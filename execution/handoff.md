@@ -1,6 +1,6 @@
 # FRONTIER Handoff
 
-Exact next action: implement and run the deterministic economy simulation, then scaffold the Next.js game surface around its metrics and the trade -> ship -> raid -> sell loop.
+Exact next action: run the WSL near-workspaces acceptance test, then install/use near-cli-rs for `frontier-uiriamuzu.testnet`, create `world` and scripted-player subaccounts, deploy the release WASM, and write testnet evidence.
 
-Known blocker: request the human's testnet account name before deployment. Do not invent a contract ID or sign a transaction.
+Platform fallback: Windows cannot run near-workspaces 0.24 directly; WSL2 Ubuntu is available and is the supported sandbox runtime. Mainnet remains out of scope and requires explicit approval.
 
