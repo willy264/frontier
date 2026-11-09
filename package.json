@@ -4,6 +4,8 @@
   "scripts": {
     "dev": "next dev apps/game",
     "build": "next build apps/game",
+    "deploy:testnet": "tsx scripts/deploy-testnet.ts",
+    "demo:round": "tsx scripts/demo-round.ts",
     "sim": "tsx sim/economy.ts",
     "test": "vitest run"
   },
@@ -12,6 +14,7 @@
     "@types/react": "^19.0.6",
     "@types/react-dom": "^19.0.2",
     "next": "^16.4.3",
+    "near-api-js": "^7.4.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tsx": "^4.19.2",

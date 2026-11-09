@@ -1,6 +1,6 @@
 # Verification Report
 
-Updated: 2026-11-08
+Updated: 2026-11-09
 
 ## Real runs
 
@@ -8,11 +8,15 @@ Updated: 2026-11-08
 - `pnpm test`: passed. 2 Vitest tests.
 - `pnpm exec tsc --noEmit`: passed.
 - `pnpm build`: passed. Next.js 16.4.3 compiled and generated the static `/` route.
-- `curl.exe -I --max-time 10 http://localhost:3000`: passed with HTTP 200 from the local dev server.
+- `cargo check --target wasm32-unknown-unknown`: passed.
+- `cargo build --target wasm32-unknown-unknown --release --locked`: passed.
+- `cargo test --jobs 1`: passed. 4 Rust tests, including the proptest.
+- WSL `cargo test --test sandbox_round -- --ignored --nocapture`: failed during `cargo near` ABI generation because public DTOs lack `JsonSchema`; the ignored test body did not run.
+- Testnet deploy transaction succeeded: `BUfZUEo3Y9UvrCYwcm9Hehc6Uphn3b3W9NaNWCDxoL8G`.
+- Testnet initialization failed with a WebAssembly `unreachable` trap; see `results/deploy-testnet.json`.
 
 ## Not yet run
 
-- Rust contract tests and sandbox integration tests: contract does not exist yet.
-- Testnet deployment and transaction evidence: blocked on a human-provided testnet account ID.
+- Full cargo-near ABI build, sandbox acceptance assertions, and initialized testnet contract: pending the `JsonSchema`/WASM fix.
 - Fresh-clone test: pending after contract and frontend wiring are complete.
 

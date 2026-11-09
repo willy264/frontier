@@ -1,0 +1,14 @@
+{
+  "network": "testnet",
+  "root": "frontier-uiriamuzu.testnet",
+  "world": "world.frontier-uiriamuzu.testnet",
+  "players": [
+    "p1.frontier-uiriamuzu.testnet",
+    "p2.frontier-uiriamuzu.testnet",
+    "p3.frontier-uiriamuzu.testnet",
+    "p4.frontier-uiriamuzu.testnet"
+  ],
+  "deployTx": "BUfZUEo3Y9UvrCYwcm9Hehc6Uphn3b3W9NaNWCDxoL8G",
+  "initError": "WebAssembly trap: An `unreachable` opcode was executed.",
+  "explorer": "https://testnet.nearblocks.io/address/world.frontier-uiriamuzu.testnet"
+}
