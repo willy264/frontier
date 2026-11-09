@@ -1,0 +1,22 @@
+{
+  "name": "frontier-near",
+  "private": true,
+  "scripts": {
+    "dev": "next dev apps/game",
+    "build": "next build apps/game",
+    "sim": "tsx sim/economy.ts",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.6",
+    "@types/react-dom": "^19.0.2",
+    "next": "^16.4.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
+

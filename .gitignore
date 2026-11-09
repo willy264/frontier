@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+node_modules/
+target/
+.next/
+neardev/
+*-key*.json
+*credential*.json
+data/
+cache/
