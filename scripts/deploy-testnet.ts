@@ -56,9 +56,10 @@ async function main() {
     world: WORLD,
     players: ["p1", "p2", "p3", "p4"].map((name) => `${name}.${ROOT}`),
     deployTx: txHash(deploy),
-    initTx: "error" in initialized || "alreadyInitialized" in initialized ? undefined : txHash(initialized),
+    initializationTx: "error" in initialized || "alreadyInitialized" in initialized ? undefined : txHash(initialized),
     initStatus: "alreadyInitialized" in initialized ? "already_initialized" : "error" in initialized ? "failed" : "initialized",
     initError: "error" in initialized ? initialized.error : undefined,
+    wasmSha256: (await import("node:crypto")).createHash("sha256").update(wasm).digest("hex"),
     explorer: `https://testnet.nearblocks.io/address/${WORLD}`,
   };
   await fs.mkdir("results", { recursive: true });

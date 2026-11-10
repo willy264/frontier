@@ -7,12 +7,13 @@
   "explorer": "https://testnet.nearblocks.io/address/world.frontier-uiriamuzu.testnet",
   "evidence": [
     "results/deploy-testnet.json",
-    "results/round-2026-11-10T08-11-25-715Z.json"
+    "results/round-2026-11-10T08-11-25-715Z.json",
+    "results/round-2026-11-10T15-52-32-625Z.json"
   ],
   "repo_url": "<add after publishing>",
-  "demo_url": "<add hosted demo or video URL>",
+  "demo_url": "<add Vercel URL after authorized publishing>",
   "video_url": "<add recorded video URL>",
   "x_post_url": "<add after posting>",
   "mainnet_used": false,
-  "notes": "Do not submit this draft until the public repo, video, and final rules review are complete."
+  "notes": "Do not submit this draft until the public repo, Vercel URL, video, X URL, and final rules review are complete."
 }

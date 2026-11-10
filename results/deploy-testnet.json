@@ -8,9 +8,9 @@
     "p3.frontier-uiriamuzu.testnet",
     "p4.frontier-uiriamuzu.testnet"
   ],
-  "deployTx": "AFQbp2D38LWNXDMkCr2wCnzdLKTGL3K8wmasMVybg9jn",
-  "initializationTx": "ATb3Wp8Xgz4XPFhoi6xAvBiSn2iiFwFauN49Zzz1VkTg",
-  "initStatus": "already_initialized",
-  "wasmSha256": "87355b240cb0bca49fd37619afd054bf93f61b7a5b37348d8ee0e22910adc01d",
+  "deployTx": "9M153EpRPozBkFhMND1wwt3DoNKM4Bzzhztr6XA8Vekk",
+  "initializationTx": "Dn2b3X5yQMXkqzCBHUwYBY8ac471ufWeQviyKHpPg8Eu",
+  "initStatus": "initialized",
+  "wasmSha256": "8624530c72f24cde41175133b2bf47311d89b2b1b7e212399d54c37bcd36fa72",
   "explorer": "https://testnet.nearblocks.io/address/world.frontier-uiriamuzu.testnet"
 }
