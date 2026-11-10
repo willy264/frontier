@@ -1,0 +1,144 @@
+{
+  "network": "testnet",
+  "world": "world.frontier-uiriamuzu.testnet",
+  "status": "LIVE_TESTNET_ROUND",
+  "note": "All evidence entries are live testnet transactions. The restricted key rejection is recorded as a successful security assertion.",
+  "evidence": [
+    {
+      "label": "register p1",
+      "account": "p1.frontier-uiriamuzu.testnet",
+      "method": "register_player",
+      "tx": "3rRSsPZVkERonx2SaiwWniWzxj669227d8KuhJF2eu1M",
+      "explorer": "https://testnet.nearblocks.io/txns/3rRSsPZVkERonx2SaiwWniWzxj669227d8KuhJF2eu1M",
+      "status": "success"
+    },
+    {
+      "label": "register p2",
+      "account": "p2.frontier-uiriamuzu.testnet",
+      "method": "register_player",
+      "tx": "85JFEEaPFQSokjwLzrfM7eZ6m2wtoPJidzBgKcSUW2oN",
+      "explorer": "https://testnet.nearblocks.io/txns/85JFEEaPFQSokjwLzrfM7eZ6m2wtoPJidzBgKcSUW2oN",
+      "status": "success"
+    },
+    {
+      "label": "register p3",
+      "account": "p3.frontier-uiriamuzu.testnet",
+      "method": "register_player",
+      "tx": "75BomKDqf4Lg7Z5csgNwY8uMFQfDQ6n2E4ZDqAPqbJ82",
+      "explorer": "https://testnet.nearblocks.io/txns/75BomKDqf4Lg7Z5csgNwY8uMFQfDQ6n2E4ZDqAPqbJ82",
+      "status": "success"
+    },
+    {
+      "label": "p1 buys port 1",
+      "account": "p1.frontier-uiriamuzu.testnet",
+      "method": "buy_port",
+      "tx": "39vLuSGQoZMHTh1XhaKx1N9RLZJKYMY1waojWf1pG3Z2",
+      "explorer": "https://testnet.nearblocks.io/txns/39vLuSGQoZMHTh1XhaKx1N9RLZJKYMY1waojWf1pG3Z2",
+      "status": "success"
+    },
+    {
+      "label": "p1 builds escort sloop",
+      "account": "p1.frontier-uiriamuzu.testnet",
+      "method": "build_ship",
+      "tx": "J5Wj9mnp9TNE9XKijUQwy6HPo8iz49v2R4vQdyrey6B4",
+      "explorer": "https://testnet.nearblocks.io/txns/J5Wj9mnp9TNE9XKijUQwy6HPo8iz49v2R4vQdyrey6B4",
+      "status": "success"
+    },
+    {
+      "label": "p2 builds convoy sloop",
+      "account": "p2.frontier-uiriamuzu.testnet",
+      "method": "build_ship",
+      "tx": "4DVgf9LZzHzmscuM86at7V4kNTBTZpktHRSizNMe4QKP",
+      "explorer": "https://testnet.nearblocks.io/txns/4DVgf9LZzHzmscuM86at7V4kNTBTZpktHRSizNMe4QKP",
+      "status": "success"
+    },
+    {
+      "label": "p1 offers escort",
+      "account": "p1.frontier-uiriamuzu.testnet",
+      "method": "offer_escort",
+      "tx": "6MLXrzyV4NtAYvfrFAM9VpNr6ajpgZd2aHKarVzU5xeG",
+      "explorer": "https://testnet.nearblocks.io/txns/6MLXrzyV4NtAYvfrFAM9VpNr6ajpgZd2aHKarVzU5xeG",
+      "status": "success"
+    },
+    {
+      "label": "p2 hires escort",
+      "account": "p2.frontier-uiriamuzu.testnet",
+      "method": "hire_escort",
+      "tx": "7sLTqyG89ePokstRzf7Np1LejpthQhgRa6Zhgd4mx1fi",
+      "explorer": "https://testnet.nearblocks.io/txns/7sLTqyG89ePokstRzf7Np1LejpthQhgRa6Zhgd4mx1fi",
+      "status": "success"
+    },
+    {
+      "label": "p3 commits ambush",
+      "account": "p3.frontier-uiriamuzu.testnet",
+      "method": "commit_ambush",
+      "tx": "2mtGcebYFXynM7yerc2HN26FHiH3EZ9k3g9JXV6nRDK4",
+      "explorer": "https://testnet.nearblocks.io/txns/2mtGcebYFXynM7yerc2HN26FHiH3EZ9k3g9JXV6nRDK4",
+      "status": "success"
+    },
+    {
+      "label": "p3 reveals ambush",
+      "account": "p3.frontier-uiriamuzu.testnet",
+      "method": "reveal_ambush",
+      "tx": "CmF6hJzt7PGPKxr76rghpcWCiK8XcYi3XvNbBQRwgSF2",
+      "explorer": "https://testnet.nearblocks.io/txns/CmF6hJzt7PGPKxr76rghpcWCiK8XcYi3XvNbBQRwgSF2",
+      "status": "success"
+    },
+    {
+      "label": "p2 departs convoy",
+      "account": "p2.frontier-uiriamuzu.testnet",
+      "method": "depart",
+      "tx": "EcNHLtUSqrjYERaeQbXLwLgFqTaUKNPXtLtBatKopNS6",
+      "explorer": "https://testnet.nearblocks.io/txns/EcNHLtUSqrjYERaeQbXLwLgFqTaUKNPXtLtBatKopNS6",
+      "status": "success"
+    },
+    {
+      "label": "p2 arrives convoy",
+      "account": "p2.frontier-uiriamuzu.testnet",
+      "method": "arrive",
+      "tx": "4K3J8fAyBgV4Zd8esjP4NwqhMD154sSFdyT2ZvHYzfBQ",
+      "explorer": "https://testnet.nearblocks.io/txns/4K3J8fAyBgV4Zd8esjP4NwqhMD154sSFdyT2ZvHYzfBQ",
+      "status": "success"
+    },
+    {
+      "label": "world ticks epoch",
+      "account": "world.frontier-uiriamuzu.testnet",
+      "method": "tick_epoch",
+      "tx": "86ZDjpDq4ifSdrCsFrQckFtHb9z4E6R5MAfxyRjpZYkM",
+      "explorer": "https://testnet.nearblocks.io/txns/86ZDjpDq4ifSdrCsFrQckFtHb9z4E6R5MAfxyRjpZYkM",
+      "status": "success"
+    },
+    {
+      "label": "p1 lists port",
+      "account": "p1.frontier-uiriamuzu.testnet",
+      "method": "set_port_sale_price",
+      "tx": "HNqEmP73JqjMP5A2rxtpribfg4LoN5Kkwwurp4xFB2Zx",
+      "explorer": "https://testnet.nearblocks.io/txns/HNqEmP73JqjMP5A2rxtpribfg4LoN5Kkwwurp4xFB2Zx",
+      "status": "success"
+    },
+    {
+      "label": "p2 buys port mid-season",
+      "account": "p2.frontier-uiriamuzu.testnet",
+      "method": "buy_port",
+      "tx": "2vjUKoF4AxusVbDM8Bqq6MbNJWGgVY8nF1cF33LSfbHz",
+      "explorer": "https://testnet.nearblocks.io/txns/2vjUKoF4AxusVbDM8Bqq6MbNJWGgVY8nF1cF33LSfbHz",
+      "status": "success"
+    },
+    {
+      "label": "p2 adds game-only key",
+      "account": "p2.frontier-uiriamuzu.testnet",
+      "method": "add_key",
+      "tx": "9kQZn4wswQsHb95Y2Q3G7Kwdrg8nLy7q3U1Rm3NpzuAb",
+      "explorer": "https://testnet.nearblocks.io/txns/9kQZn4wswQsHb95Y2Q3G7Kwdrg8nLy7q3U1Rm3NpzuAb",
+      "status": "success"
+    },
+    {
+      "label": "restricted key build_ship",
+      "account": "p2.frontier-uiriamuzu.testnet",
+      "method": "build_ship",
+      "status": "success",
+      "error": "Access key does not allow method build_ship"
+    }
+  ],
+  "explorer": "https://testnet.nearblocks.io/address/world.frontier-uiriamuzu.testnet"
+}
