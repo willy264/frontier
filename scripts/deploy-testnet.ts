@@ -33,19 +33,31 @@ function txHash(outcome: { transaction_outcome: { id: string } }) { return outco
 async function main() {
   const provider = new JsonRpcProvider({ url: RPC });
   const root = makeAccount(provider, await readCredential(ROOT));
-  await ensureSubaccount(root, provider, WORLD, 2n * 10n ** 24n);
+  await ensureSubaccount(root, provider, WORLD, 4n * 10n ** 24n);
   for (const name of ["p1", "p2", "p3", "p4"]) await ensureSubaccount(root, provider, `${name}.${ROOT}`, 1n * 10n ** 24n);
   const world = makeAccount(provider, await readCredential(WORLD));
   const wasm = await fs.readFile(wasmPath);
   const deploy = await world.deployContract(new Uint8Array(wasm));
-  const initialized = await world.callFunctionRaw({ contractId: WORLD, methodName: "new", args: {}, gas: 200n * 10n ** 12n, deposit: 0n }).catch((error) => ({ error: error instanceof Error ? error.message : String(error) }));
+  const initialized = await world
+    .callFunctionRaw({ contractId: WORLD, methodName: "new", args: {}, gas: 200n * 10n ** 12n, deposit: 0n })
+    .catch(async (error) => {
+      const message = error instanceof Error ? error.message : String(error);
+      if (!message.includes("already been initialized")) return { error: message };
+      try {
+        await provider.callFunction({ contractId: WORLD, method: "get_port", args: { port_id: 1 }, blockQuery: { finality: "final" } });
+        return { alreadyInitialized: true };
+      } catch {
+        return { error: message };
+      }
+    });
   const output = {
     network: networkId,
     root: ROOT,
     world: WORLD,
     players: ["p1", "p2", "p3", "p4"].map((name) => `${name}.${ROOT}`),
     deployTx: txHash(deploy),
-    initTx: "error" in initialized ? undefined : txHash(initialized),
+    initTx: "error" in initialized || "alreadyInitialized" in initialized ? undefined : txHash(initialized),
+    initStatus: "alreadyInitialized" in initialized ? "already_initialized" : "error" in initialized ? "failed" : "initialized",
     initError: "error" in initialized ? initialized.error : undefined,
     explorer: `https://testnet.nearblocks.io/address/${WORLD}`,
   };

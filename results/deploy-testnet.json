@@ -8,7 +8,8 @@
     "p3.frontier-uiriamuzu.testnet",
     "p4.frontier-uiriamuzu.testnet"
   ],
-  "deployTx": "BUfZUEo3Y9UvrCYwcm9Hehc6Uphn3b3W9NaNWCDxoL8G",
-  "initError": "WebAssembly trap: An `unreachable` opcode was executed.",
+  "deployTx": "FXohPVf1VBTHvD8VymbmqVxetEJWCQeUsq67ct8mhZsy",
+  "initTx": "AAd3gePMR9ZWsCN2xFs4MGQpbzNgcn3jHjc9F7gS5oTs",
+  "initStatus": "initialized",
   "explorer": "https://testnet.nearblocks.io/address/world.frontier-uiriamuzu.testnet"
 }
