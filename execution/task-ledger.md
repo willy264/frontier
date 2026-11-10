@@ -1,6 +1,6 @@
 # FRONTIER Task Ledger
 
-Updated: 2026-11-10 09:40 WAT
+Updated: 2026-11-10 17:20 WAT
 
 Deadline: 2026-11-14 23:59 UTC. Approximate time remaining at update: 86 hours.
 
@@ -18,3 +18,8 @@ Deadline: 2026-11-14 23:59 UTC. Approximate time remaining at update: 86 hours.
 | CI | done locally / pending remote observation | Workflow committed; no remote or push configured by instruction. |
 | Fresh clone | done | New local clone passed frozen install, tests, typecheck, and webpack build. |
 | README/submission/video docs | done as drafts | Human must add public URL, hosted demo/video, X URL, and submit the form. |
+| Browser commit-reveal loop | done | Browser salts use Web Crypto, localStorage, JSON backup, ambush reveal, and hidden-departure arrival controls. Frontend webpack and TypeScript checks pass. |
+| NEP-171/245 and spoilage | done | Core NFT views, treasury-preserving transfer, multi-token ship/goods views/transfers, standard metadata, and live `tick_epoch` spoilage are tested and deployed. |
+| Scripted practice mode | done for UI demo | Clearly labeled deterministic p1-p4 timeline reaches an ambush feed in about two minutes. Live p1-p4 evidence remains in `results/round-2026-11-10T15-52-32-625Z.json`. |
+| Vercel preparation | done | `vercel.json`, exact environment/build steps, and unpublished URL placeholder are documented. Publishing is intentionally left to the human. |
+| Final verification | done locally | Sandbox, 39 contract tests, frontend tests, TypeScript, and webpack build pass. A browser-wallet walkthrough was not automated in this environment. |

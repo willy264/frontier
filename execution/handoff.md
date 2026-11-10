@@ -1,17 +1,27 @@
 # FRONTIER Handoff
 
-Exact next action on resume: review the final diff and run the local CI commands once more, then inspect the frontend in a browser. Do not add a remote or publish anything without human instruction.
+Updated 2026-11-10 17:20 WAT. The requested contract and playable-loop work is complete locally and on testnet. The next action is to review this final commit/tag, then the human can publish and record the submission. Do not add a remote, push, publish, post, submit, or touch mainnet.
 
-Current exact state:
+Done:
 
-- WSL `cargo near build non-reproducible-wasm --skip-rust-version-check` passes using `#[near(serializers = [json, borsh])]` DTO annotations.
-- The sandbox acceptance test passes: three players, escort, ambush, arrival, port sale, and forbidden method on a restricted key.
-- The contract unit suite passes 37 tests single-threaded, plus the proptest.
-- Testnet world `world.frontier-uiriamuzu.testnet` was recreated and initialized from the cargo-near artifact. Latest deployment evidence is committed in `results/deploy-testnet.json`.
-- `pnpm demo:round` passed and wrote `results/round-2026-11-10T08-11-25-715Z.json` with live explorer links.
-- Frontend now reads testnet port/economy views, submits selected contract calls, and uses NEAR Connect with a session-only function-call key.
-- CI, README, X draft, submission JSON, video plan, and fresh-clone verification are committed or staged for the next checkpoint commit.
+- WSL `cargo near build non-reproducible-wasm --skip-rust-version-check` passes.
+- Contract uses `#[near(serializers = [json, borsh])]` for public DTOs.
+- NEP-171 port core views and transfer preserve the port treasury; NEP-245 minimum ship/goods methods and metadata are present.
+- `tick_epoch` applies goods spoilage and `economy_dashboard` exposes the sink.
+- Contract unit suite passes 39 tests, including error coverage, ambush edges, standards, treasury transfer, spoilage, and proptest invariants.
+- Ignored near-workspaces sandbox passes the three-player escort, ambush, arrival, port-sale, and restricted-key boundary round.
+- Testnet world was recreated and initialized from the new artifact. Deployment evidence is `results/deploy-testnet.json`.
+- `pnpm demo:round` passed with live evidence in `results/round-2026-11-10T15-52-32-625Z.json`.
+- Frontend has real browser commit-reveal salts, localStorage persistence, downloadable backups, ambush reveal, sealed-departure arrival, result feed, six-step walkthrough, economy spoilage display, and clearly labeled scripted practice mode.
+- Frontend tests, TypeScript, and webpack production build pass.
+- README, Vercel config, submission draft, video plan, X draft, and Q-015 related-project disclosure are current.
 
-Open questions/blockers: CI cannot be observed remotely because no git remote/push is authorized. The frontend needs a browser-level visual check. Submission still needs a public repo URL, hosted demo/video, X post, and human form submission. Mainnet remains out of scope.
+Exact remaining human actions:
+
+- Publish the repository and deploy Vercel using the documented commands; replace the placeholder live URL in README and submission JSON.
+- Use a brand-new testnet wallet to run the six-step flow and record the video. The repository has no browser automation tool, so this was not claimed as an automated judge walkthrough.
+- Add the public repo, hosted demo/video, and X URLs, then submit the form.
+
+Known limitations: NEAR Intents settlement and production season rollover are future work. The scripted practice button is a deterministic client timeline; the live p1-p4 contract round is evidenced separately by `pnpm demo:round`. `HACKATHON.md` is absent from the repository; the final review used `FRONTIER-BRIEF.md` and the existing research/verification docs.
 
 Platform note: Windows cannot run near-workspaces 0.24 directly; WSL2 Ubuntu is the supported sandbox runtime.
