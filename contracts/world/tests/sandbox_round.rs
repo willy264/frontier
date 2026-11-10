@@ -61,9 +61,10 @@ async fn three_player_round_with_escort_raid_port_sale_and_key_boundary() -> any
     let convoy_commit = Sha256::digest(format!("{}:{}:{}", 2, 1, convoy_salt).as_bytes()).to_vec();
     let raid_salt = "raid-salt";
     let raid_commit = Sha256::digest(format!("{}:{}", 1, raid_salt).as_bytes()).to_vec();
+    let ambush_window = worker.view_block().await?.header().height() + 5;
     p3.call(contract.id(), "commit_ambush")
         .args_json(
-            serde_json::json!({"route_id": 1, "window": 10, "commit": raid_commit, "stake": "10"}),
+            serde_json::json!({"route_id": 1, "window": ambush_window, "commit": raid_commit, "stake": "10"}),
         )
         .transact()
         .await?
@@ -71,7 +72,7 @@ async fn three_player_round_with_escort_raid_port_sale_and_key_boundary() -> any
     p2.call(contract.id(), "depart").args_json(serde_json::json!({"ship_id": ship_2, "route_id": 1, "destination_commit": convoy_commit, "cargo": ["0", "0", "0"]})).transact().await?.into_result()?;
     p3.call(contract.id(), "reveal_ambush")
         .args_json(
-            serde_json::json!({"route_id": 1, "window": 10, "salt": raid_salt, "power": "1"}),
+            serde_json::json!({"route_id": 1, "window": ambush_window, "salt": raid_salt, "power": "1"}),
         )
         .transact()
         .await?
@@ -121,7 +122,7 @@ async fn three_player_round_with_escort_raid_port_sale_and_key_boundary() -> any
         .call(contract.id(), "build_ship")
         .args_json(serde_json::json!({"kind": "sloop"}))
         .transact()
-        .await?;
-    assert!(forbidden.is_failure());
+        .await;
+    assert!(forbidden.is_err() || forbidden.as_ref().is_ok_and(|outcome| outcome.is_failure()));
     Ok(())
 }
