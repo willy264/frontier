@@ -1,3 +1,5 @@
+[![CI](https://github.com/willy264/frontier/actions/workflows/ci.yml/badge.svg)](https://github.com/willy264/frontier/actions/workflows/ci.yml)
+
 # FRONTIER: a fully on-chain trading empire across the chains
 
 FRONTIER is a persistent trading and strategy game designed to run in NEAR contracts. Players buy scarce goods, seal convoy destinations, choose risky or escorted routes, ambush rival traffic, and run player-owned port markets.
