@@ -62,13 +62,17 @@ async fn three_player_round_with_escort_raid_port_sale_and_key_boundary() -> any
     let raid_salt = "raid-salt";
     let raid_commit = Sha256::digest(format!("{}:{}", 1, raid_salt).as_bytes()).to_vec();
     p3.call(contract.id(), "commit_ambush")
-        .args_json(serde_json::json!({"route_id": 1, "window": 10, "commit": raid_commit, "stake": "10"}))
+        .args_json(
+            serde_json::json!({"route_id": 1, "window": 10, "commit": raid_commit, "stake": "10"}),
+        )
         .transact()
         .await?
         .into_result()?;
     p2.call(contract.id(), "depart").args_json(serde_json::json!({"ship_id": ship_2, "route_id": 1, "destination_commit": convoy_commit, "cargo": ["0", "0", "0"]})).transact().await?.into_result()?;
     p3.call(contract.id(), "reveal_ambush")
-        .args_json(serde_json::json!({"route_id": 1, "window": 10, "salt": raid_salt, "power": "1"}))
+        .args_json(
+            serde_json::json!({"route_id": 1, "window": 10, "salt": raid_salt, "power": "1"}),
+        )
         .transact()
         .await?
         .into_result()?;
@@ -101,7 +105,14 @@ async fn three_player_round_with_escort_raid_port_sale_and_key_boundary() -> any
     // A key restricted to register_player cannot call build_ship.
     let session_key = SecretKey::from_random(KeyType::ED25519);
     p2.batch(p2.id())
-        .add_key(session_key.public_key(), AccessKey::function_call_access(contract.id(), &["register_player"], Some(NearToken::from_near(1))))
+        .add_key(
+            session_key.public_key(),
+            AccessKey::function_call_access(
+                contract.id(),
+                &["register_player"],
+                Some(NearToken::from_near(1)),
+            ),
+        )
         .transact()
         .await?
         .into_result()?;

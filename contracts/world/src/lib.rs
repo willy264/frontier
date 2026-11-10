@@ -1,7 +1,6 @@
-use borsh::{BorshDeserialize, BorshSerialize};
+use borsh::BorshSerialize;
 use near_sdk::collections::{LookupMap, UnorderedMap};
 use near_sdk::json_types::U128;
-use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{env, near, require, AccountId, BorshStorageKey, PanicOnDefault};
 
 const STARTER_CRED: u128 = 1_000;
@@ -19,10 +18,8 @@ enum StorageKey {
     Escorts,
 }
 
-#[derive(
-    BorshSerialize, BorshDeserialize, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Debug,
-)]
-#[serde(crate = "near_sdk::serde")]
+#[near(serializers = [json, borsh])]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Good {
     Hashpower,
     Liquidity,
@@ -39,8 +36,8 @@ impl Good {
     }
 }
 
-#[derive(BorshSerialize, BorshDeserialize, Clone, Serialize, Deserialize, Debug)]
-#[serde(crate = "near_sdk::serde")]
+#[near(serializers = [json, borsh])]
+#[derive(Clone, Debug)]
 pub struct Player {
     pub cred: u128,
     pub goods: [u128; 3],
@@ -48,8 +45,8 @@ pub struct Player {
     pub active_commits: u8,
 }
 
-#[derive(BorshSerialize, BorshDeserialize, Clone, Serialize, Deserialize, Debug)]
-#[serde(crate = "near_sdk::serde")]
+#[near(serializers = [json, borsh])]
+#[derive(Clone, Debug)]
 pub struct Port {
     pub token_id: String,
     pub owner_id: AccountId,
@@ -60,8 +57,8 @@ pub struct Port {
     pub sale_price: u128,
 }
 
-#[derive(BorshSerialize, BorshDeserialize, Clone, Serialize, Deserialize, Debug)]
-#[serde(crate = "near_sdk::serde")]
+#[near(serializers = [json, borsh])]
+#[derive(Clone, Debug)]
 pub struct Route {
     pub route_id: u64,
     pub from_port: u64,
@@ -69,8 +66,8 @@ pub struct Route {
     pub distance: u64,
 }
 
-#[derive(BorshSerialize, BorshDeserialize, Clone, Serialize, Deserialize, Debug)]
-#[serde(crate = "near_sdk::serde")]
+#[near(serializers = [json, borsh])]
+#[derive(Clone, Debug)]
 pub struct Ship {
     pub token_id: String,
     pub owner_id: AccountId,
@@ -82,8 +79,8 @@ pub struct Ship {
     pub destination_commit: Option<Vec<u8>>,
 }
 
-#[derive(BorshSerialize, BorshDeserialize, Clone, Serialize, Deserialize, Debug)]
-#[serde(crate = "near_sdk::serde")]
+#[near(serializers = [json, borsh])]
+#[derive(Clone, Debug)]
 pub struct Ambush {
     pub route_id: u64,
     pub window: u64,
@@ -94,8 +91,8 @@ pub struct Ambush {
     pub power: u128,
 }
 
-#[derive(BorshSerialize, BorshDeserialize, Clone, Serialize, Deserialize, Debug)]
-#[serde(crate = "near_sdk::serde")]
+#[near(serializers = [json, borsh])]
+#[derive(Clone, Debug)]
 pub struct EscortOffer {
     pub ship_id: u64,
     pub owner_id: AccountId,
