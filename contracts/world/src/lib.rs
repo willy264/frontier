@@ -138,7 +138,6 @@ pub struct Ambush {
     pub stake: u128,
     pub commit: Vec<u8>,
     pub revealed: bool,
-    pub power: u128,
 }
 
 #[near(serializers = [json, borsh])]
@@ -420,7 +419,7 @@ impl World {
                 candidate.route_id == route_id && candidate.window <= window && candidate.revealed
             });
         if let Some(ambush) = ambush {
-            if ambush.power > ship.defence {
+            if self.raider_power(&ambush.raider) > ship.defence {
                 let loss = ship.cargo.iter().sum::<u128>() / 2;
                 self.sinks += loss;
                 ship.cargo[0] = ship.cargo[0].saturating_sub(loss.min(ship.cargo[0]));
@@ -460,13 +459,12 @@ impl World {
                 stake: stake.0,
                 commit,
                 revealed: false,
-                power: 0,
             },
         );
         self.emit("ambush_committed", &key);
     }
 
-    pub fn reveal_ambush(&mut self, route_id: u64, window: u64, salt: String, power: U128) {
+    pub fn reveal_ambush(&mut self, route_id: u64, window: u64, salt: String) {
         let caller = env::predecessor_account_id();
         require!(env::block_height() <= window + 20, "ERR_REVEAL_LATE");
         let key = Self::ambush_key(route_id, window);
@@ -477,7 +475,6 @@ impl World {
             "ERR_AMBUSH_REVEAL"
         );
         ambush.revealed = true;
-        ambush.power = power.0;
         self.ambushes.insert(&key, &ambush);
         self.emit("ambush_revealed", &key);
     }
@@ -717,6 +714,13 @@ impl World {
     fn ambush_key(route: u64, window: u64) -> String {
         format!("{}:{}", route, window)
     }
+    fn raider_power(&self, raider: &AccountId) -> u128 {
+        self.ships
+            .values()
+            .filter(|ship| ship.owner_id == *raider && ship.route_id.is_none())
+            .map(|ship| ship.defence)
+            .sum()
+    }
     fn port_id_from_token(&self, token: &str) -> u64 {
         token
             .strip_prefix("port-")
@@ -828,7 +832,7 @@ mod tests {
         let mut world = world();
         testing_env!(context("alice.testnet", 2));
         world.commit_ambush(1, 2, env::sha256(b"1:right"), U128(10));
-        world.reveal_ambush(1, 2, "wrong".into(), U128(1));
+        world.reveal_ambush(1, 2, "wrong".into());
     });
     error_test!(error_bad_trade, "ERR_BAD_TRADE", {
         let mut world = world();
@@ -928,7 +932,7 @@ mod tests {
     });
     error_test!(error_no_ambush, "ERR_NO_AMBUSH", {
         let mut world = world();
-        world.reveal_ambush(1, 2, "s".into(), U128(1));
+        world.reveal_ambush(1, 2, "s".into());
     });
     error_test!(error_not_in_transit, "ERR_NOT_IN_TRANSIT", {
         let mut world = world();
@@ -947,7 +951,7 @@ mod tests {
         world.commit_ambush(1, 2, env::sha256(b"1:s"), U128(10));
         testing_env!(context("bob.testnet", 2));
         world.register_player();
-        world.reveal_ambush(1, 2, "s".into(), U128(1));
+        world.reveal_ambush(1, 2, "s".into());
     });
     error_test!(error_not_ship_owner, "ERR_NOT_SHIP_OWNER", {
         let mut world = world();
@@ -978,7 +982,7 @@ mod tests {
         testing_env!(context("alice.testnet", 2));
         world.commit_ambush(1, 2, env::sha256(b"1:s"), U128(10));
         testing_env!(context("alice.testnet", 23));
-        world.reveal_ambush(1, 2, "s".into(), U128(1));
+        world.reveal_ambush(1, 2, "s".into());
     });
     error_test!(error_route_not_found, "ERR_ROUTE_NOT_FOUND", {
         let mut world = world();
@@ -1032,7 +1036,7 @@ mod tests {
         world.commit_ambush(1, 2, env::sha256(b"1:s"), U128(10));
         testing_env!(context("alice.testnet", 23));
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            world.reveal_ambush(1, 2, "s".into(), U128(1))
+            world.reveal_ambush(1, 2, "s".into())
         }));
         assert!(result.is_err());
     }
@@ -1047,6 +1051,18 @@ mod tests {
             world.arrive(ship, 2, "wrong-salt".into())
         }));
         assert!(result.is_err());
+    }
+    #[test]
+    fn ambush_power_cannot_be_injected_at_reveal() {
+        let mut world = world();
+        testing_env!(context("alice.testnet", 2));
+        let ship = world.build_ship("sloop".into());
+        let _second_ship = world.build_ship("sloop".into());
+        world.commit_ambush(1, 2, env::sha256(b"1:s"), U128(10));
+        world.reveal_ambush(1, 2, "s".into());
+        let ambush = world.ambushes.get(&"1:2".to_string()).expect("ambush");
+        assert_eq!(world.raider_power(&ambush.raider), 2);
+        assert_eq!(world.get_ship(ship).unwrap().route_id, None);
     }
     #[test]
     fn standards_and_spoilage_are_live() {

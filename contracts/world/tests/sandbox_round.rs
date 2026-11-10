@@ -71,9 +71,7 @@ async fn three_player_round_with_escort_raid_port_sale_and_key_boundary() -> any
         .into_result()?;
     p2.call(contract.id(), "depart").args_json(serde_json::json!({"ship_id": ship_2, "route_id": 1, "destination_commit": convoy_commit, "cargo": ["0", "0", "0"]})).transact().await?.into_result()?;
     p3.call(contract.id(), "reveal_ambush")
-        .args_json(
-            serde_json::json!({"route_id": 1, "window": ambush_window, "salt": raid_salt, "power": "1"}),
-        )
+        .args_json(serde_json::json!({"route_id": 1, "window": ambush_window, "salt": raid_salt}))
         .transact()
         .await?
         .into_result()?;
