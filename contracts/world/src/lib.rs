@@ -132,8 +132,8 @@ pub struct Ship {
 #[near(serializers = [json, borsh])]
 #[derive(Clone, Debug)]
 pub struct Ambush {
-    pub route_id: u64,
-    pub window: u64,
+    pub route_id: Option<u64>,
+    pub window_start: u64,
     pub raider: AccountId,
     pub stake: u128,
     pub commit: Vec<u8>,
@@ -158,7 +158,7 @@ pub struct World {
     ports: UnorderedMap<u64, Port>,
     routes: UnorderedMap<u64, Route>,
     ships: UnorderedMap<u64, Ship>,
-    ambushes: UnorderedMap<String, Ambush>,
+    ambushes: UnorderedMap<Vec<u8>, Ambush>,
     escorts: UnorderedMap<u64, EscortOffer>,
     next_ship: u64,
     epoch: u64,
@@ -416,7 +416,9 @@ impl World {
             .keys()
             .filter_map(|candidate| self.ambushes.get(&candidate))
             .find(|candidate| {
-                candidate.route_id == route_id && candidate.window <= window && candidate.revealed
+                candidate.route_id == Some(route_id)
+                    && candidate.window_start <= window
+                    && candidate.revealed
             });
         if let Some(ambush) = ambush {
             if self.raider_power(&ambush.raider) > ship.defence {
@@ -438,14 +440,14 @@ impl World {
         self.emit("arrived", &ship_id.to_string());
     }
 
-    pub fn commit_ambush(&mut self, route_id: u64, window: u64, commit: Vec<u8>, stake: U128) {
+    pub fn commit_ambush(&mut self, window_start: u64, commit: Vec<u8>, stake: U128) {
         let caller = env::predecessor_account_id();
         require!(stake.0 >= 10, "ERR_STAKE");
-        require!(window >= env::block_height(), "ERR_WINDOW");
+        require!(window_start >= env::block_height(), "ERR_WINDOW");
         let player = self.player_or_panic(&caller);
         require!(player.active_commits < 3, "ERR_COMMIT_SPAM");
         self.debit_cred(&caller, stake.0, "ERR_CRED_FUNDS");
-        let key = Self::ambush_key(route_id, window);
+        let key = commit.clone();
         require!(self.ambushes.get(&key).is_none(), "ERR_DUP_COMMIT");
         let mut updated = self.player_or_panic(&caller);
         updated.active_commits += 1;
@@ -453,30 +455,38 @@ impl World {
         self.ambushes.insert(
             &key,
             &Ambush {
-                route_id,
-                window,
+                route_id: None,
+                window_start,
                 raider: caller,
                 stake: stake.0,
                 commit,
                 revealed: false,
             },
         );
-        self.emit("ambush_committed", &key);
+        self.emit("ambush_committed", &format!("{:?}", key));
     }
 
-    pub fn reveal_ambush(&mut self, route_id: u64, window: u64, salt: String) {
+    pub fn reveal_ambush(&mut self, commit_id: Vec<u8>, route_id: u64, salt: String) {
         let caller = env::predecessor_account_id();
-        require!(env::block_height() <= window + 20, "ERR_REVEAL_LATE");
-        let key = Self::ambush_key(route_id, window);
-        let mut ambush = self.ambushes.get(&key).expect("ERR_NO_AMBUSH");
-        require!(ambush.raider == caller, "ERR_NOT_RAIDER");
+        let mut ambush = self.ambushes.get(&commit_id).expect("ERR_NO_AMBUSH");
         require!(
-            env::sha256(format!("{}:{}", route_id, salt).as_bytes()) == ambush.commit,
+            env::block_height() <= ambush.window_start + 20,
+            "ERR_REVEAL_LATE"
+        );
+        require!(ambush.raider == caller, "ERR_NOT_RAIDER");
+        let route = self.route_or_panic(route_id);
+        require!(
+            env::sha256(
+                format!("{}:{}:{}:{}", route_id, ambush.window_start, salt, caller).as_bytes()
+            ) == ambush.commit,
             "ERR_AMBUSH_REVEAL"
         );
+        require!(ambush.route_id.is_none(), "ERR_AMBUSH_REVEALED");
+        require!(route.route_id == route_id, "ERR_ROUTE_NOT_FOUND");
+        ambush.route_id = Some(route_id);
         ambush.revealed = true;
-        self.ambushes.insert(&key, &ambush);
-        self.emit("ambush_revealed", &key);
+        self.ambushes.insert(&commit_id, &ambush);
+        self.emit("ambush_revealed", &format!("{:?}", commit_id));
     }
 
     pub fn offer_escort(&mut self, ship_id: u64, price: U128) -> u64 {
@@ -711,9 +721,6 @@ impl World {
         })
     }
 
-    fn ambush_key(route: u64, window: u64) -> String {
-        format!("{}:{}", route, window)
-    }
     fn raider_power(&self, raider: &AccountId) -> u128 {
         self.ships
             .values()
@@ -800,6 +807,10 @@ mod tests {
         World::new()
     }
 
+    fn ambush_commit(route: u64, window: u64, salt: &str, account: &str) -> Vec<u8> {
+        env::sha256(format!("{}:{}:{}:{}", route, window, salt, account).as_bytes())
+    }
+
     fn assert_panic(code: &str, action: impl FnOnce()) {
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(action));
         let payload = result.expect_err("expected contract panic");
@@ -831,8 +842,9 @@ mod tests {
     error_test!(error_ambush_reveal, "ERR_AMBUSH_REVEAL", {
         let mut world = world();
         testing_env!(context("alice.testnet", 2));
-        world.commit_ambush(1, 2, env::sha256(b"1:right"), U128(10));
-        world.reveal_ambush(1, 2, "wrong".into());
+        let commit = vec![0; 32];
+        world.commit_ambush(2, commit.clone(), U128(10));
+        world.reveal_ambush(commit, 1, "wrong".into());
     });
     error_test!(error_bad_trade, "ERR_BAD_TRADE", {
         let mut world = world();
@@ -846,12 +858,7 @@ mod tests {
     error_test!(error_commit_spam, "ERR_COMMIT_SPAM", {
         let mut world = world();
         for route in 1..=4 {
-            world.commit_ambush(
-                route,
-                2,
-                env::sha256(format!("{}:s", route).as_bytes()),
-                U128(10),
-            );
+            world.commit_ambush(2, vec![route as u8], U128(10));
         }
     });
     error_test!(error_cred_funds, "ERR_CRED_FUNDS", {
@@ -873,8 +880,9 @@ mod tests {
     error_test!(error_dup_commit, "ERR_DUP_COMMIT", {
         let mut world = world();
         testing_env!(context("alice.testnet", 2));
-        world.commit_ambush(1, 2, env::sha256(b"1:s"), U128(10));
-        world.commit_ambush(1, 2, env::sha256(b"1:s"), U128(10));
+        let commit = ambush_commit(1, 2, "s", "alice.testnet");
+        world.commit_ambush(2, commit.clone(), U128(10));
+        world.commit_ambush(2, commit, U128(10));
     });
     error_test!(error_escort_inactive, "ERR_ESCORT_INACTIVE", {
         let mut world = world();
@@ -932,7 +940,7 @@ mod tests {
     });
     error_test!(error_no_ambush, "ERR_NO_AMBUSH", {
         let mut world = world();
-        world.reveal_ambush(1, 2, "s".into());
+        world.reveal_ambush(vec![0; 32], 1, "s".into());
     });
     error_test!(error_not_in_transit, "ERR_NOT_IN_TRANSIT", {
         let mut world = world();
@@ -948,10 +956,11 @@ mod tests {
     error_test!(error_not_raider, "ERR_NOT_RAIDER", {
         let mut world = world();
         testing_env!(context("alice.testnet", 2));
-        world.commit_ambush(1, 2, env::sha256(b"1:s"), U128(10));
+        let commit = ambush_commit(1, 2, "s", "alice.testnet");
+        world.commit_ambush(2, commit.clone(), U128(10));
         testing_env!(context("bob.testnet", 2));
         world.register_player();
-        world.reveal_ambush(1, 2, "s".into());
+        world.reveal_ambush(commit, 1, "s".into());
     });
     error_test!(error_not_ship_owner, "ERR_NOT_SHIP_OWNER", {
         let mut world = world();
@@ -980,9 +989,10 @@ mod tests {
     error_test!(error_reveal_late, "ERR_REVEAL_LATE", {
         let mut world = world();
         testing_env!(context("alice.testnet", 2));
-        world.commit_ambush(1, 2, env::sha256(b"1:s"), U128(10));
+        let commit = ambush_commit(1, 2, "s", "alice.testnet");
+        world.commit_ambush(2, commit.clone(), U128(10));
         testing_env!(context("alice.testnet", 23));
-        world.reveal_ambush(1, 2, "s".into());
+        world.reveal_ambush(commit, 1, "s".into());
     });
     error_test!(error_route_not_found, "ERR_ROUTE_NOT_FOUND", {
         let mut world = world();
@@ -1009,7 +1019,7 @@ mod tests {
     });
     error_test!(error_stake, "ERR_STAKE", {
         let mut world = world();
-        world.commit_ambush(1, 2, vec![0; 32], U128(9));
+        world.commit_ambush(2, vec![0; 32], U128(9));
     });
     error_test!(error_too_early, "ERR_TOO_EARLY", {
         let mut world = world();
@@ -1019,7 +1029,7 @@ mod tests {
     });
     error_test!(error_window, "ERR_WINDOW", {
         let mut world = world();
-        world.commit_ambush(1, 0, vec![0; 32], U128(10));
+        world.commit_ambush(0, vec![0; 32], U128(10));
     });
 
     #[test]
@@ -1033,10 +1043,11 @@ mod tests {
     fn rejects_late_reveal() {
         let mut world = world();
         testing_env!(context("alice.testnet", 2));
-        world.commit_ambush(1, 2, env::sha256(b"1:s"), U128(10));
+        let commit = ambush_commit(1, 2, "s", "alice.testnet");
+        world.commit_ambush(2, commit.clone(), U128(10));
         testing_env!(context("alice.testnet", 23));
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            world.reveal_ambush(1, 2, "s".into())
+            world.reveal_ambush(commit, 1, "s".into())
         }));
         assert!(result.is_err());
     }
@@ -1058,11 +1069,22 @@ mod tests {
         testing_env!(context("alice.testnet", 2));
         let ship = world.build_ship("sloop".into());
         let _second_ship = world.build_ship("sloop".into());
-        world.commit_ambush(1, 2, env::sha256(b"1:s"), U128(10));
-        world.reveal_ambush(1, 2, "s".into());
-        let ambush = world.ambushes.get(&"1:2".to_string()).expect("ambush");
+        let commit = ambush_commit(1, 2, "s", "alice.testnet");
+        world.commit_ambush(2, commit.clone(), U128(10));
+        world.reveal_ambush(commit.clone(), 1, "s".into());
+        let ambush = world.ambushes.get(&commit).expect("ambush");
         assert_eq!(world.raider_power(&ambush.raider), 2);
         assert_eq!(world.get_ship(ship).unwrap().route_id, None);
+    }
+    #[test]
+    fn distinct_ambush_commits_can_share_a_window() {
+        let mut world = world();
+        testing_env!(context("alice.testnet", 2));
+        world.commit_ambush(2, ambush_commit(1, 2, "alice", "alice.testnet"), U128(10));
+        testing_env!(context("bob.testnet", 2));
+        world.register_player();
+        world.commit_ambush(2, ambush_commit(1, 2, "bob", "bob.testnet"), U128(10));
+        assert_eq!(world.ambushes.len(), 2);
     }
     #[test]
     fn standards_and_spoilage_are_live() {
