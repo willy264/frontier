@@ -1,0 +1,18 @@
+{
+  "status": "draft",
+  "project": "FRONTIER",
+  "tracks": ["games", "nfts"],
+  "network": "testnet",
+  "world_account": "world.frontier-uiriamuzu.testnet",
+  "explorer": "https://testnet.nearblocks.io/address/world.frontier-uiriamuzu.testnet",
+  "evidence": [
+    "results/deploy-testnet.json",
+    "results/round-2026-11-10T08-11-25-715Z.json"
+  ],
+  "repo_url": "<add after publishing>",
+  "demo_url": "<add hosted demo or video URL>",
+  "video_url": "<add recorded video URL>",
+  "x_post_url": "<add after posting>",
+  "mainnet_used": false,
+  "notes": "Do not submit this draft until the public repo, video, and final rules review are complete."
+}
