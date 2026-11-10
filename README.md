@@ -2,19 +2,34 @@
 
 FRONTIER is a persistent trading and strategy game designed to run in NEAR contracts. Players buy scarce goods, seal convoy destinations, choose risky or escorted routes, ambush rival traffic, and run player-owned port markets.
 
-## Try it in 5 minutes
+## Try it locally
 
 ```powershell
 pnpm install
 pnpm sim
 pnpm test
-pnpm build
+pnpm exec next build apps/game --webpack
 pnpm dev
 ```
 
-Open `http://localhost:3000`. Click an island to inspect its market, switch to Economy to see the `SIMULATED` faucet/sink proof, and use the fleet and ambush controls to walk through the scripted MVP loop.
+Open `http://localhost:3000`. The map and Economy tab read the deployed testnet world when it is reachable. Connect a testnet wallet to provision a session-only function-call key limited to FRONTIER methods.
 
-The current frontend is a local demo state. It does not claim testnet deployment or real-value settlement.
+The scripted economy simulator remains available with `pnpm sim`; its results are labelled `SIMULATED`.
+
+## Testnet deployment
+
+- Root: `frontier-uiriamuzu.testnet`
+- World: `world.frontier-uiriamuzu.testnet`
+- Explorer: https://testnet.nearblocks.io/address/world.frontier-uiriamuzu.testnet
+- Deployment and initialization evidence: `results/deploy-testnet.json`
+- Full round evidence: `results/round-2026-11-10T08-11-25-715Z.json`
+
+The deploy command expects the root account credential in the user-level NEAR credential directory and only targets testnet:
+
+```powershell
+pnpm deploy:testnet
+pnpm demo:round
+```
 
 ## Why it is on-chain
 
@@ -22,7 +37,7 @@ The current frontend is a local demo state. It does not claim testnet deployment
 - Ships and goods fit NEP-245 multi-token records.
 - Convoy destinations and ambushes use commit-reveal timing.
 - A function-call key is restricted to game methods and cannot move a player's funds.
-- Market prices and the economy change from player activity, with upkeep, maintenance, spoilage, and raid loss sinks.
+- Market prices and the economy change from player activity, with upkeep and raid-loss sinks in the current MVP.
 
 ## Project layout
 
@@ -34,7 +49,9 @@ The current frontend is a local demo state. It does not claim testnet deployment
 
 ## Limits and safety
 
-CRED is game currency and is not redeemable. The project is currently local-only. NEAR Intents is optional and has no testnet; no mainnet transaction is performed by this repository. Deployment requires a human-provided testnet account and explicit approval.
+CRED is game currency and is not redeemable. The world contract is a focused MVP: spoilage, NEAR Intents settlement, full NEP-171/NEP-245 interfaces, and a production-grade season rollover are not complete. NEAR Intents has no testnet path in this repository. No mainnet transaction is performed.
+
+The browser never receives a seed phrase. NEAR Connect adds a function-call key for the deployed world contract; wallet support and the user’s wallet approval are required. The key is held in session storage for the current browser session.
 
 ## Built with
 
