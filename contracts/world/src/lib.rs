@@ -254,7 +254,9 @@ impl World {
         let idx = good.index();
         require!(port.reserves[idx] > 0 && cred_in.0 > 0, "ERR_BAD_TRADE");
         self.debit_cred(&caller, cred_in.0, "ERR_CRED_FUNDS");
-        let fee = (cred_in.0 * port.fee_bps as u128 / 10_000).max(MIN_FEE_BPS);
+        let fee = (cred_in.0 * port.fee_bps as u128 / 10_000)
+            .max(MIN_FEE_BPS)
+            .min(cred_in.0);
         let net = cred_in.0 - fee;
         let out = (port.reserves[idx] * net) / (port.cred_reserve + net);
         require!(out >= min_out.0 && out < port.reserves[idx], "ERR_SLIPPAGE");
@@ -595,7 +597,7 @@ impl World {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use near_sdk::{testing_env, VMContext};
+    use near_sdk::{testing_env, NearToken, VMContext};
     use proptest::prelude::*;
 
     fn context(account: &str, block: u64) -> VMContext {
@@ -605,12 +607,240 @@ mod tests {
             .block_height(block)
             .build()
     }
+    fn context_with_deposit(account: &str, block: u64, deposit: u128) -> VMContext {
+        near_sdk::test_utils::VMContextBuilder::new()
+            .current_account_id(account.parse().unwrap())
+            .predecessor_account_id(account.parse().unwrap())
+            .block_height(block)
+            .attached_deposit(NearToken::from_yoctonear(deposit))
+            .build()
+    }
     fn world() -> World {
         testing_env!(context("alice.testnet", 1));
-        let mut world = World::new();
-        world.register_player();
-        world
+        World::new()
     }
+
+    fn assert_panic(code: &str, action: impl FnOnce()) {
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(action));
+        let payload = result.expect_err("expected contract panic");
+        let message = payload
+            .downcast_ref::<String>()
+            .cloned()
+            .or_else(|| {
+                payload
+                    .downcast_ref::<&str>()
+                    .map(|value| (*value).to_string())
+            })
+            .unwrap_or_default();
+        assert!(message.contains(code), "expected {code}, got {message}");
+    }
+
+    macro_rules! error_test {
+        ($name:ident, $code:literal, $body:block) => {
+            #[test]
+            fn $name() {
+                assert_panic($code, || $body);
+            }
+        };
+    }
+
+    error_test!(error_already_port_owner, "ERR_ALREADY_PORT_OWNER", {
+        let mut world = world();
+        world.buy_port(1);
+    });
+    error_test!(error_ambush_reveal, "ERR_AMBUSH_REVEAL", {
+        let mut world = world();
+        testing_env!(context("alice.testnet", 2));
+        world.commit_ambush(1, 2, env::sha256(b"1:right"), U128(10));
+        world.reveal_ambush(1, 2, "wrong".into(), U128(1));
+    });
+    error_test!(error_bad_trade, "ERR_BAD_TRADE", {
+        let mut world = world();
+        world.buy(1, Good::Hashpower, U128(0), U128(0));
+    });
+    error_test!(error_cargo_funds, "ERR_CARGO_FUNDS", {
+        let mut world = world();
+        let ship = world.build_ship("sloop".into());
+        world.depart(ship, 1, vec![0; 32], [U128(1), U128(0), U128(0)]);
+    });
+    error_test!(error_commit_spam, "ERR_COMMIT_SPAM", {
+        let mut world = world();
+        for route in 1..=4 {
+            world.commit_ambush(
+                route,
+                2,
+                env::sha256(format!("{}:s", route).as_bytes()),
+                U128(10),
+            );
+        }
+    });
+    error_test!(error_cred_funds, "ERR_CRED_FUNDS", {
+        let mut world = world();
+        world.buy(1, Good::Hashpower, U128(2_000), U128(0));
+    });
+    error_test!(error_destination_reveal, "ERR_DESTINATION_REVEAL", {
+        let mut world = world();
+        let ship = world.build_ship("sloop".into());
+        world.depart(
+            ship,
+            1,
+            env::sha256(b"2:1:right"),
+            [U128(0), U128(0), U128(0)],
+        );
+        testing_env!(context("alice.testnet", 30));
+        world.arrive(ship, 2, "wrong".into());
+    });
+    error_test!(error_dup_commit, "ERR_DUP_COMMIT", {
+        let mut world = world();
+        testing_env!(context("alice.testnet", 2));
+        world.commit_ambush(1, 2, env::sha256(b"1:s"), U128(10));
+        world.commit_ambush(1, 2, env::sha256(b"1:s"), U128(10));
+    });
+    error_test!(error_escort_inactive, "ERR_ESCORT_INACTIVE", {
+        let mut world = world();
+        let escort = world.build_ship("sloop".into());
+        let offer = world.offer_escort(escort, U128(10));
+        testing_env!(context("bob.testnet", 2));
+        world.register_player();
+        let convoy = world.build_ship("sloop".into());
+        world.hire_escort(offer, convoy);
+        world.hire_escort(offer, convoy);
+    });
+    error_test!(error_escort_not_found, "ERR_ESCORT_NOT_FOUND", {
+        let mut world = world();
+        testing_env!(context("bob.testnet", 2));
+        world.register_player();
+        let convoy = world.build_ship("sloop".into());
+        world.hire_escort(99, convoy);
+    });
+    error_test!(error_fee_range, "ERR_FEE_RANGE", {
+        let mut world = world();
+        world.set_fee(1, 1_001);
+    });
+    error_test!(error_good_funds, "ERR_GOOD_FUNDS", {
+        let mut world = world();
+        world.sell(1, Good::Hashpower, U128(1), U128(0));
+    });
+    error_test!(error_in_transit, "ERR_IN_TRANSIT", {
+        let mut world = world();
+        let ship = world.build_ship("sloop".into());
+        world.depart(ship, 1, vec![0; 32], [U128(0), U128(0), U128(0)]);
+        world.depart(ship, 1, vec![0; 32], [U128(0), U128(0), U128(0)]);
+    });
+    error_test!(error_mt_token, "ERR_MT_TOKEN", {
+        let mut world = world();
+        testing_env!(context_with_deposit("alice.testnet", 1, 1));
+        world.mt_transfer(
+            "bob.testnet".parse().unwrap(),
+            "cred".into(),
+            U128(1),
+            None,
+            None,
+        );
+    });
+    error_test!(error_mt_transfer, "ERR_MT_TRANSFER", {
+        let mut world = world();
+        let ship = world.build_ship("sloop".into());
+        testing_env!(context_with_deposit("alice.testnet", 1, 1));
+        world.mt_transfer(
+            "bob.testnet".parse().unwrap(),
+            format!("ship:{}", ship),
+            U128(2),
+            None,
+            None,
+        );
+    });
+    error_test!(error_no_ambush, "ERR_NO_AMBUSH", {
+        let mut world = world();
+        world.reveal_ambush(1, 2, "s".into(), U128(1));
+    });
+    error_test!(error_not_in_transit, "ERR_NOT_IN_TRANSIT", {
+        let mut world = world();
+        let ship = world.build_ship("sloop".into());
+        world.arrive(ship, 2, "s".into());
+    });
+    error_test!(error_not_port_owner, "ERR_NOT_PORT_OWNER", {
+        let mut world = world();
+        testing_env!(context("bob.testnet", 2));
+        world.register_player();
+        world.set_fee(1, 100);
+    });
+    error_test!(error_not_raider, "ERR_NOT_RAIDER", {
+        let mut world = world();
+        testing_env!(context("alice.testnet", 2));
+        world.commit_ambush(1, 2, env::sha256(b"1:s"), U128(10));
+        testing_env!(context("bob.testnet", 2));
+        world.register_player();
+        world.reveal_ambush(1, 2, "s".into(), U128(1));
+    });
+    error_test!(error_not_ship_owner, "ERR_NOT_SHIP_OWNER", {
+        let mut world = world();
+        let ship = world.build_ship("sloop".into());
+        testing_env!(context("bob.testnet", 2));
+        world.register_player();
+        world.offer_escort(ship, U128(10));
+    });
+    error_test!(error_one_yocto, "ERR_ONE_YOCTO", {
+        let mut world = world();
+        world.nft_transfer("bob.testnet".parse().unwrap(), "port-1".into(), None, None);
+    });
+    error_test!(error_player_exists, "ERR_PLAYER_EXISTS", {
+        let mut world = world();
+        world.register_player();
+    });
+    error_test!(error_player_not_found, "ERR_PLAYER_NOT_FOUND", {
+        let mut world = world();
+        testing_env!(context("bob.testnet", 2));
+        world.build_ship("sloop".into());
+    });
+    error_test!(error_port_not_found, "ERR_PORT_NOT_FOUND", {
+        let mut world = world();
+        world.set_fee(99, 100);
+    });
+    error_test!(error_reveal_late, "ERR_REVEAL_LATE", {
+        let mut world = world();
+        testing_env!(context("alice.testnet", 2));
+        world.commit_ambush(1, 2, env::sha256(b"1:s"), U128(10));
+        testing_env!(context("alice.testnet", 23));
+        world.reveal_ambush(1, 2, "s".into(), U128(1));
+    });
+    error_test!(error_route_not_found, "ERR_ROUTE_NOT_FOUND", {
+        let mut world = world();
+        let ship = world.build_ship("sloop".into());
+        world.depart(ship, 99, vec![0; 32], [U128(0), U128(0), U128(0)]);
+    });
+    error_test!(error_ship_funds, "ERR_SHIP_FUNDS", {
+        let mut world = world();
+        world.build_ship("galleon".into());
+        world.build_ship("galleon".into());
+        world.build_ship("galleon".into());
+    });
+    error_test!(error_ship_kind, "ERR_SHIP_KIND", {
+        let mut world = world();
+        world.build_ship("invalid".into());
+    });
+    error_test!(error_ship_not_found, "ERR_SHIP_NOT_FOUND", {
+        let mut world = world();
+        world.offer_escort(99, U128(10));
+    });
+    error_test!(error_slippage, "ERR_SLIPPAGE", {
+        let mut world = world();
+        world.buy(1, Good::Hashpower, U128(10), U128(10_000));
+    });
+    error_test!(error_stake, "ERR_STAKE", {
+        let mut world = world();
+        world.commit_ambush(1, 2, vec![0; 32], U128(9));
+    });
+    error_test!(error_too_early, "ERR_TOO_EARLY", {
+        let mut world = world();
+        let ship = world.build_ship("sloop".into());
+        world.depart(ship, 1, env::sha256(b"2:1:s"), [U128(0), U128(0), U128(0)]);
+        world.arrive(ship, 2, "s".into());
+    });
+    error_test!(error_window, "ERR_WINDOW", {
+        let mut world = world();
+        world.commit_ambush(1, 0, vec![0; 32], U128(10));
+    });
 
     #[test]
     fn registers_and_caps_faucet() {
