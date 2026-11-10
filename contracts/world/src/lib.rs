@@ -1,5 +1,5 @@
 use borsh::BorshSerialize;
-use near_sdk::collections::{LookupMap, UnorderedMap};
+use near_sdk::collections::{UnorderedMap, UnorderedSet};
 use near_sdk::json_types::U128;
 use near_sdk::{env, near, require, AccountId, BorshStorageKey, PanicOnDefault};
 
@@ -16,6 +16,7 @@ enum StorageKey {
     Routes,
     Ambushes,
     Escorts,
+    PlayerIds,
 }
 
 #[near(serializers = [json, borsh])]
@@ -55,6 +56,56 @@ pub struct Port {
     pub reserves: [u128; 3],
     pub cred_reserve: u128,
     pub sale_price: u128,
+}
+
+#[near(serializers = [json, borsh])]
+#[derive(Clone, Debug)]
+pub struct PortMetadata {
+    pub title: String,
+    pub description: String,
+    pub media: Option<String>,
+}
+
+#[near(serializers = [json, borsh])]
+#[derive(Clone, Debug)]
+pub struct NftToken {
+    pub token_id: String,
+    pub owner_id: AccountId,
+    pub metadata: PortMetadata,
+}
+
+#[near(serializers = [json, borsh])]
+#[derive(Clone, Debug)]
+pub struct NftContractMetadata {
+    pub spec: String,
+    pub name: String,
+    pub symbol: String,
+    pub icon: Option<String>,
+    pub base_uri: Option<String>,
+    pub reference: Option<String>,
+    pub reference_hash: Option<Vec<u8>>,
+}
+
+#[near(serializers = [json, borsh])]
+#[derive(Clone, Debug)]
+pub struct MtTokenMetadata {
+    pub spec: String,
+    pub name: String,
+    pub symbol: String,
+    pub icon: Option<String>,
+    pub reference: Option<String>,
+    pub reference_hash: Option<Vec<u8>>,
+    pub decimals: u8,
+}
+
+#[near(serializers = [json, borsh])]
+#[derive(Clone, Debug)]
+pub struct EconomySnapshot {
+    pub cred_supply: U128,
+    pub npc_faucet: U128,
+    pub sinks: U128,
+    pub spoilage: U128,
+    pub epoch: u64,
 }
 
 #[near(serializers = [json, borsh])]
@@ -104,7 +155,8 @@ pub struct EscortOffer {
 #[near(contract_state)]
 #[derive(PanicOnDefault)]
 pub struct World {
-    players: LookupMap<AccountId, Player>,
+    players: UnorderedMap<AccountId, Player>,
+    player_ids: UnorderedSet<AccountId>,
     ports: UnorderedMap<u64, Port>,
     routes: UnorderedMap<u64, Route>,
     ships: UnorderedMap<u64, Ship>,
@@ -115,6 +167,7 @@ pub struct World {
     cred_supply: u128,
     npc_faucet: u128,
     sinks: u128,
+    spoilage: u128,
 }
 
 #[near]
@@ -122,7 +175,8 @@ impl World {
     #[init]
     pub fn new() -> Self {
         let mut this = Self {
-            players: LookupMap::new(StorageKey::Players),
+            players: UnorderedMap::new(StorageKey::Players),
+            player_ids: UnorderedSet::new(StorageKey::PlayerIds),
             ports: UnorderedMap::new(StorageKey::Ports),
             routes: UnorderedMap::new(StorageKey::Routes),
             ships: UnorderedMap::new(StorageKey::Ships),
@@ -133,6 +187,7 @@ impl World {
             cred_supply: 0,
             npc_faucet: 0,
             sinks: 0,
+            spoilage: 0,
         };
         let contract_account = env::current_account_id();
         this.players.insert(
@@ -144,6 +199,7 @@ impl World {
                 active_commits: 0,
             },
         );
+        this.player_ids.insert(&contract_account);
         this.cred_supply = STARTER_CRED;
         let names = [
             "Bitcoin Isle",
@@ -183,7 +239,7 @@ impl World {
 
     pub fn register_player(&mut self) {
         let caller = env::predecessor_account_id();
-        require!(!self.players.contains_key(&caller), "ERR_PLAYER_EXISTS");
+        require!(!self.player_ids.contains(&caller), "ERR_PLAYER_EXISTS");
         self.players.insert(
             &caller,
             &Player {
@@ -193,6 +249,7 @@ impl World {
                 active_commits: 0,
             },
         );
+        self.player_ids.insert(&caller);
         self.cred_supply += STARTER_CRED;
         self.emit("player_registered", &caller.to_string());
     }
@@ -219,6 +276,16 @@ impl World {
             U128(self.sinks),
             self.epoch,
         )
+    }
+
+    pub fn economy_dashboard(&self) -> EconomySnapshot {
+        EconomySnapshot {
+            cred_supply: U128(self.cred_supply),
+            npc_faucet: U128(self.npc_faucet),
+            sinks: U128(self.sinks),
+            spoilage: U128(self.spoilage),
+            epoch: self.epoch,
+        }
     }
 
     pub fn build_ship(&mut self, kind: String) -> u64 {
@@ -475,12 +542,27 @@ impl World {
 
     pub fn tick_epoch(&mut self) {
         let upkeep = 5 * 2;
+        let mut spoiled = 0u128;
+        let ids: Vec<AccountId> = self.player_ids.iter().collect();
+        for id in ids {
+            let mut player = self.player_or_panic(&id);
+            for good in &mut player.goods {
+                let loss = *good / 20;
+                *good -= loss;
+                spoiled += loss;
+            }
+            self.players.insert(&id, &player);
+        }
+        self.spoilage += spoiled;
         self.cred_supply = self.cred_supply.saturating_sub(upkeep);
-        self.sinks += upkeep;
+        self.sinks += upkeep + spoiled;
         self.npc_faucet = NPC_CAP;
         self.cred_supply += NPC_CAP;
         self.epoch += 1;
-        self.emit("epoch", &format!("{}:{}:{}", self.epoch, NPC_CAP, upkeep));
+        self.emit(
+            "epoch",
+            &format!("{}:{}:{}:{}", self.epoch, NPC_CAP, upkeep, spoiled),
+        );
     }
 
     #[payable]
@@ -502,10 +584,55 @@ impl World {
         self.ports.insert(&id, &port);
         self.emit("port_transferred", &token_id);
     }
-    pub fn nft_token(&self, token_id: String) -> Option<Port> {
+    pub fn nft_token(&self, token_id: String) -> Option<NftToken> {
         self.port_id_from_token(&token_id)
             .checked_sub(0)
-            .and_then(|id| self.ports.get(&id))
+            .and_then(|id| {
+                self.ports.get(&id).map(|port| NftToken {
+                    token_id: port.token_id,
+                    owner_id: port.owner_id,
+                    metadata: PortMetadata {
+                        title: format!("FRONTIER Port {}", id),
+                        description: "Player-owned port market in FRONTIER".to_string(),
+                        media: None,
+                    },
+                })
+            })
+    }
+    pub fn nft_tokens_for_owner(
+        &self,
+        account_id: AccountId,
+        from_index: Option<U128>,
+        limit: Option<u64>,
+    ) -> Vec<NftToken> {
+        let start = from_index.map(|x| x.0 as usize).unwrap_or(0);
+        let take = limit.unwrap_or(50) as usize;
+        self.ports
+            .values()
+            .filter(|port| port.owner_id == account_id)
+            .skip(start)
+            .take(take)
+            .map(|port| NftToken {
+                token_id: port.token_id.clone(),
+                owner_id: port.owner_id.clone(),
+                metadata: PortMetadata {
+                    title: format!("FRONTIER {}", port.token_id),
+                    description: "Player-owned port market in FRONTIER".to_string(),
+                    media: None,
+                },
+            })
+            .collect()
+    }
+    pub fn nft_metadata(&self) -> NftContractMetadata {
+        NftContractMetadata {
+            spec: "nft-1.0.0".to_string(),
+            name: "FRONTIER Ports".to_string(),
+            symbol: "PORT".to_string(),
+            icon: None,
+            base_uri: None,
+            reference: None,
+            reference_hash: None,
+        }
     }
 
     #[payable]
@@ -525,6 +652,14 @@ impl World {
             require!(ship.owner_id == caller && amount.0 == 1, "ERR_MT_TRANSFER");
             ship.owner_id = receiver_id;
             self.ships.insert(&id, &ship);
+        } else if let Some(idx) = self.good_token_index(&token_id) {
+            let mut sender = self.player_or_panic(&caller);
+            require!(sender.goods[idx] >= amount.0, "ERR_MT_TRANSFER");
+            sender.goods[idx] -= amount.0;
+            self.players.insert(&caller, &sender);
+            let mut receiver = self.player_or_panic(&receiver_id);
+            receiver.goods[idx] += amount.0;
+            self.players.insert(&receiver_id, &receiver);
         } else {
             env::panic_str("ERR_MT_TOKEN")
         }
@@ -543,7 +678,41 @@ impl World {
                     .unwrap_or(0),
             );
         }
-        U128(0)
+        self.good_token_index(&token_id)
+            .map(|idx| U128(self.player_or_panic(&account_id).goods[idx]))
+            .unwrap_or(U128(0))
+    }
+    pub fn mt_batch_balance_of(&self, account_id: AccountId, token_ids: Vec<String>) -> Vec<U128> {
+        token_ids
+            .into_iter()
+            .map(|token_id| self.mt_balance_of(account_id.clone(), token_id))
+            .collect()
+    }
+    pub fn mt_token(&self, token_id: String) -> Option<MtTokenMetadata> {
+        if token_id
+            .strip_prefix("ship:")
+            .and_then(|x| x.parse::<u64>().ok())
+            .is_some()
+        {
+            return Some(MtTokenMetadata {
+                spec: "mt-1.0.0".to_string(),
+                name: "FRONTIER Ship".to_string(),
+                symbol: "SHIP".to_string(),
+                icon: None,
+                reference: None,
+                reference_hash: None,
+                decimals: 0,
+            });
+        }
+        self.good_token_index(&token_id).map(|idx| MtTokenMetadata {
+            spec: "mt-1.0.0".to_string(),
+            name: ["Hashpower", "Liquidity", "Blockspace"][idx].to_string(),
+            symbol: "CRED-GOOD".to_string(),
+            icon: None,
+            reference: None,
+            reference_hash: None,
+            decimals: 0,
+        })
     }
 
     fn ambush_key(route: u64, window: u64) -> String {
@@ -554,6 +723,14 @@ impl World {
             .strip_prefix("port-")
             .and_then(|x| x.parse().ok())
             .unwrap_or(0)
+    }
+    fn good_token_index(&self, token: &str) -> Option<usize> {
+        match token.strip_prefix("good:")? {
+            "0" | "Hashpower" => Some(0),
+            "1" | "Liquidity" => Some(1),
+            "2" | "Blockspace" => Some(2),
+            _ => None,
+        }
     }
     fn port_or_panic(&self, id: u64) -> Port {
         self.ports.get(&id).expect("ERR_PORT_NOT_FOUND")
@@ -871,6 +1048,66 @@ mod tests {
             world.arrive(ship, 2, "wrong-salt".into())
         }));
         assert!(result.is_err());
+    }
+    #[test]
+    fn standards_and_spoilage_are_live() {
+        let mut world = world();
+        let token = world.nft_token("port-1".into()).expect("port NFT");
+        assert_eq!(
+            token.owner_id,
+            "alice.testnet".parse::<AccountId>().unwrap()
+        );
+        assert_eq!(
+            world
+                .nft_tokens_for_owner("alice.testnet".parse().unwrap(), None, None)
+                .len(),
+            5
+        );
+        assert_eq!(world.nft_metadata().spec, "nft-1.0.0");
+
+        let ship = world.build_ship("sloop".into());
+        assert_eq!(
+            world
+                .mt_balance_of("alice.testnet".parse().unwrap(), format!("ship:{ship}"))
+                .0,
+            1
+        );
+        assert_eq!(
+            world.mt_batch_balance_of(
+                "alice.testnet".parse().unwrap(),
+                vec![format!("ship:{ship}"), "good:0".into()]
+            ),
+            vec![U128(1), U128(0)]
+        );
+        assert_eq!(
+            world.mt_token("good:Hashpower".into()).unwrap().spec,
+            "mt-1.0.0"
+        );
+
+        world.buy(1, Good::Hashpower, U128(100), U128(0));
+        let before = world
+            .get_player("alice.testnet".parse().unwrap())
+            .unwrap()
+            .goods[0];
+        world.tick_epoch();
+        let after = world
+            .get_player("alice.testnet".parse().unwrap())
+            .unwrap()
+            .goods[0];
+        assert!(after < before);
+        assert!(world.economy_dashboard().spoilage.0 > 0);
+    }
+
+    #[test]
+    fn nft_transfer_keeps_treasury_with_token() {
+        let mut world = world();
+        testing_env!(context_with_deposit("alice.testnet", 1, 1));
+        world.set_fee(1, 100);
+        let before = world.get_port(1).unwrap().treasury;
+        world.nft_transfer("bob.testnet".parse().unwrap(), "port-1".into(), None, None);
+        let port = world.get_port(1).unwrap();
+        assert_eq!(port.owner_id, "bob.testnet".parse::<AccountId>().unwrap());
+        assert_eq!(port.treasury, before);
     }
     proptest! {
         #[test]
