@@ -6,7 +6,6 @@ use near_sdk::{env, near, require, AccountId, BorshStorageKey, PanicOnDefault};
 const STARTER_CRED: u128 = 1_000;
 const NPC_CAP: u128 = 160;
 const MIN_FEE_BPS: u128 = 30;
-const BLOCKS_PER_EPOCH: u64 = 100;
 
 #[derive(BorshSerialize, BorshStorageKey)]
 enum StorageKey {
