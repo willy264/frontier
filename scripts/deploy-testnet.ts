@@ -8,7 +8,7 @@ const WORLD = process.env.FRONTIER_WORLD_ACCOUNT ?? `world.${ROOT}`;
 const RPC = process.env.FRONTIER_RPC_URL ?? "https://rpc.testnet.fastnear.com";
 const networkId = "testnet";
 const credentialsPath = path.join(os.homedir(), ".near-credentials", "testnet");
-const wasmPath = path.resolve("contracts/world/target/wasm32-unknown-unknown/release/frontier_world.wasm");
+const wasmPath = path.resolve("contracts/world/target/near/frontier_world.wasm");
 
 type Credential = { account_id?: string; public_key: string; private_key: KeyPairString };
 async function readCredential(accountId: string): Promise<Credential & { account_id: string }> {
