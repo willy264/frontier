@@ -23,3 +23,4 @@ Deadline: 2026-11-14 23:59 UTC. Approximate time remaining at update: 86 hours.
 | Scripted practice mode | done for UI demo | Clearly labeled deterministic p1-p4 timeline reaches an ambush feed in about two minutes. Live p1-p4 evidence remains in `results/round-2026-11-10T15-52-32-625Z.json`. |
 | Vercel preparation | done | `vercel.json`, exact environment/build steps, and unpublished URL placeholder are documented. Publishing is intentionally left to the human. |
 | Final verification | done locally | Sandbox, 39 contract tests, frontend tests, TypeScript, and webpack build pass. A browser-wallet walkthrough was not automated in this environment. |
+| CI hardening and final redeploy | done locally / awaiting GitHub | CI installs `libudev-dev` before cargo-near; audits and non-breaking upgrade decisions are documented in `docs/THREAT_MODEL.md`; deploy-only tx `8fTNboMxWxTWB9YbfH1V8Qjc6j5UxTenzocwHncyYZZz` responds to economy, NFT, and MT views. |

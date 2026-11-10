@@ -24,6 +24,8 @@ The scripted economy simulator remains available with `pnpm sim`; its results ar
 - World: `world.frontier-uiriamuzu.testnet`
 - Explorer: https://testnet.nearblocks.io/address/world.frontier-uiriamuzu.testnet
 - Deployment and initialization evidence: `results/deploy-testnet.json`
+- Latest deploy-only transaction: `8fTNboMxWxTWB9YbfH1V8Qjc6j5UxTenzocwHncyYZZz`
+- Latest WASM SHA-256: `02add099b1446b7e2b40ec654b6c00f991f5b4006d9e1d3e00a41e56a56ee8c4`
 - Full round evidence: `results/round-2026-11-10T08-11-25-715Z.json`
 - Latest live round evidence: `results/round-2026-11-10T15-52-32-625Z.json`
 - Live URL: not published yet. After authorization, deploy the Vercel project and replace this line with its URL.

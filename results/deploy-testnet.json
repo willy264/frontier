@@ -12,5 +12,7 @@
   "initializationTx": "Dn2b3X5yQMXkqzCBHUwYBY8ac471ufWeQviyKHpPg8Eu",
   "initStatus": "initialized",
   "wasmSha256": "8624530c72f24cde41175133b2bf47311d89b2b1b7e212399d54c37bcd36fa72",
+  "latestDeployTx": "8fTNboMxWxTWB9YbfH1V8Qjc6j5UxTenzocwHncyYZZz",
+  "latestWasmSha256": "02add099b1446b7e2b40ec654b6c00f991f5b4006d9e1d3e00a41e56a56ee8c4",
   "explorer": "https://testnet.nearblocks.io/address/world.frontier-uiriamuzu.testnet"
 }
