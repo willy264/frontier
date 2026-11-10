@@ -1,19 +1,20 @@
 # FRONTIER Task Ledger
 
-Updated: 2026-11-09 08:02 WAT
+Updated: 2026-11-10 09:40 WAT
 
-Deadline: 2026-11-15 00:59 WAT. Approximate time remaining at update: 138 hours.
+Deadline: 2026-11-14 23:59 UTC. Approximate time remaining at update: 86 hours.
 
 | Task | Status | Notes |
 |---|---|---|
-| Read brief and common rules | done | Brief-only workspace inspected. |
-| Research gate R1-R4 | done | Research records and verified sources created; Intents remains optional. |
+| Read brief and common rules | done | Brief, research gate, and project constraints are documented. |
 | Economy simulation | done | 100 players x 200 epochs; bounded supply and faucet tests pass. |
-| World contract | in progress | Rust contract, AMM, epochs, escorts, commit-reveal, port transfer, ship transfer, and events implemented; native WASM build passes. `cargo near` ABI build currently fails because public DTOs lack `JsonSchema`. |
-| Contract unit/proptest suite | done | 4 tests pass on Windows with MSYS2/CMake. |
-| Sandbox acceptance round | blocked pending contract build fix | WSL runtime reached the ignored test, then failed during `cargo near` ABI generation: `Player`, `Port`, `Route`, `Ship`, and `Good` need `JsonSchema` derives. |
-| Frontend map and loop | paused by required build order | Existing local Next.js map, market, fleet, raid, and economy views build successfully; no new frontend wiring started after the contract-order instruction. |
-| Testnet deployment | partial / blocked on init | Testnet account and `world`, `p1`-`p4` accounts exist; WASM deploy transaction succeeded. Initialization trapped with `WebAssembly trap: An unreachable opcode was executed`. Evidence: `results/deploy-testnet.json`. |
-| RPC scripts | in progress | `near-api-js` v7 signer/provider migration compiles; deploy script writes evidence. Demo script is not yet valid end-to-end and must wait for a fixed initialized contract. |
-| CI, fresh clone, submission docs | pending | Not started in this pause checkpoint. |
-
+| World contract | done for MVP | Serializer annotations, AMM, epochs, escorts, commit-reveal, port/ship transfers, events, and fee-underflow fix implemented. WSL `cargo near build` passes. |
+| Contract unit/proptest suite | done | 37 tests pass single-threaded: every current error code, ambush timing edges, and proptest invariants. |
+| Sandbox acceptance round | done | WSL ignored near-workspaces round passes, including restricted-key rejection. |
+| Frontend map and loop | done for MVP | Next.js map/economy reads testnet state and submits contract calls through a session-only game key. Webpack build passes. |
+| NEAR Connect login/key | done for MVP | Testnet login provisions a key restricted to FRONTIER methods; no browser seed credentials. |
+| Testnet deployment | done | World recreated cleanly, cargo-near artifact deployed and initialized; evidence committed in `results/deploy-testnet.json`. |
+| RPC scripts and live evidence | done | `pnpm demo:round` passed and wrote the committed full round JSON with explorer links. |
+| CI | done locally / pending remote observation | Workflow committed; no remote or push configured by instruction. |
+| Fresh clone | done | New local clone passed frozen install, tests, typecheck, and webpack build. |
+| README/submission/video docs | done as drafts | Human must add public URL, hosted demo/video, X URL, and submit the form. |
