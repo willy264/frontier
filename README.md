@@ -28,7 +28,7 @@ The scripted economy simulator remains available with `pnpm sim`; its results ar
 - Initialization transaction: `ChPnbDm39eanmyiNdkZw4Ly7EL8ho2EHUrLiwshyX7n`
 - Latest WASM SHA-256: `f7c8cef1e210787f413aa64d357ef1b58e55a02b0c63377164179fb62392fca7`
 - Latest live round evidence: `results/round-2026-11-11T14-19-28-579Z.json`
-- Live URL: not published yet. After authorization, deploy the Vercel project and replace this line with its URL.
+- Live URL: https://frontier-willy264s-projects.vercel.app
 
 The deploy command expects the root account credential in the user-level NEAR credential directory and only targets testnet:
 
@@ -43,7 +43,7 @@ pnpm demo:round
 2. Use `pnpm install --frozen-lockfile` as the install command and `pnpm exec next build apps/game --webpack` as the build command.
 3. Add `NEXT_PUBLIC_FRONTIER_WORLD_ACCOUNT=world.frontier-final.testnet` and `NEXT_PUBLIC_FRONTIER_RPC_URL=https://rpc.testnet.fastnear.com`.
 4. Deploy, open the generated URL, connect a testnet wallet, register, buy cargo, build a sloop, and use the hidden departure and ambush panels.
-5. Replace the Live URL line above and `demo_url` in `submission/submission.json` after the deployment is publicly available.
+5. The production deployment is already available at the Live URL above; use that URL for the judge walkthrough.
 
 ## Why it is on-chain
 

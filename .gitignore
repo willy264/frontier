@@ -10,3 +10,5 @@ neardev/
 data/
 cache/
 *.tsbuildinfo
+
+.vercel

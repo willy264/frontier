@@ -7,10 +7,10 @@
   "explorer": "https://testnet.nearblocks.io/address/world.frontier-final.testnet",
   "evidence": [
     "results/deploy-testnet.json",
-    "results/round-2026-11T14-19-28-579Z.json"
+    "results/round-2026-11-11T14-19-28-579Z.json"
   ],
-  "repo_url": "<add after publishing>",
-  "demo_url": "<add Vercel URL after authorized publishing>",
+  "repo_url": "https://github.com/willy264/frontier",
+  "demo_url": "https://frontier-willy264s-projects.vercel.app",
   "video_url": "<add recorded video URL>",
   "x_post_url": "<add after posting>",
   "mainnet_used": false,
