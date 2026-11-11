@@ -11,6 +11,6 @@ The MVP is live in `world.frontier-final.testnet` with a full scripted round pro
 - arrival after route time
 - NEAR Connect game-only key rejection for forbidden methods
 
-Demo and evidence: `<add hosted demo or video URL>`
+Demo and evidence: https://frontier-willy264s-projects.vercel.app
 
 #NEAR #Web3Gaming #Onchain

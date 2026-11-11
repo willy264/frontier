@@ -1,6 +1,6 @@
 # FRONTIER Handoff
 
-Updated 2026-11-11 08:00 WAT. Contract hardening and the live playable loop are updated locally and on testnet. The remaining work is final CI/tag verification and human-owned hosting/video/submission actions. Mainnet remains untouched.
+Updated 2026-11-11 23:00 WAT. Contract hardening, the live playable loop, public GitHub repository, and Vercel deployment are complete. The remaining work is human-owned video/X/submission actions. Mainnet remains untouched.
 
 Done:
 
@@ -14,13 +14,13 @@ Done:
 - `pnpm demo:round` passed with live evidence in `results/round-2026-11-11T14-19-28-579Z.json`.
 - Frontend has browser salts, localStorage persistence, downloadable backups, destination-only departure, route selection at arrival, live AMM quotes/min-out, port fee control, contract-driven ships, result feed, six-step walkthrough, economy spoilage display, and a guided tutorial.
 - Frontend tests, TypeScript, and webpack production build pass.
-- README, Vercel config, submission draft, video plan, X draft, and Q-015 related-project disclosure are current.
+- README, Vercel config, public demo URL, submission draft, video plan, X draft, and Q-015 related-project disclosure are current.
 
 Exact remaining human actions:
 
-- Publish the repository and deploy Vercel using the documented commands; replace the placeholder live URL in README and submission JSON.
+- Record the video using the public demo at `https://frontier-willy264s-projects.vercel.app`.
 - Use a brand-new testnet wallet to run the six-step flow and record the video. The repository has no browser automation tool, so this was not claimed as an automated judge walkthrough.
-- Add the public repo, hosted demo/video, and X URLs, then submit the form.
+- Publish the X post, add its URL and the video URL to `submission/submission.json`, then submit the form after reviewing the exact payload.
 
 Known limitations: NEAR Intents settlement and production season rollover are future work. The guided tutorial is local-only; live p1-p4 activity is evidenced by `pnpm demo:round`. `HACKATHON.md` is absent from the repository; the final review used `docs/FRONTIER-BRIEF.md` and the existing research/verification docs.
 
