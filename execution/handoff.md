@@ -2,6 +2,8 @@
 
 Demo recording in progress (2026-11-11 UTC): user authorized production of an MP4 with synthetic voiceover. Recording rehearsal found that UI AMM quotes used 0.3 CRED instead of the deployed 30 CRED minimum. Four regression tests failed before the correction and pass with integer arithmetic matching the contract. Next: record live testnet UI actions, render narration/subtitles, inspect the MP4, and commit its public evidence.
 
+Second rehearsal registered p4, bought 106 Hashpower, and built ship 4, but the UI's finality-view scan did not select the ship before the browser assertion timed out. Ship selection now decodes the successful build return directly; two receipt regression cases pass. Recording keys were revoked after the failed capture. Next recording uses a fresh, funded testnet sub-account; failed raw footage remains ignored under data/video.
+
 Updated 2026-11-11 23:00 WAT. Contract hardening, the live playable loop, public GitHub repository, and Vercel deployment are complete. The remaining work is human-owned video/X/submission actions. Mainnet remains untouched.
 
 Done:

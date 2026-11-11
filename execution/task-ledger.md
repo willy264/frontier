@@ -6,7 +6,7 @@ Deadline: 2026-11-14 23:59 UTC. Approximate time remaining at update: 86 hours.
 
 | Task | Status | Notes |
 |---|---|---|
-| Narrated demo video | in progress | Capture live UI/testnet actions with an automated recording wallet; synthesize local narration and export MP4/subtitles. Quote regression fixed during rehearsal (4 new tests). |
+| Narrated demo video | in progress | Live recording caught and fixed quote rounding/minimum-fee and new-ship selection issues (6 regression cases). Next: complete fresh-captain capture, synthesize narration, export and inspect MP4/subtitles. |
 | Read brief and common rules | done | Brief, research gate, and project constraints are documented. |
 | Economy simulation | done | 100 players x 200 epochs; bounded supply and faucet tests pass. |
 | World contract | done for MVP | Serializer annotations, AMM, epochs, escorts, commit-reveal, port/ship transfers, events, and fee-underflow fix implemented. WSL `cargo near build` passes. |
