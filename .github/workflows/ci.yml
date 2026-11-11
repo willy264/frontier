@@ -36,7 +36,6 @@ jobs:
           components: rustfmt
       - run: cargo fmt --check
       - run: cargo test -- --test-threads=1
-      - run: sudo apt-get install -y -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 pkg-config libudev-dev
       - run: rustup target add wasm32-unknown-unknown
-      - run: cargo install cargo-near --version 0.22.0 --locked
+      - run: cargo install cargo-near --version 0.22.0 --locked --no-default-features
       - run: cargo near build non-reproducible-wasm --skip-rust-version-check
