@@ -1,16 +1,13 @@
-# X Post Draft
+# X post draft
 
-FRONTIER is a fully on-chain trading empire on NEAR testnet.
+Built at NEAR HACKATHON: FRONTIER, a trading game on NEAR testnet. Buy cargo, seal a convoy, and survive an ambush.
 
-Players buy scarce goods, sail sealed convoys, hire escorts, commit reveal ambushes, and buy ports whose fees move with ownership.
+Play: https://frontier-willy264s-projects.vercel.app
+Code: https://github.com/willy264/frontier
 
-The MVP is live in `world.frontier-final.testnet` with a full scripted round proving:
+Which route would you risk?
+@NEARProtocol #NEARHackathon
 
-- player-owned port transfer
-- escort and ambush flow
-- arrival after route time
-- NEAR Connect game-only key rejection for forbidden methods
+---
 
-Demo and evidence: https://frontier-willy264s-projects.vercel.app
-
-#NEAR #Web3Gaming #Onchain
+Attach `apps/game/public/demo/frontier-demo.mp4` when posting. It has synthetic narration and captions, with the scripted rival disclosed. This is a draft only; no post has been published.

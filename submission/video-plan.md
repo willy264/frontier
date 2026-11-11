@@ -1,16 +1,21 @@
-# Video Plan
+# Finished demo video
 
-Target length: 90 seconds.
+Length: 117.9 seconds. Format: 1920x1080 H.264/AAC MP4, synthetic voiceover, and burned captions.
 
-1. 0:00-0:10: open the deployed FRONTIER map at `world.frontier-final.testnet` and connect a testnet wallet.
-2. 0:10-0:25: select Bitcoin Isle; show live owner, market fee, and the game-only key status.
-3. 0:25-0:45: submit a market action and build a sloop; show the event line and wallet-free contract interaction.
-4. 0:45-1:05: switch to Economy; show live contract supply, faucet, and epoch values.
-5. 1:05-1:20: use the guided tutorial for the UI flow, then show the live p1-p4 round evidence and explorer links for ambush, arrival, and port transfer.
-6. 1:20-1:30: show the restricted-key rejection and close on the world account explorer page.
+Watch: https://frontier-willy264s-projects.vercel.app/demo/index.html
 
-Recording notes:
+| Time | Actual footage |
+|---|---|
+| 0:00 | Live FRONTIER testnet map and the trading-game premise. |
+| 0:12 | Automated recording wallet, real scoped key approval, and a new captain registering. |
+| 0:25 | Buy 41 Hashpower for 300 CRED and build a sloop. |
+| 0:38 | Load 41 goods, seal the destination, and download the browser salt backup. |
+| 0:51 | Reveal arrival; the contract event reports a scripted rival's raid and loss of 20 goods. |
+| 1:05 | Sell the remaining 21 goods at the selected market. |
+| 1:18 | Commit a player ambush with a 10 CRED stake, then reveal it. |
+| 1:30 | Inspect live economy totals and state the MVP's limits. |
+| 1:45 | Public demo/repository links and the hackathon credit. |
 
-- Use testnet only and hide account credential files.
-- Keep the explorer links visible long enough to read the transaction hashes.
-- Do not claim NEAR Intents settlement or production season rollover; those are documented MVP limitations.
+Full narration: `voiceover-script.md`. Public transaction evidence: `../results/video-demo.json`. Reproduction and disclosures: `../docs/VIDEO.md`.
+
+Waiting periods are shortened; some frames are held to fit narration. The rival is scripted, the recording wallet is automated, and the speech is synthetic. The video does not demonstrate retail wallet-provider login, profitable arbitrage, escrowed escort protection, port sale, Intents settlement, or season rollover. No mainnet was used.

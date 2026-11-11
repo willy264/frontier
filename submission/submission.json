@@ -1,5 +1,6 @@
 {
   "status": "draft",
+  "kind": "project evidence manifest; not a submission API payload",
   "project": "FRONTIER",
   "tracks": ["games", "nfts"],
   "network": "testnet",
@@ -7,12 +8,15 @@
   "explorer": "https://testnet.nearblocks.io/address/world.frontier-final.testnet",
   "evidence": [
     "results/deploy-testnet.json",
-    "results/round-2026-11-11T14-19-28-579Z.json"
+    "results/round-2026-11-11T14-19-28-579Z.json",
+    "results/video-demo.json",
+    "results/video-hosting.json"
   ],
   "repo_url": "https://github.com/willy264/frontier",
   "demo_url": "https://frontier-willy264s-projects.vercel.app",
-  "video_url": "<add recorded video URL>",
+  "video_url": "https://frontier-willy264s-projects.vercel.app/demo/index.html",
+  "video_download_url": "https://frontier-willy264s-projects.vercel.app/demo/frontier-demo.mp4",
   "x_post_url": "<add after posting>",
   "mainnet_used": false,
-  "notes": "Do not submit this draft until the public repo, Vercel URL, video, X URL, and final rules review are complete."
+  "notes": "Review the video, publish the X post with the video attached, and supply the human-owned submission details and consent. This manifest is not the organizer's API payload; see submission-package.md. No submission has been sent."
 }

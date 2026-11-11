@@ -1,8 +1,14 @@
 [![CI](https://github.com/willy264/frontier/actions/workflows/ci.yml/badge.svg)](https://github.com/willy264/frontier/actions/workflows/ci.yml)
 
-# FRONTIER: a fully on-chain trading empire across the chains
+# FRONTIER: a trading world on NEAR testnet
 
-FRONTIER is a persistent trading and strategy game designed to run in NEAR contracts. Players buy scarce goods, seal convoy destinations, choose risky or escorted routes, ambush rival traffic, and run player-owned port markets.
+FRONTIER is a trading and strategy game running in NEAR contracts. Players buy goods, seal convoy destinations, ambush rival traffic, and run player-owned port markets. The islands represent other chains; cross-chain settlement remains future work.
+
+## Watch the demo
+
+[Watch the narrated demo](https://frontier-willy264s-projects.vercel.app/demo/index.html) or [download the MP4](https://frontier-willy264s-projects.vercel.app/demo/frontier-demo.mp4). The video includes captions and shows real testnet purchases, ship construction, a sealed departure, a scripted rival's raid, a sale, and a player ambush reveal.
+
+The recording uses an automated testnet wallet adapter and synthetic narration. Waiting periods are shortened. It does not verify an ordinary retail wallet login or profitable arbitrage. [Transaction evidence](results/video-demo.json), [narration](submission/voiceover-script.md), and [recording instructions](docs/VIDEO.md) are included.
 
 ## Try it locally
 
@@ -51,7 +57,7 @@ pnpm demo:round
 - Ships and goods expose the NEP-245 minimum views and transfer call.
 - Convoy destinations and ambushes use commit-reveal timing.
 - A function-call key is restricted to game methods and cannot move a player's funds.
-- Market prices and the economy change from player activity, with upkeep, raid-loss, and live goods-spoilage sinks in `tick_epoch`.
+- Market prices and the economy change from player activity. Epoch advances enable upkeep and goods spoilage, applied lazily on each player's next action; raids also burn part of the lost cargo.
 
 ## Project layout
 
@@ -74,6 +80,8 @@ Next.js 16, React 19, TypeScript, Vitest, NEAR Connect, near-api-js, near-sdk, c
 ## AI/tools disclosure
 
 Codex assisted with implementation, test authoring, debugging, and documentation. The guided tutorial is a deterministic local walkthrough, the live p1-p4 demo is scripted, and the contract NPC faucet is deterministic; no AI agent controls gameplay or NPC decisions.
+
+The demo was recorded with Playwright and Edge, edited with FFmpeg, and narrated locally using Windows System.Speech (Microsoft Hazel Desktop). The voice is synthetic. No external voice account or voice clone was used.
 
 ## Related projects
 

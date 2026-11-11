@@ -1,0 +1,123 @@
+1
+00:00:00,180 --> 00:00:01,104
+Trade goods.
+
+2
+00:00:01,104 --> 00:00:02,489
+Choose your route.
+
+3
+00:00:02,489 --> 00:00:03,644
+Risk an ambush.
+
+4
+00:00:03,644 --> 00:00:08,416
+This is Frontier, a strategy and trading game on NEAR testnet.
+
+5
+00:00:08,416 --> 00:00:12,110
+These are real transactions in the deployed app.
+
+6
+00:00:12,460 --> 00:00:17,091
+For this recording, an automated testnet wallet approves a game-only key.
+
+7
+00:00:17,091 --> 00:00:19,565
+The key is restricted to this contract.
+
+8
+00:00:19,565 --> 00:00:25,020
+Registering gives our new captain one thousand CRED, the non-redeemable game currency.
+
+9
+00:00:25,370 --> 00:00:29,652
+The port market reads its reserves and owner fee from the contract.
+
+10
+00:00:29,652 --> 00:00:33,551
+We spend three hundred CRED on Hashpower, then build a sloop.
+
+11
+00:00:33,551 --> 00:00:37,450
+Every purchase changes the market and our on-chain inventory.
+
+12
+00:00:37,800 --> 00:00:43,336
+We load 41 units of Hashpower and seal the destination with a browser-generated salt.
+
+13
+00:00:43,336 --> 00:00:46,983
+A scripted rival has placed a real ambush on this route.
+
+14
+00:00:46,983 --> 00:00:50,890
+The backup download preserves the secret needed for arrival.
+
+15
+00:00:51,240 --> 00:00:55,000
+Once the travel time passes, we reveal the destination.
+
+16
+00:00:55,000 --> 00:00:58,896
+The contract validates the route and resolves the ambush.
+
+17
+00:00:58,896 --> 00:01:02,177
+The result feed reports the raid and cargo loss.
+
+18
+00:01:02,177 --> 00:01:04,980
+These outcomes come from contract events.
+
+19
+00:01:05,330 --> 00:01:10,380
+Back at the market panel, we sell the surviving Hashpower at the current quote.
+
+20
+00:01:10,380 --> 00:01:12,362
+The CRED balance changes again.
+
+21
+00:01:12,362 --> 00:01:17,540
+This run shows the cost of fees and a raid; it does not promise a trading profit.
+
+22
+00:01:17,890 --> 00:01:20,129
+A player can also become a raider.
+
+23
+00:01:20,129 --> 00:01:25,265
+We choose another route, stake ten CRED, save the salt, and reveal the ambush.
+
+24
+00:01:25,265 --> 00:01:29,940
+The browser exposes the reveal control and keeps a downloadable backup.
+
+25
+00:01:30,290 --> 00:01:34,670
+The economy panel reads live supply, faucet, and spoilage totals.
+
+26
+00:01:34,670 --> 00:01:37,635
+Ports collect trading fees for their owners.
+
+27
+00:01:37,635 --> 00:01:44,440
+This is a testnet MVP; cross-chain Intents settlement and production season rollover are future work.
+
+28
+00:01:44,790 --> 00:01:47,380
+Try Frontier at the link on screen.
+
+29
+00:01:47,380 --> 00:01:52,561
+The repository includes the contract, tests, and transaction evidence.
+
+30
+00:01:52,561 --> 00:01:54,338
+Built at NEAR Hackathon.
+
+31
+00:01:54,338 --> 00:01:57,520
+Synthetic narration; real testnet gameplay.

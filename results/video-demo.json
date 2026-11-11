@@ -1,0 +1,349 @@
+{
+  "recordedAt": "2026-11-11T23:20:53.410Z",
+  "site": "https://frontier-willy264s-projects.vercel.app",
+  "contract": "world.frontier-final.testnet",
+  "captain": "video1794439157987.frontier-final.testnet",
+  "durationSeconds": 117.89,
+  "resolution": "1920x1080",
+  "videoCodec": "H.264",
+  "audioCodec": "AAC",
+  "voice": "Microsoft Hazel Desktop (synthetic)",
+  "sha256": "d0ee104bd1d4de5c7a89cf9b867570f6911521b39728e11c022494abf9008be3",
+  "bytes": 5770709,
+  "file": "apps/game/public/demo/frontier-demo.mp4",
+  "disclosures": [
+    "Automated injected recording wallet uses a real contract-restricted key.",
+    "All contract calls and state reads use live testnet; no mocked responses.",
+    "Rival ambush is rule-based scripting, not autonomous AI.",
+    "Market sale uses the selected port; this is not proof of profitable arbitrage.",
+    "No retail wallet-provider login walkthrough is claimed."
+  ],
+  "keyCleanup": {
+    "verifiedAt": "2026-11-11T23:21:43.172Z",
+    "remainingFunctionCallKeys": 0
+  },
+  "transactions": [
+    {
+      "source": "recording setup: fresh testnet account",
+      "tx": "9BT3yvogup7ip7tNTLSDPntEdRpAkCrgXj9CT68ZiGVp",
+      "explorer": "https://testnet.nearblocks.io/txns/9BT3yvogup7ip7tNTLSDPntEdRpAkCrgXj9CT68ZiGVp",
+      "signer": "frontier-final.testnet",
+      "receiver": "video1794439157987.frontier-final.testnet",
+      "status": {
+        "SuccessValue": ""
+      },
+      "events": []
+    },
+    {
+      "source": "recording wallet: scoped key approval",
+      "tx": "8HDHvGRuKbf5fUjXDxoFmcw5gN5RdX4CDS66zRo7Xveq",
+      "explorer": "https://testnet.nearblocks.io/txns/8HDHvGRuKbf5fUjXDxoFmcw5gN5RdX4CDS66zRo7Xveq",
+      "signer": "video1794439157987.frontier-final.testnet",
+      "receiver": "video1794439157987.frontier-final.testnet",
+      "status": {
+        "SuccessValue": ""
+      },
+      "events": []
+    },
+    {
+      "source": "browser UI",
+      "tx": "9Lythid1VEJb43CT8zxkVjuAWQNfMiCTs6kBE4yvf2kq",
+      "explorer": "https://testnet.nearblocks.io/txns/9Lythid1VEJb43CT8zxkVjuAWQNfMiCTs6kBE4yvf2kq",
+      "signer": "video1794439157987.frontier-final.testnet",
+      "receiver": "world.frontier-final.testnet",
+      "status": {
+        "SuccessValue": ""
+      },
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "player_registered",
+          "data": [
+            {
+              "value": "video1794439157987.frontier-final.testnet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "browser UI",
+      "tx": "DinhQaDo81EgsqMhHy2rpiragqAYVjiTsoutwiubpkQs",
+      "explorer": "https://testnet.nearblocks.io/txns/DinhQaDo81EgsqMhHy2rpiragqAYVjiTsoutwiubpkQs",
+      "signer": "video1794439157987.frontier-final.testnet",
+      "receiver": "world.frontier-final.testnet",
+      "status": {
+        "SuccessValue": "IjQxIg=="
+      },
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "trade",
+          "data": [
+            {
+              "value": "buy:1:0:41"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "browser UI",
+      "tx": "4ngQmWm69XZfUV4ndV4jigGv3fZsRpMYEBTDpLSdJ7GF",
+      "explorer": "https://testnet.nearblocks.io/txns/4ngQmWm69XZfUV4ndV4jigGv3fZsRpMYEBTDpLSdJ7GF",
+      "signer": "video1794439157987.frontier-final.testnet",
+      "receiver": "world.frontier-final.testnet",
+      "status": {
+        "SuccessValue": "Nw=="
+      },
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ship_built",
+          "data": [
+            {
+              "value": "7"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "scripted rival: commit_ambush",
+      "tx": "JAAykzgubTAeDzHxZ8zd3XAvc8GyJypBtvQvDAGFsjWX",
+      "explorer": "https://testnet.nearblocks.io/txns/JAAykzgubTAeDzHxZ8zd3XAvc8GyJypBtvQvDAGFsjWX",
+      "signer": "p3.frontier-final.testnet",
+      "receiver": "world.frontier-final.testnet",
+      "status": {
+        "SuccessValue": ""
+      },
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ambush_committed",
+          "data": [
+            {
+              "value": "[195, 13, 216, 116, 165, 21, 45, 166, 0, 159, 27, 129, 19, 42, 32, 104, 120, 59, 19, 204, 27, 164, 64, 107, 96, 241, 168, 93, 14, 84, 101, 254]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "scripted rival: reveal_ambush",
+      "tx": "EAJt9tLGAkkucN9ThUm5ZsTRMrecoCKypqZe2x9G8Hvq",
+      "explorer": "https://testnet.nearblocks.io/txns/EAJt9tLGAkkucN9ThUm5ZsTRMrecoCKypqZe2x9G8Hvq",
+      "signer": "p3.frontier-final.testnet",
+      "receiver": "world.frontier-final.testnet",
+      "status": {
+        "SuccessValue": ""
+      },
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ambush_revealed",
+          "data": [
+            {
+              "value": "[195, 13, 216, 116, 165, 21, 45, 166, 0, 159, 27, 129, 19, 42, 32, 104, 120, 59, 19, 204, 27, 164, 64, 107, 96, 241, 168, 93, 14, 84, 101, 254]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "browser UI",
+      "tx": "6bNd6b2JVvvMWV9tnmbNhUcRty6i1dMsXvJPyj7QYtGz",
+      "explorer": "https://testnet.nearblocks.io/txns/6bNd6b2JVvvMWV9tnmbNhUcRty6i1dMsXvJPyj7QYtGz",
+      "signer": "video1794439157987.frontier-final.testnet",
+      "receiver": "world.frontier-final.testnet",
+      "status": {
+        "SuccessValue": ""
+      },
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "departed",
+          "data": [
+            {
+              "value": "7"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "browser UI",
+      "tx": "zu94xZVbo8Zp4tdKcHdXNUikec89oLHHjZreoPALrQ7",
+      "explorer": "https://testnet.nearblocks.io/txns/zu94xZVbo8Zp4tdKcHdXNUikec89oLHHjZreoPALrQ7",
+      "signer": "video1794439157987.frontier-final.testnet",
+      "receiver": "world.frontier-final.testnet",
+      "status": {
+        "SuccessValue": ""
+      },
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "arrived",
+          "data": [
+            {
+              "value": "7:raided=true:loss=20"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "browser UI",
+      "tx": "E3W8DitdPpmrG1rcE6tx6ka4KkJYs1WFkfFofTPzxBuk",
+      "explorer": "https://testnet.nearblocks.io/txns/E3W8DitdPpmrG1rcE6tx6ka4KkJYs1WFkfFofTPzxBuk",
+      "signer": "video1794439157987.frontier-final.testnet",
+      "receiver": "world.frontier-final.testnet",
+      "status": {
+        "SuccessValue": "IjExNCI="
+      },
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "trade",
+          "data": [
+            {
+              "value": "sell:1:0:114"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "browser UI",
+      "tx": "7BfQGhJeFvP1CmvFSwBmH2BWxGoA6Jsdoogdp91cNB9t",
+      "explorer": "https://testnet.nearblocks.io/txns/7BfQGhJeFvP1CmvFSwBmH2BWxGoA6Jsdoogdp91cNB9t",
+      "signer": "video1794439157987.frontier-final.testnet",
+      "receiver": "world.frontier-final.testnet",
+      "status": {
+        "SuccessValue": ""
+      },
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ambush_committed",
+          "data": [
+            {
+              "value": "[250, 190, 221, 124, 180, 180, 192, 105, 14, 254, 91, 27, 242, 255, 118, 103, 213, 7, 232, 37, 161, 41, 56, 200, 128, 21, 2, 16, 163, 134, 226, 127]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "browser UI",
+      "tx": "27H9Z216bo1V8H14tQabPqf81FpyyLSAGt7Zvh1v5Cjj",
+      "explorer": "https://testnet.nearblocks.io/txns/27H9Z216bo1V8H14tQabPqf81FpyyLSAGt7Zvh1v5Cjj",
+      "signer": "video1794439157987.frontier-final.testnet",
+      "receiver": "world.frontier-final.testnet",
+      "status": {
+        "SuccessValue": ""
+      },
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ambush_revealed",
+          "data": [
+            {
+              "value": "[250, 190, 221, 124, 180, 180, 192, 105, 14, 254, 91, 27, 242, 255, 118, 103, 213, 7, 232, 37, 161, 41, 56, 200, 128, 21, 2, 16, 163, 134, 226, 127]"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "afterBuy": {
+    "cred": 700,
+    "goods": [
+      41,
+      0,
+      0
+    ],
+    "defence": 0,
+    "active_commits": 0,
+    "last_epoch_seen": 1
+  },
+  "afterArrival": {
+    "cred": 600,
+    "goods": [
+      21,
+      0,
+      0
+    ],
+    "defence": 0,
+    "active_commits": 0,
+    "last_epoch_seen": 1
+  },
+  "finalPlayer": {
+    "cred": 704,
+    "goods": [
+      0,
+      0,
+      0
+    ],
+    "defence": 0,
+    "active_commits": 1,
+    "last_epoch_seen": 1
+  },
+  "chapters": [
+    {
+      "title": "FRONTIER / REAL TESTNET GAMEPLAY",
+      "startSeconds": 0,
+      "durationSeconds": 12.28
+    },
+    {
+      "title": "01 / CONNECT AND REGISTER",
+      "startSeconds": 12.28,
+      "durationSeconds": 12.91
+    },
+    {
+      "title": "02 / BUY CARGO AND BUILD A SHIP",
+      "startSeconds": 25.189999999999998,
+      "durationSeconds": 12.43
+    },
+    {
+      "title": "03 / SEAL THE DESTINATION",
+      "startSeconds": 37.62,
+      "durationSeconds": 13.44
+    },
+    {
+      "title": "04 / REVEAL AND RESOLVE",
+      "startSeconds": 51.059999999999995,
+      "durationSeconds": 14.09
+    },
+    {
+      "title": "05 / SELL THE SURVIVING GOODS",
+      "startSeconds": 65.14999999999999,
+      "durationSeconds": 12.56
+    },
+    {
+      "title": "06 / COMMIT AND REVEAL AN AMBUSH",
+      "startSeconds": 77.71,
+      "durationSeconds": 12.4
+    },
+    {
+      "title": "07 / INSPECT THE ON-CHAIN ECONOMY",
+      "startSeconds": 90.11,
+      "durationSeconds": 14.5
+    },
+    {
+      "title": "PLAY FRONTIER / BUILT AT NEAR HACKATHON",
+      "startSeconds": 104.61,
+      "durationSeconds": 13.08
+    }
+  ]
+}

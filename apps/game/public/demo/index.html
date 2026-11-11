@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Watch FRONTIER's narrated demo: real NEAR testnet trading, sealed departures, ambushes, and contract results.">
+  <title>FRONTIER — Demo video</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; color: #f5faf8; background: #152936; }
+    body { max-width: 1120px; margin: auto; padding: 32px 20px 48px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    h1 { margin: 0; font-size: clamp(24px, 4vw, 36px); letter-spacing: .08em; }
+    a { color: #b9e9e1; text-underline-offset: 4px; }
+    p { line-height: 1.6; color: #cfddd9; }
+    video { display: block; width: 100%; aspect-ratio: 16 / 9; margin: 28px 0 20px; background: #0d1a22; border-radius: 12px; }
+    .downloads { display: flex; gap: 20px; flex-wrap: wrap; margin: 24px 0; }
+    small { display: block; max-width: 880px; line-height: 1.7; color: #a7beb6; }
+  </style>
+</head>
+<body>
+  <header><h1>FRONTIER</h1><a href="/">Play the testnet game →</a></header>
+  <p>Trade cargo. Seal your destination. Survive a rival ambush.</p>
+  <video controls playsinline preload="metadata" poster="poster.jpg" aria-label="FRONTIER demo with synthetic narration and captions">
+    <source src="frontier-demo.mp4" type="video/mp4">
+    Your browser does not support embedded video. <a href="frontier-demo.mp4">Download the MP4.</a>
+  </video>
+  <div class="downloads">
+    <a href="frontier-demo.mp4" download>Download video</a>
+    <a href="frontier-voiceover.mp3" download>Voiceover MP3</a>
+    <a href="frontier-demo.srt" download>Subtitles</a>
+    <a href="https://github.com/willy264/frontier/blob/main/results/video-demo.json">Transaction evidence</a>
+  </div>
+  <small>Real NEAR testnet transactions, an automated recording wallet, and a scripted rival.
+    Narration is synthetic; waits are shortened and captions are included in the picture.
+    This is a testnet MVP. Cross-chain Intents settlement and production season rollover are future work.</small>
+  <p>Built at NEAR HACKATHON · <a href="https://github.com/willy264/frontier">Source code</a></p>
+</body>
+</html>

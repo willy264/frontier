@@ -1,0 +1,50 @@
+{
+  "checkedAt": "2026-11-11T23:32:02.513Z",
+  "watchUrl": "https://frontier-willy264s-projects.vercel.app/demo/index.html",
+  "deployment": "https://vercel.com/willy264s-projects/frontier/DcZi2CL6qgX3fDxeG9eUnywvfrhG",
+  "assets": [
+    {
+      "url": "https://frontier-willy264s-projects.vercel.app/demo/index.html",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://frontier-willy264s-projects.vercel.app/demo/frontier-demo.mp4",
+      "status": 200,
+      "contentType": "video/mp4"
+    },
+    {
+      "url": "https://frontier-willy264s-projects.vercel.app/demo/frontier-voiceover.mp3",
+      "status": 200,
+      "contentType": "audio/mpeg"
+    },
+    {
+      "url": "https://frontier-willy264s-projects.vercel.app/demo/frontier-demo.srt",
+      "status": 200,
+      "contentType": "application/x-subrip"
+    },
+    {
+      "url": "https://frontier-willy264s-projects.vercel.app/demo/poster.jpg",
+      "status": 200,
+      "contentType": "image/jpeg"
+    }
+  ],
+  "downloadedBytes": 5770709,
+  "sha256": "d0ee104bd1d4de5c7a89cf9b867570f6911521b39728e11c022494abf9008be3",
+  "checksumMatchesLocal": true,
+  "byteRangeStatus": 206,
+  "browser": "Microsoft Edge / Playwright",
+  "playback": {
+    "durationSeconds": 117.887333,
+    "width": 1920,
+    "height": 1080,
+    "mediaError": null,
+    "played": true,
+    "seekNearEndPassed": true
+  },
+  "mobileViewport": {
+    "viewportWidth": 390,
+    "documentWidth": 390,
+    "videoWidth": 350
+  }
+}

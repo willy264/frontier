@@ -1,31 +1,39 @@
-# FRONTIER Handoff
+# FRONTIER handoff
 
-Demo recording in progress (2026-11-11 UTC): user authorized production of an MP4 with synthetic voiceover. Recording rehearsal found that UI AMM quotes used 0.3 CRED instead of the deployed 30 CRED minimum. Four regression tests failed before the correction and pass with integer arithmetic matching the contract. Next: record live testnet UI actions, render narration/subtitles, inspect the MP4, and commit its public evidence.
+Updated 2026-11-11 23:32 UTC. Deadline: 2026-11-14 23:59 UTC, approximately 72.4 hours remaining.
 
-Second rehearsal registered p4, bought 106 Hashpower, and built ship 4, but the UI's finality-view scan did not select the ship before the browser assertion timed out. Ship selection now decodes the successful build return directly; two receipt regression cases pass. Recording keys were revoked after the failed capture. Next recording uses a fresh, funded testnet sub-account; failed raw footage remains ignored under data/video.
+## Completed in the narrated-video task
 
-Updated 2026-11-11 23:00 WAT. Contract hardening, the live playable loop, public GitHub repository, and Vercel deployment are complete. The remaining work is human-owned video/X/submission actions. Mainnet remains untouched.
+- Produced and deployed the actual demo video: https://frontier-willy264s-projects.vercel.app/demo/index.html.
+- Export: 117.89 seconds, 1920x1080 H.264/AAC, burned captions, synthetic Microsoft Hazel narration, separate MP3 and SRT, poster, and an accessible watch/download page. Files are in `apps/game/public/demo/`.
+- Recorded a fresh captain using an automated injected recording wallet and a real scoped function-call key. The captain bought 41 Hashpower, built ship 7, sealed a departure, lost 20 cargo to a scripted rival, sold 21, and committed/revealed its own ambush. All calls used the deployed app and real testnet.
+- `results/video-demo.json` contains twelve successful receipt links, balances, chapter timings, MP4 checksum, and confirmation that the recording key was revoked. `results/video-hosting.json` verifies public downloads, matching bytes, byte ranges, playback/seeking, and a mobile viewport.
+- Fixed two bugs exposed by recording: incorrect minimum-fee quotes (`650a0f2`) and unreliable new-ship selection (`09d356f`). Eight JavaScript tests pass; app TypeScript passes; GitHub Actions app and contract jobs passed on both fixes.
+- Vercel production build passes. Deployment: `dpl_DcZi2CL6qgX3fDxeG9eUnywvfrhG`. The existing canonical domain serves the video correctly.
+- Re-read the official HACKATHON.md, updated README/disclosures, finished the narration and reproduction guide, and corrected the X draft to include the required hackathon credit and tags. The submission manifest now points to the video and is explicitly not an API payload.
 
-Done:
+## Previously completed and retained
 
-- WSL `cargo near build non-reproducible-wasm --skip-rust-version-check` passes.
-- Contract uses `#[near(serializers = [json, borsh])]` for public DTOs.
-- NEP-171 port core views and transfer preserve the port treasury; NEP-245 minimum ship/goods methods and metadata are present.
-- `tick_epoch` applies goods spoilage and `economy_dashboard` exposes the sink.
-- Contract unit suite passes 48 tests, including error coverage, hidden destinations, ambush lifecycle/timing, standards, treasury transfer, lazy epochs, and conservation accounting.
-- Ignored near-workspaces sandbox passes the three-player escort, ambush, arrival, port-sale, and restricted-key boundary round.
-- Fresh `world.frontier-final.testnet` was deployed and initialized from the changed-state artifact. Deployment evidence is `results/deploy-testnet.json`.
-- `pnpm demo:round` passed with live evidence in `results/round-2026-11-11T14-19-28-579Z.json`.
-- Frontend has browser salts, localStorage persistence, downloadable backups, destination-only departure, route selection at arrival, live AMM quotes/min-out, port fee control, contract-driven ships, result feed, six-step walkthrough, economy spoilage display, and a guided tutorial.
-- Frontend tests, TypeScript, and webpack production build pass.
-- README, Vercel config, public demo URL, submission draft, video plan, X draft, and Q-015 related-project disclosure are current.
+World `world.frontier-final.testnet` is deployed. Deployment evidence is in `results/deploy-testnet.json`; the earlier scripted round is `results/round-2026-11-11T14-19-28-579Z.json`. Existing sandbox, 48 Rust tests, cargo-near build, and frontend build checks passed. The app includes trading, browser commit-reveal secrets/backups, fleet actions, contract events, port controls, economy totals, and a guided tutorial. The current deployment does not require a contract upgrade for the video task.
 
-Exact remaining human actions:
+## In progress / exact next action
 
-- Record the video using the public demo at `https://frontier-willy264s-projects.vercel.app`.
-- Use a brand-new testnet wallet to run the six-step flow and record the video. The repository has no browser automation tool, so this was not claimed as an automated judge walkthrough.
-- Publish the X post, add its URL and the video URL to `submission/submission.json`, then submit the form after reviewing the exact payload.
+The media assets and production verification are complete. Commit the reviewed public files, push main, wait for its GitHub Actions run, and move/push `hackathon-submission` to that commit. If resuming after those steps, inspect `git log -3 --oneline`, the remote tag, and the latest CI run rather than making another duplicate media commit. No render, browser, or development server needs to stay running.
 
-Known limitations: NEAR Intents settlement and production season rollover are future work. The guided tutorial is local-only; live p1-p4 activity is evidenced by `pnpm demo:round`. `HACKATHON.md` is absent from the repository; the final review used `docs/FRONTIER-BRIEF.md` and the existing research/verification docs.
+## Remaining human actions
 
-Platform note: Windows cannot run near-workspaces 0.24 directly; WSL2 Ubuntu is the supported sandbox runtime.
+1. Review the finished video; no new recording is required for the supplied demo.
+2. Test a normal supported retail wallet login if desired. The recording wallet is an automation adapter, not evidence of a third-party wallet walkthrough.
+3. Publish `submission/x-post-draft.md` with the MP4 attached, and add the X post URL to the manifest.
+4. Supply team/contact details, your own mainnet payout account, track/description confirmation, and contact consent privately. Review the exact submission payload before the one allowed submission. Do not put personal details or credentials in the public repository.
+
+## Honest limits and outstanding engineering coverage
+
+- NEAR Intents settlement and production season rollover are future work. No mainnet transaction was performed.
+- The in-app guided tutorial does not run rivals. The recording's separate scripted rival placed real testnet ambushes.
+- The filmed sale uses the selected market and is not proof of profitable arbitrage or location-restricted markets. Escort protection and port transfer are not demonstrated by this video.
+- The existing proptest exercises a small model; it does not implement the requested random sequences of actual contract trades, raids, and epochs. The ledger now states this coverage gap rather than calling that requirement complete.
+- Dependency alerts already documented in `docs/THREAT_MODEL.md` remain; this video task does not change dependencies.
+- Failed rehearsal captures remain ignored under `data/video/`; some testnet rehearsal accounts retain game state. Credential files live only in the user-level NEAR directory. Never commit raw browser backups or that directory.
+
+Permissions persist: testnet actions, pushing this repository's main branch, deployment to the existing Vercel project, and refreshing the submission tag are authorized. Mainnet, X publication, and the final submission require explicit approval.

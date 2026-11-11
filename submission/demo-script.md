@@ -1,12 +1,15 @@
-# Demo Script
+# Demo script
 
-1. Open the deployed frontend and connect a testnet wallet.
-2. Show the captain account and `GAME KEY READY` state.
-3. Select Bitcoin Isle and point out the live owner and fee returned by the contract.
-4. Use the market and fleet actions; show that the event line reports submitted contract calls.
-5. Open Economy and show live supply, faucet, and epoch values.
-6. Use `results/round-2026-11-11T14-19-28-579Z.json` to show the live scripted three-player round: escort, sealed destination, hidden ambush, route selection at arrival, port sale, and restricted-key rejection. The in-app button is a guided tutorial and does not move rival accounts.
-7. Open the testnet explorer for the deployment and one round transaction.
+The completed narrated video is at https://frontier-willy264s-projects.vercel.app/demo/index.html. Use `voiceover-script.md` for the exact narration and `video-plan.md` for chapter timings.
 
-Keep the wallet address and any private credential material out of the recording. The contract and evidence are testnet-only.
+For a live presentation:
+
+1. Open the public app and connect a supported testnet wallet. Register a fresh captain for 1,000 non-redeemable CRED.
+2. At Bitcoin Isle, enter 300 Buy CRED and buy at the live quote. The quote includes the deployed contract's minimum fee; small purchases can quote zero.
+3. Build a sloop; its returned ID is selected automatically. Load an amount no greater than the displayed inventory.
+4. Select origin Bitcoin Isle and destination Solana Reef. Depart, save the salt backup, and reveal arrival after the route time. A rival ambush requires another actor; the guided tutorial does not create one.
+5. Read the result feed, then sell the available goods at the selected market. No profit is guaranteed. The filmed sale uses Bitcoin Isle's market.
+6. Choose an ambush route, commit, and reveal in its block window. Open Economy to inspect current totals.
+
+For a reproducible rival-assisted capture use `scripts/record-demo.mjs`, documented in `docs/VIDEO.md`. It performs real testnet actions through the UI while a scripted rival supplies the ambush. Public account IDs and explorer links can be shown; private credentials and secret backups must remain private.
 

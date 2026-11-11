@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm exec next build apps/game --webpack && rm -rf .next && cp -R apps/game/.next .next",
+  "buildCommand": "pnpm exec next build apps/game --webpack && rm -rf .next && cp -R apps/game/.next .next && mkdir -p public && cp -R apps/game/public/. public/",
   "devCommand": "pnpm dev"
 }
