@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Account, JsonRpcProvider, KeyPair, KeyPairSigner, type KeyPairString } from "near-api-js";
 import type { NearConnector } from "@hot-labs/near-connect";
 import { Economy, type Economy as EconomySnapshot } from "./components";
+import { marketQuote } from "./quotes";
 
 const WORLD = process.env.NEXT_PUBLIC_FRONTIER_WORLD_ACCOUNT ?? "world.frontier-final.testnet";
 const RPC = process.env.NEXT_PUBLIC_FRONTIER_RPC_URL ?? "https://rpc.testnet.fastnear.com";
@@ -79,8 +80,8 @@ export default function Home() {
 
   function addFeed(message: string) { setFeed((items) => [`${new Date().toLocaleTimeString()}  ${message}`, ...items].slice(0, 8)); }
   function goodIndex() { return ["Hashpower", "Liquidity", "Blockspace"].indexOf(selected.good); }
-  function buyQuote() { if (!livePort) return "--"; const input = Number(buyAmount) || 0; const fee = Math.max(input * livePort.fee_bps / 10000, 0.3); const net = input - fee; return Math.floor(livePort.reserves[goodIndex()] * net / (livePort.cred_reserve + net)).toString(); }
-  function sellQuote() { if (!livePort) return "--"; const amount = Number(sellAmount) || 0; const gross = Math.floor(livePort.cred_reserve * amount / (livePort.reserves[goodIndex()] + amount)); return Math.max(0, Math.floor(gross - Math.max(gross * livePort.fee_bps / 10000, 0.3))).toString(); }
+  function buyQuote() { return livePort ? marketQuote(livePort, goodIndex(), buyAmount, "buy") : "--"; }
+  function sellQuote() { return livePort ? marketQuote(livePort, goodIndex(), sellAmount, "sell") : "--"; }
   function remember(record: SecretRecord) { const next = [...secrets.filter((item) => item.id !== record.id), record]; setSecrets(next); saveSecrets(next); }
   function downloadBackup() { const blob = new Blob([JSON.stringify(secrets, null, 2)], { type: "application/json" }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "frontier-commit-secrets.json"; link.click(); URL.revokeObjectURL(link.href); }
   async function connectWallet() {

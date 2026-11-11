@@ -1,5 +1,7 @@
 # FRONTIER Handoff
 
+Demo recording in progress (2026-11-11 UTC): user authorized production of an MP4 with synthetic voiceover. Recording rehearsal found that UI AMM quotes used 0.3 CRED instead of the deployed 30 CRED minimum. Four regression tests failed before the correction and pass with integer arithmetic matching the contract. Next: record live testnet UI actions, render narration/subtitles, inspect the MP4, and commit its public evidence.
+
 Updated 2026-11-11 23:00 WAT. Contract hardening, the live playable loop, public GitHub repository, and Vercel deployment are complete. The remaining work is human-owned video/X/submission actions. Mainnet remains untouched.
 
 Done:
