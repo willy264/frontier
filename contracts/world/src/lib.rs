@@ -7,6 +7,7 @@ const STARTER_CRED: u128 = 1_000;
 const NPC_CAP: u128 = 160;
 const MIN_FEE_BPS: u128 = 30;
 const AMBUSH_BURN_BPS: u128 = 1_000;
+const EPOCH_BLOCKS: u64 = 100;
 
 #[derive(BorshSerialize, BorshStorageKey)]
 enum StorageKey {
@@ -44,6 +45,7 @@ pub struct Player {
     pub goods: [u128; 3],
     pub defence: u128,
     pub active_commits: u8,
+    pub last_epoch_seen: u64,
 }
 
 #[near(serializers = [json, borsh])]
@@ -164,6 +166,7 @@ pub struct World {
     escorts: UnorderedMap<u64, EscortOffer>,
     next_ship: u64,
     epoch: u64,
+    last_epoch_block: u64,
     cred_supply: u128,
     npc_faucet: u128,
     sinks: u128,
@@ -184,6 +187,7 @@ impl World {
             escorts: UnorderedMap::new(StorageKey::Escorts),
             next_ship: 1,
             epoch: 0,
+            last_epoch_block: env::block_height(),
             cred_supply: 0,
             npc_faucet: 0,
             sinks: 0,
@@ -197,6 +201,7 @@ impl World {
                 goods: [0; 3],
                 defence: 0,
                 active_commits: 0,
+                last_epoch_seen: 0,
             },
         );
         this.player_ids.insert(&contract_account);
@@ -247,6 +252,7 @@ impl World {
                 goods: [0; 3],
                 defence: 0,
                 active_commits: 0,
+                last_epoch_seen: self.epoch,
             },
         );
         self.player_ids.insert(&caller);
@@ -290,6 +296,7 @@ impl World {
 
     pub fn build_ship(&mut self, kind: String) -> u64 {
         let caller = env::predecessor_account_id();
+        self.touch_player(&caller);
         let (cost, defence) = match kind.as_str() {
             "sloop" => (100, 1),
             "galleon" => (350, 3),
@@ -318,6 +325,7 @@ impl World {
 
     pub fn buy(&mut self, port_id: u64, good: Good, cred_in: U128, min_out: U128) -> U128 {
         let caller = env::predecessor_account_id();
+        self.touch_player(&caller);
         let mut port = self.port_or_panic(port_id);
         let idx = good.index();
         require!(port.reserves[idx] > 0 && cred_in.0 > 0, "ERR_BAD_TRADE");
@@ -339,6 +347,7 @@ impl World {
 
     pub fn sell(&mut self, port_id: u64, good: Good, amount: U128, min_cred: U128) -> U128 {
         let caller = env::predecessor_account_id();
+        self.touch_player(&caller);
         let mut port = self.port_or_panic(port_id);
         let idx = good.index();
         self.debit_good(&caller, idx, amount.0);
@@ -362,6 +371,7 @@ impl World {
 
     pub fn set_fee(&mut self, port_id: u64, fee_bps: u16) {
         let caller = env::predecessor_account_id();
+        self.touch_player(&caller);
         let mut port = self.port_or_panic(port_id);
         require!(port.owner_id == caller, "ERR_NOT_PORT_OWNER");
         require!(fee_bps <= 1_000, "ERR_FEE_RANGE");
@@ -378,6 +388,7 @@ impl World {
         cargo: [U128; 3],
     ) {
         let caller = env::predecessor_account_id();
+        self.touch_player(&caller);
         let mut ship = self.ship_or_panic(ship_id);
         self.port_or_panic(origin_port);
         require!(ship.owner_id == caller, "ERR_NOT_SHIP_OWNER");
@@ -408,6 +419,7 @@ impl World {
 
     pub fn arrive(&mut self, ship_id: u64, route_id: u64, destination: u64, salt: String) {
         let caller = env::predecessor_account_id();
+        self.touch_player(&caller);
         let mut ship = self.ship_or_panic(ship_id);
         require!(ship.owner_id == caller, "ERR_NOT_SHIP_OWNER");
         let origin_port = ship.origin_port.expect("ERR_NOT_IN_TRANSIT");
@@ -477,6 +489,7 @@ impl World {
 
     pub fn commit_ambush(&mut self, window_start: u64, commit: Vec<u8>, stake: U128) {
         let caller = env::predecessor_account_id();
+        self.touch_player(&caller);
         require!(stake.0 >= 10, "ERR_STAKE");
         require!(window_start >= env::block_height(), "ERR_WINDOW");
         let player = self.player_or_panic(&caller);
@@ -503,6 +516,7 @@ impl World {
 
     pub fn reveal_ambush(&mut self, commit_id: Vec<u8>, route_id: u64, salt: String) {
         let caller = env::predecessor_account_id();
+        self.touch_player(&caller);
         let mut ambush = self.ambushes.get(&commit_id).expect("ERR_NO_AMBUSH");
         require!(
             env::block_height() <= ambush.window_start + 20,
@@ -526,6 +540,7 @@ impl World {
 
     pub fn offer_escort(&mut self, ship_id: u64, price: U128) -> u64 {
         let caller = env::predecessor_account_id();
+        self.touch_player(&caller);
         let ship = self.ship_or_panic(ship_id);
         require!(ship.owner_id == caller, "ERR_NOT_SHIP_OWNER");
         require!(ship.route_id.is_none(), "ERR_IN_TRANSIT");
@@ -546,6 +561,7 @@ impl World {
 
     pub fn hire_escort(&mut self, offer_id: u64, convoy_ship_id: u64) {
         let caller = env::predecessor_account_id();
+        self.touch_player(&caller);
         let mut offer = self.escorts.get(&offer_id).expect("ERR_ESCORT_NOT_FOUND");
         let convoy = self.ship_or_panic(convoy_ship_id);
         require!(convoy.owner_id == caller, "ERR_NOT_SHIP_OWNER");
@@ -562,6 +578,7 @@ impl World {
 
     pub fn set_port_sale_price(&mut self, port_id: u64, price: U128) {
         let caller = env::predecessor_account_id();
+        self.touch_player(&caller);
         let mut port = self.port_or_panic(port_id);
         require!(port.owner_id == caller, "ERR_NOT_PORT_OWNER");
         port.sale_price = price.0;
@@ -570,6 +587,7 @@ impl World {
 
     pub fn buy_port(&mut self, port_id: u64) {
         let caller = env::predecessor_account_id();
+        self.touch_player(&caller);
         let mut port = self.port_or_panic(port_id);
         require!(port.owner_id != caller, "ERR_ALREADY_PORT_OWNER");
         let seller = port.owner_id.clone();
@@ -582,28 +600,21 @@ impl World {
     }
 
     pub fn tick_epoch(&mut self) {
+        require!(
+            env::block_height() >= self.last_epoch_block + EPOCH_BLOCKS,
+            "ERR_EPOCH_TOO_EARLY"
+        );
         self.expire_ambushes();
         let upkeep = 5 * 2;
-        let mut spoiled = 0u128;
-        let ids: Vec<AccountId> = self.player_ids.iter().collect();
-        for id in ids {
-            let mut player = self.player_or_panic(&id);
-            for good in &mut player.goods {
-                let loss = *good / 20;
-                *good -= loss;
-                spoiled += loss;
-            }
-            self.players.insert(&id, &player);
-        }
-        self.spoilage += spoiled;
         self.cred_supply = self.cred_supply.saturating_sub(upkeep);
-        self.sinks += upkeep + spoiled;
+        self.sinks += upkeep;
         self.npc_faucet = NPC_CAP;
         self.cred_supply += NPC_CAP;
         self.epoch += 1;
+        self.last_epoch_block = env::block_height();
         self.emit(
             "epoch",
-            &format!("{}:{}:{}:{}", self.epoch, NPC_CAP, upkeep, spoiled),
+            &format!("{}:{}:{}:lazy", self.epoch, NPC_CAP, upkeep),
         );
     }
 
@@ -816,6 +827,28 @@ impl World {
     }
     fn ship_or_panic(&self, id: u64) -> Ship {
         self.ships.get(&id).expect("ERR_SHIP_NOT_FOUND")
+    }
+    fn touch_player(&mut self, id: &AccountId) {
+        let mut player = self.player_or_panic(id);
+        if player.last_epoch_seen >= self.epoch {
+            return;
+        }
+        let mut upkeep = 0u128;
+        let mut spoiled = 0u128;
+        for _ in player.last_epoch_seen..self.epoch {
+            let before = player.cred;
+            player.cred = player.cred.saturating_sub(10);
+            upkeep += before - player.cred;
+            for good in &mut player.goods {
+                let loss = *good / 20;
+                *good -= loss;
+                spoiled += loss;
+            }
+        }
+        player.last_epoch_seen = self.epoch;
+        self.spoilage += spoiled;
+        self.sinks += upkeep + spoiled;
+        self.players.insert(id, &player);
     }
     fn player_or_panic(&self, id: &AccountId) -> Player {
         self.players.get(id).expect("ERR_PLAYER_NOT_FOUND")
@@ -1107,7 +1140,7 @@ mod tests {
     #[test]
     fn registers_and_caps_faucet() {
         let mut world = world();
-        testing_env!(context("alice.testnet", 2));
+        testing_env!(context("alice.testnet", 101));
         world.tick_epoch();
         assert_eq!(world.economy().1 .0, NPC_CAP);
     }
@@ -1235,8 +1268,9 @@ mod tests {
                 .cred,
             990
         );
-        testing_env!(context("alice.testnet", 23));
+        testing_env!(context("alice.testnet", 101));
         world.tick_epoch();
+        world.build_ship("sloop".into());
         assert!(world.ambushes.get(&commit).is_none());
         assert_eq!(
             world
@@ -1248,7 +1282,7 @@ mod tests {
             world
                 .player_or_panic(&"alice.testnet".parse().unwrap())
                 .cred,
-            990
+            880
         );
         assert!(world.sinks >= 20);
     }
@@ -1278,6 +1312,15 @@ mod tests {
         world.arrive(convoy, 1, 2, "dest".into());
         assert_eq!(world.player_or_panic(&alice).goods, [10, 0, 0]);
         assert_eq!(world.player_or_panic(&bob).goods, [0, 0, 0]);
+    }
+    #[test]
+    fn epoch_requires_block_spacing() {
+        let mut world = world();
+        testing_env!(context("alice.testnet", 2));
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            world.tick_epoch();
+        }));
+        assert!(result.is_err());
     }
     #[test]
     fn standards_and_spoilage_are_live() {
@@ -1319,7 +1362,9 @@ mod tests {
             .get_player("alice.testnet".parse().unwrap())
             .unwrap()
             .goods[0];
+        testing_env!(context("alice.testnet", 101));
         world.tick_epoch();
+        world.build_ship("sloop".into());
         let after = world
             .get_player("alice.testnet".parse().unwrap())
             .unwrap()
