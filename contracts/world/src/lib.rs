@@ -456,6 +456,8 @@ impl World {
                 })
             })
         });
+        let mut raided = false;
+        let mut cargo_loss = 0u128;
         if let Some((key, ambush)) = ambush {
             let caught = self.raider_power(&ambush.raider) > ship.defence;
             self.ambushes.remove(&key);
@@ -464,6 +466,8 @@ impl World {
             if caught {
                 let total = ship.cargo.iter().sum::<u128>();
                 let loss = total / 2;
+                raided = true;
+                cargo_loss = loss;
                 let mut remaining_loss = loss;
                 let mut burned = 0u128;
                 let cargo_slots = ship.cargo.len();
@@ -495,7 +499,10 @@ impl World {
         ship.destination_commit = None;
         ship.cargo = [0; 3];
         self.ships.insert(&ship_id, &ship);
-        self.emit("arrived", &ship_id.to_string());
+        self.emit(
+            "arrived",
+            &format!("{}:raided={}:loss={}", ship_id, raided, cargo_loss),
+        );
     }
 
     pub fn commit_ambush(&mut self, window_start: u64, commit: Vec<u8>, stake: U128) {

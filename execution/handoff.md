@@ -10,8 +10,8 @@ Done:
 - `tick_epoch` applies goods spoilage and `economy_dashboard` exposes the sink.
 - Contract unit suite passes 48 tests, including error coverage, hidden destinations, ambush lifecycle/timing, standards, treasury transfer, lazy epochs, and conservation accounting.
 - Ignored near-workspaces sandbox passes the three-player escort, ambush, arrival, port-sale, and restricted-key boundary round.
-- Fresh `world2.frontier-uiriamuzu.testnet` was deployed and initialized from the changed-state artifact. Deployment evidence is `results/deploy-testnet.json`.
-- `pnpm demo:round` passed with live evidence in `results/round-2026-11-11T06-51-48-317Z.json`.
+- Fresh `world.frontier-final.testnet` was deployed and initialized from the changed-state artifact. Deployment evidence is `results/deploy-testnet.json`.
+- `pnpm demo:round` passed with live evidence in `results/round-2026-11-11T14-19-28-579Z.json`.
 - Frontend has browser salts, localStorage persistence, downloadable backups, destination-only departure, route selection at arrival, live AMM quotes/min-out, port fee control, contract-driven ships, result feed, six-step walkthrough, economy spoilage display, and a guided tutorial.
 - Frontend tests, TypeScript, and webpack production build pass.
 - README, Vercel config, submission draft, video plan, X draft, and Q-015 related-project disclosure are current.

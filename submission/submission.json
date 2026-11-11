@@ -3,11 +3,11 @@
   "project": "FRONTIER",
   "tracks": ["games", "nfts"],
   "network": "testnet",
-  "world_account": "world2.frontier-uiriamuzu.testnet",
-  "explorer": "https://testnet.nearblocks.io/address/world2.frontier-uiriamuzu.testnet",
+  "world_account": "world.frontier-final.testnet",
+  "explorer": "https://testnet.nearblocks.io/address/world.frontier-final.testnet",
   "evidence": [
     "results/deploy-testnet.json",
-    "results/round-2026-11-11T06-51-48-317Z.json"
+    "results/round-2026-11T14-19-28-579Z.json"
   ],
   "repo_url": "<add after publishing>",
   "demo_url": "<add Vercel URL after authorized publishing>",

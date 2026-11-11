@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { Account, JsonRpcProvider, KeyPair, KeyPairSigner, type KeyPairString } from "near-api-js";
 
-const ROOT = process.env.FRONTIER_ROOT_ACCOUNT ?? "frontier-uiriamuzu.testnet";
+const ROOT = process.env.FRONTIER_ROOT_ACCOUNT ?? "frontier-final.testnet";
 const WORLD = process.env.FRONTIER_WORLD_ACCOUNT ?? `world.${ROOT}`;
 const RPC = process.env.FRONTIER_RPC_URL ?? "https://rpc.testnet.fastnear.com";
 const networkId = "testnet";
@@ -38,18 +38,20 @@ async function main() {
   const world = makeAccount(provider, await readCredential(WORLD));
   const wasm = await fs.readFile(wasmPath);
   const deploy = await world.deployContract(new Uint8Array(wasm));
-  const initialized = await world
-    .callFunctionRaw({ contractId: WORLD, methodName: "new", args: {}, gas: 200n * 10n ** 12n, deposit: 0n })
-    .catch(async (error) => {
-      const message = error instanceof Error ? error.message : String(error);
-      if (!message.includes("already been initialized")) return { error: message };
-      try {
-        await provider.callFunction({ contractId: WORLD, method: "get_port", args: { port_id: 1 }, blockQuery: { finality: "final" } });
-        return { alreadyInitialized: true };
-      } catch {
-        return { error: message };
-      }
-    });
+  const initialized = process.env.FRONTIER_SKIP_INIT === "1"
+    ? { alreadyInitialized: true as const }
+    : await world
+      .callFunctionRaw({ contractId: WORLD, methodName: "new", args: {}, gas: 200n * 10n ** 12n, deposit: 0n })
+      .catch(async (error) => {
+        const message = error instanceof Error ? error.message : String(error);
+        if (!message.includes("already been initialized")) return { error: message };
+        try {
+          await provider.callFunction({ contractId: WORLD, method: "get_port", args: { port_id: 1 }, blockQuery: { finality: "final" } });
+          return { alreadyInitialized: true as const };
+        } catch {
+          return { error: message };
+        }
+      });
   const output = {
     network: networkId,
     root: ROOT,

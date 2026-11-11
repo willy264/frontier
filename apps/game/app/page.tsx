@@ -5,7 +5,7 @@ import { Account, JsonRpcProvider, KeyPair, KeyPairSigner, type KeyPairString } 
 import type { NearConnector } from "@hot-labs/near-connect";
 import { Economy, type Economy as EconomySnapshot } from "./components";
 
-const WORLD = process.env.NEXT_PUBLIC_FRONTIER_WORLD_ACCOUNT ?? "world2.frontier-uiriamuzu.testnet";
+const WORLD = process.env.NEXT_PUBLIC_FRONTIER_WORLD_ACCOUNT ?? "world.frontier-final.testnet";
 const RPC = process.env.NEXT_PUBLIC_FRONTIER_RPC_URL ?? "https://rpc.testnet.fastnear.com";
 const GAME_METHODS = ["register_player", "buy", "sell", "build_ship", "depart", "arrive", "commit_ambush", "reveal_ambush", "offer_escort", "hire_escort", "set_fee", "set_port_sale_price", "buy_port"];
 const provider = new JsonRpcProvider({ url: RPC });
@@ -98,7 +98,7 @@ export default function Home() {
     if (!accountId) { setEvent("Connect a testnet wallet first."); return false; }
     const saved = sessionStorage.getItem("frontier-game-key");
     if (!saved) { setEvent("Connect again to provision the game-only key."); return false; }
-    try { const account = new Account(accountId, provider, new KeyPairSigner(KeyPair.fromString(saved as KeyPairString))); await account.callFunction({ contractId: WORLD, methodName, args, gas: 300n * 10n ** 12n, deposit: 0n }); setEvent(message); addFeed(message); if (methodName === "build_ship") { for (let id = 1; id < 50; id += 1) { const ship = await provider.callFunction<{ owner_id: string; route_id: number | null }>({ contractId: WORLD, method: "get_ship", args: { ship_id: id }, blockQuery: { finality: "final" } }).catch(() => null); if (ship?.owner_id === accountId && ship.route_id === null) { setShipId(String(id)); addFeed(`Sloop ${id} is ready in Fleet.`); break; } } } return true; }
+    try { const account = new Account(accountId, provider, new KeyPairSigner(KeyPair.fromString(saved as KeyPairString))); const result = await account.callFunctionRaw({ contractId: WORLD, methodName, args, gas: 300n * 10n ** 12n, deposit: 0n }); setEvent(message); addFeed(message); const logs = result.receipts_outcome?.flatMap((receipt) => receipt.outcome.logs ?? []).filter((log) => log.includes("EVENT_JSON")) ?? []; logs.forEach((log) => { try { const event = JSON.parse(log.replace("EVENT_JSON:", "")) as { event?: string; data?: Array<{ value?: string }> }; addFeed(`Contract event ${event.event ?? "unknown"}: ${event.data?.[0]?.value ?? ""}`); } catch { addFeed(`Contract log: ${log}`); } }); if (methodName === "build_ship") { for (let id = 1; id < 50; id += 1) { const ship = await provider.callFunction<{ owner_id: string; route_id: number | null }>({ contractId: WORLD, method: "get_ship", args: { ship_id: id }, blockQuery: { finality: "final" } }).catch(() => null); if (ship?.owner_id === accountId && ship.route_id === null) { setShipId(String(id)); addFeed(`Contract state: ship ${id} is ready in Fleet.`); break; } } } return true; }
     catch (error) { setEvent(error instanceof Error ? error.message : "Transaction failed."); addFeed("Transaction rejected: check the result and try again."); return false; }
   }
   async function commitAmbush() {

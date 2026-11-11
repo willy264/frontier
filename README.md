@@ -20,14 +20,14 @@ The scripted economy simulator remains available with `pnpm sim`; its results ar
 
 ## Testnet deployment
 
-- Root: `frontier-uiriamuzu.testnet`
-- World: `world2.frontier-uiriamuzu.testnet`
-- Explorer: https://testnet.nearblocks.io/address/world2.frontier-uiriamuzu.testnet
+- Root: `frontier-final.testnet`
+- World: `world.frontier-final.testnet`
+- Explorer: https://testnet.nearblocks.io/address/world.frontier-final.testnet
 - Deployment and initialization evidence: `results/deploy-testnet.json`
-- Deployment transaction: `56ZpVEHwzgJhGqHqWnozTeNJY46qPMpVTg9SA5BuU2mK`
-- Initialization transaction: `DubyeCFH9quTVtdegSWoGLQpedjdHRJWAhpXEUFW1G8H`
-- Latest WASM SHA-256: `0f39fbb76eed618d9984eff5ca016ecc13a2faa6071669fc06964a28a51bdf47`
-- Latest live round evidence: `results/round-2026-11-11T06-51-48-317Z.json`
+- Deployment transaction: `AUWBUMuuzLs9KuguHaCmAjN9pK8gXJjFqEgw8XkvAouu`
+- Initialization transaction: `ChPnbDm39eanmyiNdkZw4Ly7EL8ho2EHUrLiwshyX7n`
+- Latest WASM SHA-256: `f7c8cef1e210787f413aa64d357ef1b58e55a02b0c63377164179fb62392fca7`
+- Latest live round evidence: `results/round-2026-11-11T14-19-28-579Z.json`
 - Live URL: not published yet. After authorization, deploy the Vercel project and replace this line with its URL.
 
 The deploy command expects the root account credential in the user-level NEAR credential directory and only targets testnet:
@@ -41,7 +41,7 @@ pnpm demo:round
 
 1. Create a Vercel project from this repository with root directory set to the repository root.
 2. Use `pnpm install --frozen-lockfile` as the install command and `pnpm exec next build apps/game --webpack` as the build command.
-3. Add `NEXT_PUBLIC_FRONTIER_WORLD_ACCOUNT=world2.frontier-uiriamuzu.testnet` and `NEXT_PUBLIC_FRONTIER_RPC_URL=https://rpc.testnet.fastnear.com`.
+3. Add `NEXT_PUBLIC_FRONTIER_WORLD_ACCOUNT=world.frontier-final.testnet` and `NEXT_PUBLIC_FRONTIER_RPC_URL=https://rpc.testnet.fastnear.com`.
 4. Deploy, open the generated URL, connect a testnet wallet, register, buy cargo, build a sloop, and use the hidden departure and ambush panels.
 5. Replace the Live URL line above and `demo_url` in `submission/submission.json` after the deployment is publicly available.
 
