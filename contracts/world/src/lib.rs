@@ -124,6 +124,7 @@ pub struct Ship {
     pub cargo: [u128; 3],
     pub defence: u128,
     pub route_id: Option<u64>,
+    pub origin_port: Option<u64>,
     pub departed_at: u64,
     pub arrives_at: u64,
     pub destination_commit: Option<Vec<u8>>,
@@ -304,6 +305,7 @@ impl World {
                 cargo: [0; 3],
                 defence,
                 route_id: None,
+                origin_port: None,
                 departed_at: 0,
                 arrives_at: 0,
                 destination_commit: None,
@@ -370,15 +372,18 @@ impl World {
     pub fn depart(
         &mut self,
         ship_id: u64,
-        route_id: u64,
+        origin_port: u64,
         destination_commit: Vec<u8>,
         cargo: [U128; 3],
     ) {
         let caller = env::predecessor_account_id();
         let mut ship = self.ship_or_panic(ship_id);
-        let route = self.route_or_panic(route_id);
+        self.port_or_panic(origin_port);
         require!(ship.owner_id == caller, "ERR_NOT_SHIP_OWNER");
-        require!(ship.route_id.is_none(), "ERR_IN_TRANSIT");
+        require!(
+            ship.route_id.is_none() && ship.origin_port.is_none(),
+            "ERR_IN_TRANSIT"
+        );
         let player = self.player_or_panic(&caller);
         require!(
             cargo.iter().map(|x| x.0).sum::<u128>() <= player.goods.iter().sum(),
@@ -391,21 +396,28 @@ impl World {
             ship.cargo[idx] = amount.0;
         }
         self.players.insert(&caller, &updated);
-        ship.route_id = Some(route_id);
+        ship.route_id = None;
+        ship.origin_port = Some(origin_port);
         ship.departed_at = env::block_height();
-        ship.arrives_at = env::block_height() + route.distance;
+        ship.arrives_at = 0;
         ship.destination_commit = Some(destination_commit);
         self.ships.insert(&ship_id, &ship);
         self.emit("departed", &ship_id.to_string());
     }
 
-    pub fn arrive(&mut self, ship_id: u64, destination: u64, salt: String) {
+    pub fn arrive(&mut self, ship_id: u64, route_id: u64, destination: u64, salt: String) {
         let caller = env::predecessor_account_id();
         let mut ship = self.ship_or_panic(ship_id);
         require!(ship.owner_id == caller, "ERR_NOT_SHIP_OWNER");
-        let route_id = ship.route_id.expect("ERR_NOT_IN_TRANSIT");
-        require!(env::block_height() >= ship.arrives_at, "ERR_TOO_EARLY");
-        let expected = env::sha256(format!("{}:{}:{}", destination, route_id, salt).as_bytes());
+        let origin_port = ship.origin_port.expect("ERR_NOT_IN_TRANSIT");
+        let route = self.route_or_panic(route_id);
+        require!(route.from_port == origin_port, "ERR_ROUTE_ORIGIN");
+        require!(route.to_port == destination, "ERR_ROUTE_DESTINATION");
+        require!(
+            env::block_height() >= ship.departed_at + route.distance,
+            "ERR_TOO_EARLY"
+        );
+        let expected = env::sha256(format!("{}:{}:{}", destination, salt, ship_id).as_bytes());
         require!(
             ship.destination_commit.as_ref() == Some(&expected),
             "ERR_DESTINATION_REVEAL"
@@ -434,6 +446,7 @@ impl World {
         }
         self.players.insert(&caller, &updated);
         ship.route_id = None;
+        ship.origin_port = None;
         ship.destination_commit = None;
         ship.cargo = [0; 3];
         self.ships.insert(&ship_id, &ship);
@@ -724,7 +737,9 @@ impl World {
     fn raider_power(&self, raider: &AccountId) -> u128 {
         self.ships
             .values()
-            .filter(|ship| ship.owner_id == *raider && ship.route_id.is_none())
+            .filter(|ship| {
+                ship.owner_id == *raider && ship.route_id.is_none() && ship.origin_port.is_none()
+            })
             .map(|ship| ship.defence)
             .sum()
     }
@@ -875,7 +890,7 @@ mod tests {
             [U128(0), U128(0), U128(0)],
         );
         testing_env!(context("alice.testnet", 30));
-        world.arrive(ship, 2, "wrong".into());
+        world.arrive(ship, 1, 2, "wrong".into());
     });
     error_test!(error_dup_commit, "ERR_DUP_COMMIT", {
         let mut world = world();
@@ -945,7 +960,7 @@ mod tests {
     error_test!(error_not_in_transit, "ERR_NOT_IN_TRANSIT", {
         let mut world = world();
         let ship = world.build_ship("sloop".into());
-        world.arrive(ship, 2, "s".into());
+        world.arrive(ship, 1, 2, "s".into());
     });
     error_test!(error_not_port_owner, "ERR_NOT_PORT_OWNER", {
         let mut world = world();
@@ -997,7 +1012,8 @@ mod tests {
     error_test!(error_route_not_found, "ERR_ROUTE_NOT_FOUND", {
         let mut world = world();
         let ship = world.build_ship("sloop".into());
-        world.depart(ship, 99, vec![0; 32], [U128(0), U128(0), U128(0)]);
+        world.depart(ship, 1, vec![0; 32], [U128(0), U128(0), U128(0)]);
+        world.arrive(ship, 99, 2, "s".into());
     });
     error_test!(error_ship_funds, "ERR_SHIP_FUNDS", {
         let mut world = world();
@@ -1024,8 +1040,13 @@ mod tests {
     error_test!(error_too_early, "ERR_TOO_EARLY", {
         let mut world = world();
         let ship = world.build_ship("sloop".into());
-        world.depart(ship, 1, env::sha256(b"2:1:s"), [U128(0), U128(0), U128(0)]);
-        world.arrive(ship, 2, "s".into());
+        world.depart(
+            ship,
+            1,
+            env::sha256(format!("2:s:{}", ship).as_bytes()),
+            [U128(0), U128(0), U128(0)],
+        );
+        world.arrive(ship, 1, 2, "s".into());
     });
     error_test!(error_window, "ERR_WINDOW", {
         let mut world = world();
@@ -1059,7 +1080,7 @@ mod tests {
         world.depart(ship, 1, vec![0; 32], [U128(0), U128(0), U128(0)]);
         testing_env!(context("alice.testnet", 30));
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            world.arrive(ship, 2, "wrong-salt".into())
+            world.arrive(ship, 1, 2, "wrong-salt".into())
         }));
         assert!(result.is_err());
     }
@@ -1085,6 +1106,38 @@ mod tests {
         world.register_player();
         world.commit_ambush(2, ambush_commit(1, 2, "bob", "bob.testnet"), U128(10));
         assert_eq!(world.ambushes.len(), 2);
+    }
+    #[test]
+    fn destination_commit_does_not_bind_departure_route() {
+        let mut world = world();
+        testing_env!(context("alice.testnet", 2));
+        let ship = world.build_ship("sloop".into());
+        world.depart(
+            ship,
+            1,
+            env::sha256(format!("{}:{}:{}", 2, "salt", ship).as_bytes()),
+            [U128(0), U128(0), U128(0)],
+        );
+        testing_env!(context("alice.testnet", 30));
+        world.arrive(ship, 1, 2, "salt".into());
+        assert_eq!(world.get_ship(ship).unwrap().route_id, None);
+    }
+    #[test]
+    fn arrival_route_must_match_hidden_origin_and_destination() {
+        let mut world = world();
+        testing_env!(context("alice.testnet", 2));
+        let ship = world.build_ship("sloop".into());
+        world.depart(
+            ship,
+            1,
+            env::sha256(format!("2:salt:{}", ship).as_bytes()),
+            [U128(0), U128(0), U128(0)],
+        );
+        testing_env!(context("alice.testnet", 30));
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            world.arrive(ship, 2, 2, "salt".into())
+        }));
+        assert!(result.is_err());
     }
     #[test]
     fn standards_and_spoilage_are_live() {
