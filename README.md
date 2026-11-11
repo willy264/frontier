@@ -21,13 +21,13 @@ The scripted economy simulator remains available with `pnpm sim`; its results ar
 ## Testnet deployment
 
 - Root: `frontier-uiriamuzu.testnet`
-- World: `world.frontier-uiriamuzu.testnet`
-- Explorer: https://testnet.nearblocks.io/address/world.frontier-uiriamuzu.testnet
+- World: `world2.frontier-uiriamuzu.testnet`
+- Explorer: https://testnet.nearblocks.io/address/world2.frontier-uiriamuzu.testnet
 - Deployment and initialization evidence: `results/deploy-testnet.json`
-- Latest deploy-only transaction: `8fTNboMxWxTWB9YbfH1V8Qjc6j5UxTenzocwHncyYZZz`
-- Latest WASM SHA-256: `02add099b1446b7e2b40ec654b6c00f991f5b4006d9e1d3e00a41e56a56ee8c4`
-- Full round evidence: `results/round-2026-11-10T08-11-25-715Z.json`
-- Latest live round evidence: `results/round-2026-11-10T15-52-32-625Z.json`
+- Deployment transaction: `56ZpVEHwzgJhGqHqWnozTeNJY46qPMpVTg9SA5BuU2mK`
+- Initialization transaction: `DubyeCFH9quTVtdegSWoGLQpedjdHRJWAhpXEUFW1G8H`
+- Latest WASM SHA-256: `0f39fbb76eed618d9984eff5ca016ecc13a2faa6071669fc06964a28a51bdf47`
+- Latest live round evidence: `results/round-2026-11-11T06-51-48-317Z.json`
 - Live URL: not published yet. After authorization, deploy the Vercel project and replace this line with its URL.
 
 The deploy command expects the root account credential in the user-level NEAR credential directory and only targets testnet:
@@ -41,7 +41,7 @@ pnpm demo:round
 
 1. Create a Vercel project from this repository with root directory set to the repository root.
 2. Use `pnpm install --frozen-lockfile` as the install command and `pnpm exec next build apps/game --webpack` as the build command.
-3. Add `NEXT_PUBLIC_FRONTIER_WORLD_ACCOUNT=world.frontier-uiriamuzu.testnet` and `NEXT_PUBLIC_FRONTIER_RPC_URL=https://rpc.testnet.fastnear.com`.
+3. Add `NEXT_PUBLIC_FRONTIER_WORLD_ACCOUNT=world2.frontier-uiriamuzu.testnet` and `NEXT_PUBLIC_FRONTIER_RPC_URL=https://rpc.testnet.fastnear.com`.
 4. Deploy, open the generated URL, connect a testnet wallet, register, buy cargo, build a sloop, and use the hidden departure and ambush panels.
 5. Replace the Live URL line above and `demo_url` in `submission/submission.json` after the deployment is publicly available.
 
@@ -73,7 +73,7 @@ Next.js 16, React 19, TypeScript, Vitest, NEAR Connect, near-api-js, near-sdk, c
 
 ## AI/tools disclosure
 
-Codex assisted with implementation, test authoring, debugging, and documentation. Practice rivals and the contract NPC faucet are deterministic rule-based code; no AI agent controls gameplay or NPC decisions.
+Codex assisted with implementation, test authoring, debugging, and documentation. The guided tutorial is a deterministic local walkthrough, the live p1-p4 demo is scripted, and the contract NPC faucet is deterministic; no AI agent controls gameplay or NPC decisions.
 
 ## Related projects
 

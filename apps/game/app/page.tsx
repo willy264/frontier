@@ -5,7 +5,7 @@ import { Account, JsonRpcProvider, KeyPair, KeyPairSigner, type KeyPairString } 
 import type { NearConnector } from "@hot-labs/near-connect";
 import { Economy, type Economy as EconomySnapshot } from "./components";
 
-const WORLD = process.env.NEXT_PUBLIC_FRONTIER_WORLD_ACCOUNT ?? "world.frontier-uiriamuzu.testnet";
+const WORLD = process.env.NEXT_PUBLIC_FRONTIER_WORLD_ACCOUNT ?? "world2.frontier-uiriamuzu.testnet";
 const RPC = process.env.NEXT_PUBLIC_FRONTIER_RPC_URL ?? "https://rpc.testnet.fastnear.com";
 const GAME_METHODS = ["register_player", "buy", "sell", "build_ship", "depart", "arrive", "commit_ambush", "reveal_ambush", "offer_escort", "hire_escort", "set_fee", "set_port_sale_price", "buy_port"];
 const provider = new JsonRpcProvider({ url: RPC });
@@ -114,7 +114,7 @@ export default function Home() {
   }
   async function arrive(record: SecretRecord) { if (await gameCall("arrive", { ship_id: record.shipId, route_id: record.routeId, destination: record.destination, salt: record.salt }, `Ship ${record.shipId} arrived at ${islands.find((item) => item.id === record.destination)?.name}.`)) { const next = secrets.filter((item) => item.id !== record.id); setSecrets(next); saveSecrets(next); } }
   function startPractice() {
-    if (practiceRunning) return; setPracticeRunning(true); const steps = ["SCRIPTED p1 buys Hashpower on Bitcoin Isle.", "SCRIPTED p2 sails a sealed convoy toward Base Harbor.", "SCRIPTED p3 commits a route ambush with a deterministic salt.", "SCRIPTED p3 reveals inside the ambush window.", "SCRIPTED p2 reaches the route: ambush result is now visible."]; steps.forEach((step, index) => setTimeout(() => { addFeed(step); if (index === steps.length - 1) { setPracticeRunning(false); setEvent("Practice round complete. Connect a wallet to play the live loop."); } }, index * 30000)); addFeed("Scripted practice started; the next ambush resolves in about 2 minutes.");
+    if (practiceRunning) return; setPracticeRunning(true); const steps = ["Tutorial: buy Hashpower at Bitcoin Isle.", "Tutorial: seal a destination before departure.", "Tutorial: commit an ambush with a browser salt.", "Tutorial: reveal the ambush inside its window.", "Tutorial: arrive, resolve the result feed, and sell."]; steps.forEach((step, index) => setTimeout(() => { addFeed(step); if (index === steps.length - 1) { setPracticeRunning(false); setEvent("Guided tutorial complete. Connect a wallet to play the live loop."); } }, index * 30000)); addFeed("Guided tutorial started; this local walkthrough does not move rival accounts.");
   }
 
   return <main className="shell">
