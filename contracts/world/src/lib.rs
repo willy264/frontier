@@ -276,6 +276,12 @@ impl World {
     pub fn get_ship(&self, ship_id: u64) -> Option<Ship> {
         self.ships.get(&ship_id)
     }
+    pub fn ships_for_owner(&self, account_id: AccountId) -> Vec<(u64, Ship)> {
+        self.ships
+            .iter()
+            .filter(|(_, ship)| ship.owner_id == account_id)
+            .collect()
+    }
     pub fn get_escort(&self, offer_id: u64) -> Option<EscortOffer> {
         self.escorts.get(&offer_id)
     }
