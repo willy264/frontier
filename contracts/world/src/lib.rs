@@ -16,6 +16,8 @@ enum StorageKey {
     Ships,
     Routes,
     Ambushes,
+    AmbushRoutes,
+    AmbushRoute(u64),
     Escorts,
     PlayerIds,
 }
@@ -163,6 +165,7 @@ pub struct World {
     routes: UnorderedMap<u64, Route>,
     ships: UnorderedMap<u64, Ship>,
     ambushes: UnorderedMap<Vec<u8>, Ambush>,
+    ambush_routes: UnorderedMap<u64, UnorderedSet<Vec<u8>>>,
     escorts: UnorderedMap<u64, EscortOffer>,
     next_ship: u64,
     epoch: u64,
@@ -184,6 +187,7 @@ impl World {
             routes: UnorderedMap::new(StorageKey::Routes),
             ships: UnorderedMap::new(StorageKey::Ships),
             ambushes: UnorderedMap::new(StorageKey::Ambushes),
+            ambush_routes: UnorderedMap::new(StorageKey::AmbushRoutes),
             escorts: UnorderedMap::new(StorageKey::Escorts),
             next_ship: 1,
             epoch: 0,
@@ -436,19 +440,20 @@ impl World {
             "ERR_DESTINATION_REVEAL"
         );
         let window = ship.departed_at;
-        let ambush = self
-            .ambushes
-            .keys()
-            .filter_map(|key| self.ambushes.get(&key).map(|ambush| (key, ambush)))
-            .find(|candidate| {
-                candidate.1.route_id == Some(route_id)
-                    && candidate.1.window_start <= window
-                    && window <= candidate.1.window_start + 20
-                    && candidate.1.revealed
-            });
+        let ambush = self.ambush_routes.get(&route_id).and_then(|index| {
+            index.iter().find_map(|key| {
+                self.ambushes.get(&key).and_then(|candidate| {
+                    (candidate.window_start <= window
+                        && window <= candidate.window_start + 20
+                        && candidate.revealed)
+                        .then_some((key, candidate))
+                })
+            })
+        });
         if let Some((key, ambush)) = ambush {
             let caught = self.raider_power(&ambush.raider) > ship.defence;
             self.ambushes.remove(&key);
+            self.remove_ambush_index(route_id, &key);
             self.decrement_active_commit(&ambush.raider);
             if caught {
                 let total = ship.cargo.iter().sum::<u128>();
@@ -535,6 +540,12 @@ impl World {
         ambush.route_id = Some(route_id);
         ambush.revealed = true;
         self.ambushes.insert(&commit_id, &ambush);
+        let mut index = self
+            .ambush_routes
+            .get(&route_id)
+            .unwrap_or_else(|| UnorderedSet::new(StorageKey::AmbushRoute(route_id)));
+        index.insert(&commit_id);
+        self.ambush_routes.insert(&route_id, &index);
         self.emit("ambush_revealed", &format!("{:?}", commit_id));
     }
 
@@ -782,6 +793,12 @@ impl World {
         player.active_commits = player.active_commits.saturating_sub(1);
         self.players.insert(account, &player);
     }
+    fn remove_ambush_index(&mut self, route_id: u64, key: &Vec<u8>) {
+        if let Some(mut index) = self.ambush_routes.get(&route_id) {
+            index.remove(key);
+            self.ambush_routes.insert(&route_id, &index);
+        }
+    }
     fn expire_ambushes(&mut self) {
         let now = env::block_height();
         let expired: Vec<Vec<u8>> = self
@@ -796,6 +813,9 @@ impl World {
         for key in expired {
             if let Some(ambush) = self.ambushes.remove(&key) {
                 self.decrement_active_commit(&ambush.raider);
+                if let Some(route_id) = ambush.route_id {
+                    self.remove_ambush_index(route_id, &key);
+                }
                 if ambush.revealed {
                     self.credit_cred(&ambush.raider, ambush.stake);
                 } else {
