@@ -1398,6 +1398,31 @@ mod tests {
         assert!(after < before);
         assert!(world.economy_dashboard().spoilage.0 > 0);
     }
+    #[test]
+    fn conservation_tracks_trade_and_lazy_spoilage_sink() {
+        let mut world = world();
+        let before = world.get_port(1).unwrap().reserves[0]
+            + world
+                .get_player("alice.testnet".parse().unwrap())
+                .unwrap()
+                .goods[0];
+        world.buy(1, Good::Hashpower, U128(100), U128(0));
+        let after_trade = world.get_port(1).unwrap().reserves[0]
+            + world
+                .get_player("alice.testnet".parse().unwrap())
+                .unwrap()
+                .goods[0];
+        assert_eq!(before, after_trade);
+        testing_env!(context("alice.testnet", 101));
+        world.tick_epoch();
+        world.build_ship("sloop".into());
+        let after_epoch = world.get_port(1).unwrap().reserves[0]
+            + world
+                .get_player("alice.testnet".parse().unwrap())
+                .unwrap()
+                .goods[0];
+        assert_eq!(after_trade - after_epoch, world.spoilage);
+    }
 
     #[test]
     fn nft_transfer_keeps_treasury_with_token() {
