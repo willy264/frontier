@@ -6,6 +6,7 @@ use near_sdk::{env, near, require, AccountId, BorshStorageKey, PanicOnDefault};
 const STARTER_CRED: u128 = 1_000;
 const NPC_CAP: u128 = 160;
 const MIN_FEE_BPS: u128 = 30;
+const AMBUSH_BURN_BPS: u128 = 1_000;
 
 #[derive(BorshSerialize, BorshStorageKey)]
 enum StorageKey {
@@ -426,18 +427,39 @@ impl World {
         let ambush = self
             .ambushes
             .keys()
-            .filter_map(|candidate| self.ambushes.get(&candidate))
+            .filter_map(|key| self.ambushes.get(&key).map(|ambush| (key, ambush)))
             .find(|candidate| {
-                candidate.route_id == Some(route_id)
-                    && candidate.window_start <= window
-                    && candidate.revealed
+                candidate.1.route_id == Some(route_id)
+                    && candidate.1.window_start <= window
+                    && window <= candidate.1.window_start + 20
+                    && candidate.1.revealed
             });
-        if let Some(ambush) = ambush {
-            if self.raider_power(&ambush.raider) > ship.defence {
-                let loss = ship.cargo.iter().sum::<u128>() / 2;
-                self.sinks += loss;
-                ship.cargo[0] = ship.cargo[0].saturating_sub(loss.min(ship.cargo[0]));
+        if let Some((key, ambush)) = ambush {
+            let caught = self.raider_power(&ambush.raider) > ship.defence;
+            self.ambushes.remove(&key);
+            self.decrement_active_commit(&ambush.raider);
+            if caught {
+                let total = ship.cargo.iter().sum::<u128>();
+                let loss = total / 2;
+                let mut remaining_loss = loss;
+                let mut burned = 0u128;
+                let cargo_slots = ship.cargo.len();
+                for (idx, cargo) in ship.cargo.iter_mut().enumerate() {
+                    let slot_loss = if idx == cargo_slots - 1 {
+                        remaining_loss
+                    } else {
+                        loss.saturating_mul(*cargo) / total.max(1)
+                    }
+                    .min(*cargo);
+                    remaining_loss = remaining_loss.saturating_sub(slot_loss);
+                    *cargo -= slot_loss;
+                    let payout = slot_loss * (10_000 - AMBUSH_BURN_BPS) / 10_000;
+                    burned += slot_loss - payout;
+                    self.credit_good(&ambush.raider, idx, payout);
+                }
+                self.sinks += burned;
             }
+            self.credit_cred(&ambush.raider, ambush.stake);
         }
         let player = self.player_or_panic(&caller);
         let mut updated = player;
@@ -560,6 +582,7 @@ impl World {
     }
 
     pub fn tick_epoch(&mut self) {
+        self.expire_ambushes();
         let upkeep = 5 * 2;
         let mut spoiled = 0u128;
         let ids: Vec<AccountId> = self.player_ids.iter().collect();
@@ -742,6 +765,34 @@ impl World {
             })
             .map(|ship| ship.defence)
             .sum()
+    }
+    fn decrement_active_commit(&mut self, account: &AccountId) {
+        let mut player = self.player_or_panic(account);
+        player.active_commits = player.active_commits.saturating_sub(1);
+        self.players.insert(account, &player);
+    }
+    fn expire_ambushes(&mut self) {
+        let now = env::block_height();
+        let expired: Vec<Vec<u8>> = self
+            .ambushes
+            .keys()
+            .filter(|key| {
+                self.ambushes
+                    .get(key)
+                    .is_some_and(|ambush| now > ambush.window_start + 20)
+            })
+            .collect();
+        for key in expired {
+            if let Some(ambush) = self.ambushes.remove(&key) {
+                self.decrement_active_commit(&ambush.raider);
+                if ambush.revealed {
+                    self.credit_cred(&ambush.raider, ambush.stake);
+                } else {
+                    self.cred_supply = self.cred_supply.saturating_sub(ambush.stake);
+                    self.sinks += ambush.stake;
+                }
+            }
+        }
     }
     fn port_id_from_token(&self, token: &str) -> u64 {
         token
@@ -1138,6 +1189,95 @@ mod tests {
             world.arrive(ship, 2, 2, "salt".into())
         }));
         assert!(result.is_err());
+    }
+    #[test]
+    fn ambush_catch_splits_cargo_pays_raider_and_consumes_commit() {
+        let mut world = world();
+        let alice: AccountId = "alice.testnet".parse().unwrap();
+        let bob: AccountId = "bob.testnet".parse().unwrap();
+        let mut alice_player = world.player_or_panic(&alice);
+        alice_player.goods = [10, 10, 10];
+        world.players.insert(&alice, &alice_player);
+        testing_env!(context("bob.testnet", 2));
+        world.register_player();
+        let _raider_ship = world.build_ship("galleon".into());
+        let commit = ambush_commit(1, 2, "raid", "bob.testnet");
+        world.commit_ambush(2, commit.clone(), U128(10));
+        world.reveal_ambush(commit.clone(), 1, "raid".into());
+        testing_env!(context("alice.testnet", 3));
+        let convoy = world.build_ship("sloop".into());
+        world.depart(
+            convoy,
+            1,
+            env::sha256(format!("2:dest:{}", convoy).as_bytes()),
+            [U128(10), U128(10), U128(10)],
+        );
+        testing_env!(context("alice.testnet", 20));
+        world.arrive(convoy, 1, 2, "dest".into());
+        let bob_after = world.player_or_panic(&bob);
+        let alice_after = world.player_or_panic(&alice);
+        assert_eq!(bob_after.goods, [4, 4, 4]);
+        assert_eq!(bob_after.cred, 650);
+        assert_eq!(alice_after.goods, [5, 5, 5]);
+        assert!(world.ambushes.get(&commit).is_none());
+        assert_eq!(bob_after.active_commits, 0);
+        assert_eq!(world.sinks, 3);
+    }
+    #[test]
+    fn unrevealed_ambush_expiry_slashes_stake_and_clears_counter() {
+        let mut world = world();
+        testing_env!(context("alice.testnet", 2));
+        let commit = ambush_commit(1, 2, "never", "alice.testnet");
+        world.commit_ambush(2, commit.clone(), U128(10));
+        assert_eq!(
+            world
+                .player_or_panic(&"alice.testnet".parse().unwrap())
+                .cred,
+            990
+        );
+        testing_env!(context("alice.testnet", 23));
+        world.tick_epoch();
+        assert!(world.ambushes.get(&commit).is_none());
+        assert_eq!(
+            world
+                .player_or_panic(&"alice.testnet".parse().unwrap())
+                .active_commits,
+            0
+        );
+        assert_eq!(
+            world
+                .player_or_panic(&"alice.testnet".parse().unwrap())
+                .cred,
+            990
+        );
+        assert!(world.sinks >= 20);
+    }
+    #[test]
+    fn ambush_after_reveal_window_does_not_catch() {
+        let mut world = world();
+        let alice: AccountId = "alice.testnet".parse().unwrap();
+        let bob: AccountId = "bob.testnet".parse().unwrap();
+        let mut alice_player = world.player_or_panic(&alice);
+        alice_player.goods = [10, 0, 0];
+        world.players.insert(&alice, &alice_player);
+        testing_env!(context("bob.testnet", 2));
+        world.register_player();
+        world.build_ship("galleon".into());
+        let commit = ambush_commit(1, 2, "raid", "bob.testnet");
+        world.commit_ambush(2, commit.clone(), U128(10));
+        world.reveal_ambush(commit, 1, "raid".into());
+        testing_env!(context("alice.testnet", 23));
+        let convoy = world.build_ship("sloop".into());
+        world.depart(
+            convoy,
+            1,
+            env::sha256(format!("2:dest:{}", convoy).as_bytes()),
+            [U128(10), U128(0), U128(0)],
+        );
+        testing_env!(context("alice.testnet", 40));
+        world.arrive(convoy, 1, 2, "dest".into());
+        assert_eq!(world.player_or_panic(&alice).goods, [10, 0, 0]);
+        assert_eq!(world.player_or_panic(&bob).goods, [0, 0, 0]);
     }
     #[test]
     fn standards_and_spoilage_are_live() {
