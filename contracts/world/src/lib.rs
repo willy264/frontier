@@ -520,6 +520,7 @@ impl World {
         if let Some(escort_id) = ship.escort_ship_id.take() {
             let mut escort = self.ship_or_panic(escort_id);
             escort.escorting_convoy_id = None;
+            escort.current_port = Some(destination);
             self.ships.insert(&escort_id, &escort);
             self.add_idle_defence(&escort.owner_id, escort.defence);
         }
@@ -1512,6 +1513,7 @@ mod tests {
         assert_eq!(world.get_ship(convoy).unwrap().escort_ship_id, None);
         assert_eq!(world.get_ship(escort).unwrap().escorting_convoy_id, None);
         assert_eq!(world.get_ship(escort).unwrap().origin_port, None);
+        assert_eq!(world.get_ship(escort).unwrap().current_port, Some(2));
         assert_eq!(world.get_ship(raider).unwrap().owner_id, carol);
         let _ = alice;
     }
