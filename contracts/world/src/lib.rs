@@ -174,7 +174,6 @@ pub struct World {
     next_ship: u64,
     epoch: u64,
     last_epoch_block: u64,
-    cred_supply: u128,
     npc_faucet: u128,
     sinks: u128,
     spoilage: u128,
@@ -197,7 +196,6 @@ impl World {
             next_ship: 1,
             epoch: 0,
             last_epoch_block: env::block_height(),
-            cred_supply: 0,
             npc_faucet: 0,
             sinks: 0,
             spoilage: 0,
@@ -214,7 +212,6 @@ impl World {
             },
         );
         this.player_ids.insert(&contract_account);
-        this.cred_supply = STARTER_CRED;
         let names = [
             "Bitcoin Isle",
             "Solana Reef",
@@ -265,7 +262,6 @@ impl World {
             },
         );
         self.player_ids.insert(&caller);
-        self.cred_supply += STARTER_CRED;
         self.emit("player_registered", &caller.to_string());
     }
 
@@ -292,7 +288,7 @@ impl World {
     }
     pub fn economy(&self) -> (U128, U128, U128, u64) {
         (
-            U128(self.cred_supply),
+            U128(self.computed_cred_supply()),
             U128(self.npc_faucet),
             U128(self.sinks),
             self.epoch,
@@ -301,7 +297,7 @@ impl World {
 
     pub fn economy_dashboard(&self) -> EconomySnapshot {
         EconomySnapshot {
-            cred_supply: U128(self.cred_supply),
+            cred_supply: U128(self.computed_cred_supply()),
             npc_faucet: U128(self.npc_faucet),
             sinks: U128(self.sinks),
             spoilage: U128(self.spoilage),
@@ -667,17 +663,10 @@ impl World {
             "ERR_EPOCH_TOO_EARLY"
         );
         self.expire_ambushes();
-        let upkeep = 5 * 2;
-        self.cred_supply = self.cred_supply.saturating_sub(upkeep);
-        self.sinks += upkeep;
-        self.npc_faucet = NPC_CAP;
-        self.cred_supply += NPC_CAP;
         self.epoch += 1;
         self.last_epoch_block = env::block_height();
-        self.emit(
-            "epoch",
-            &format!("{}:{}:{}:lazy", self.epoch, NPC_CAP, upkeep),
-        );
+        self.npc_faucet = self.run_npc_demand();
+        self.emit("epoch", &format!("{}:{}:lazy", self.epoch, self.npc_faucet));
     }
 
     #[payable]
@@ -841,6 +830,70 @@ impl World {
     fn raider_power(&self, raider: &AccountId) -> u128 {
         self.idle_defence.get(raider).unwrap_or(0)
     }
+    fn computed_cred_supply(&self) -> u128 {
+        let players = self
+            .players
+            .values()
+            .map(|player| player.cred)
+            .sum::<u128>();
+        let ports = self
+            .ports
+            .values()
+            .map(|port| port.cred_reserve + port.treasury)
+            .sum::<u128>();
+        let stakes = self
+            .ambushes
+            .values()
+            .map(|ambush| ambush.stake)
+            .sum::<u128>();
+        players + ports + stakes
+    }
+    fn npc_demand(&self, port_id: u64) -> (usize, u128) {
+        let good = match port_id {
+            1 | 5 => 0,
+            2 => 1,
+            _ => 2,
+        };
+        let price = match good {
+            0 => 20,
+            1 => 30,
+            _ => 40,
+        };
+        (good, price)
+    }
+    fn run_npc_demand(&mut self) -> u128 {
+        let mut remaining = NPC_CAP;
+        let mut paid = 0;
+        let players: Vec<AccountId> = self.player_ids.iter().collect();
+        for port_id in 1..=5 {
+            if remaining == 0 {
+                break;
+            }
+            let (good, reference_price) = self.npc_demand(port_id);
+            let mut port = self.port_or_panic(port_id);
+            for account in &players {
+                if remaining == 0 {
+                    break;
+                }
+                let mut player = self.player_or_panic(account);
+                let affordable = (remaining / reference_price)
+                    .min(port.cred_reserve / reference_price)
+                    .min(player.goods[good]);
+                if affordable == 0 {
+                    continue;
+                }
+                let payout = affordable * reference_price;
+                player.goods[good] -= affordable;
+                player.cred += payout;
+                port.cred_reserve -= payout;
+                self.players.insert(account, &player);
+                remaining -= payout;
+                paid += payout;
+            }
+            self.ports.insert(&port_id, &port);
+        }
+        paid
+    }
     fn add_idle_defence(&mut self, owner: &AccountId, defence: u128) {
         let total = self.idle_defence.get(owner).unwrap_or(0) + defence;
         self.idle_defence.insert(owner, &total);
@@ -884,7 +937,6 @@ impl World {
                 if ambush.revealed {
                     self.credit_cred(&ambush.raider, ambush.stake);
                 } else {
-                    self.cred_supply = self.cred_supply.saturating_sub(ambush.stake);
                     self.sinks += ambush.stake;
                 }
             }
@@ -1223,11 +1275,28 @@ mod tests {
     });
 
     #[test]
-    fn registers_and_caps_faucet() {
+    fn empty_epoch_has_no_npc_faucet() {
         let mut world = world();
         testing_env!(context("alice.testnet", 101));
         world.tick_epoch();
-        assert_eq!(world.economy().1 .0, NPC_CAP);
+        assert_eq!(world.economy().1 .0, 0);
+    }
+
+    #[test]
+    fn npc_demand_buys_goods_and_credits_the_seller() {
+        let mut world = world();
+        let bob: AccountId = "bob.testnet".parse().unwrap();
+        testing_env!(context("bob.testnet", 2));
+        world.register_player();
+        let mut player = world.player_or_panic(&bob);
+        player.goods = [8, 0, 0];
+        world.players.insert(&bob, &player);
+        testing_env!(context("alice.testnet", 101));
+        world.tick_epoch();
+        let after = world.player_or_panic(&bob);
+        assert_eq!(after.goods[0], 0);
+        assert_eq!(after.cred, 1_160);
+        assert_eq!(world.economy_dashboard().npc_faucet.0, 160);
     }
     #[test]
     fn rejects_late_reveal() {
@@ -1536,7 +1605,8 @@ mod tests {
                 .get_player("alice.testnet".parse().unwrap())
                 .unwrap()
                 .goods[0];
-        assert_eq!(after_trade - after_epoch, world.spoilage);
+        let npc_goods_sink = world.economy_dashboard().npc_faucet.0 / 20;
+        assert_eq!(after_trade - after_epoch, world.spoilage + npc_goods_sink);
     }
 
     #[test]
