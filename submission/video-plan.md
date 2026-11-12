@@ -18,4 +18,4 @@ Watch: https://frontier-willy264s-projects.vercel.app/demo/index.html
 
 Full narration: `voiceover-script.md`. Public transaction evidence: `../results/video-demo.json`. Reproduction and disclosures: `../docs/VIDEO.md`.
 
-Waiting periods are shortened; some frames are held to fit narration. The rival is scripted, the recording wallet is automated, and the speech is synthetic. The video does not demonstrate retail wallet-provider login, profitable arbitrage, escrowed escort protection, port sale, Intents settlement, or season rollover. No mainnet was used.
+Waiting periods are shortened; some frames are held to fit narration. The rival is scripted, the recording wallet is automated, and the speech is synthetic. The video does not demonstrate retail wallet-provider login, profitable arbitrage, escort protection, port sale, storms, separate port maintenance, port sub-accounts, Intents settlement, or season rollover. Goods decay/spoilage and player upkeep are live; the other listed systems are future work. No mainnet was used.

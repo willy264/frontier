@@ -53,11 +53,11 @@ pnpm demo:round
 
 ## Why it is on-chain
 
-- Port ownership and its treasury move atomically with a port NFT record; the contract exposes NEP-171 core views.
+- Port ownership and its treasury move atomically with a port NFT record; the contract exposes NEP-171 core views. Ports are contract NFTs in this MVP; port sub-accounts are future work.
 - Ships and goods expose the NEP-245 minimum views and transfer call.
 - Convoy destinations and ambushes use commit-reveal timing.
 - A function-call key is restricted to game methods and cannot move a player's funds.
-- Market prices and the economy change from player activity. Epoch advances enable upkeep and goods spoilage, applied lazily on each player's next action; raids also burn part of the lost cargo.
+- Market prices and the economy change from player activity. Epoch advances enable player upkeep and goods spoilage, applied lazily on each player's next action; NPC demand, raids, and decay are visible flows.
 
 ## Project layout
 
@@ -71,6 +71,8 @@ pnpm demo:round
 
 CRED is game currency and is not redeemable. The world contract is a focused MVP: NEAR Intents settlement and a production-grade season rollover are future work. NEAR Intents has no testnet path in this repository. No mainnet transaction is performed.
 
+This MVP does not yet implement storms, separate port maintenance, production season rollover and carry-over, port sub-accounts, or the NEAR Intents cross-chain entry and payout pass. Goods decay/spoilage and player upkeep are implemented in the epoch flow; the other systems are future work.
+
 The browser never receives a seed phrase. NEAR Connect adds a function-call key for the deployed world contract; wallet support and the user’s wallet approval are required. The key is held in session storage for the current browser session.
 
 ## Built with
@@ -79,7 +81,7 @@ Next.js 16, React 19, TypeScript, Vitest, NEAR Connect, near-api-js, near-sdk, c
 
 ## AI/tools disclosure
 
-Codex assisted with implementation, test authoring, debugging, and documentation. The guided tutorial is a deterministic local walkthrough, the live p1-p4 demo is scripted, and the contract NPC faucet is deterministic; no AI agent controls gameplay or NPC decisions.
+Codex assisted with implementation, test authoring, debugging, and documentation. The guided tutorial is a deterministic local walkthrough, the live p1-p4 demo is scripted, and the contract NPC buyer follows deterministic island demand; no AI agent controls gameplay or NPC decisions.
 
 The demo was recorded with Playwright and Edge, edited with FFmpeg, and narrated locally using Windows System.Speech (Microsoft Hazel Desktop). The voice is synthetic. No external voice account or voice clone was used.
 
