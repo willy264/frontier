@@ -1,6 +1,6 @@
 # FRONTIER Task Ledger
 
-Updated: 2026-11-11 23:32 UTC (2026-11-12 00:32 WAT)
+Updated: 2026-11-12 08:35 UTC (2026-11-12 09:35 WAT)
 
 Deadline: 2026-11-14 23:59 UTC. Approximate time remaining at update: 72.4 hours.
 
@@ -11,12 +11,12 @@ Deadline: 2026-11-14 23:59 UTC. Approximate time remaining at update: 72.4 hours
 | Read brief and common rules | done | Brief, research gate, and project constraints are documented. |
 | Economy simulation | done | 100 players x 200 epochs; bounded supply and faucet tests pass. |
 | World contract | done for MVP | Serializer annotations, AMM, epochs, escorts, commit-reveal, port/ship transfers, events, and fee-underflow fix implemented. WSL `cargo near build` passes. |
-| Contract unit/proptest suite | partial coverage | 48 tests pass in CI. A model-level proptest and focused conservation test exist; the requested random sequences of actual contract actions including raids and epochs are not covered by that proptest. |
+| Contract unit/proptest suite | partial coverage | 52 Rust tests pass locally and in CI, including error codes, ambush timing, escort, NPC demand, conservation model, indexed raider power, and NEP events. The model proptest is not a full random sequence of actual contract actions. |
 | Sandbox acceptance round | done | WSL ignored near-workspaces round passes, including restricted-key rejection. |
 | Frontend map and loop | done for MVP | Next.js map/economy reads testnet state and submits contract calls through a session-only game key. Webpack build passes. |
 | NEAR Connect login/key | done for MVP | Testnet login provisions a key restricted to FRONTIER methods; no browser seed credentials. |
-| Testnet deployment | done | Fresh `world.frontier-final.testnet` deployed and initialized; deploy tx `AUWBUMuuzLs9KuguHaCmAjN9pK8gXJjFqEgw8XkvAouu`, init tx `ChPnbDm39eanmyiNdkZw4Ly7EL8ho2EHUrLiwshyX7n`, and checksum `f7c8cef1...` are in `results/deploy-testnet.json`. |
-| RPC scripts and live evidence | done | `pnpm demo:round` passed and wrote the committed full round JSON with explorer links. |
+| Testnet deployment | done | Fresh `world3.world3.testnet` deployed and initialized; deploy tx `7yBzUscXD4TtziMY9ug81LEN1A64YA1fdkXGmUJZXDS5`, init tx `4RvJMuDzWCcHVDo9MHm5TJ3oS6tAPRC9dfrSz2aNMoNU`, checksum `4bffab9d1cdf21c217ab291eef8c09ee42b3afaf1b9b1904e6ae6f4ecee43b7b`. |
+| RPC scripts and live evidence | done | `pnpm demo:round` passed on world3 and wrote `results/round-2026-11-12T08-16-16-506Z.json`, including a real escort-blocked raid and explorer links. |
 | CI | verified on gameplay fixes | App and contract jobs green on 09d356f (run 43118092463). Check the subsequent media commit before updating hackathon-submission. |
 | Fresh clone | done | New local clone passed frozen install, tests, typecheck, and webpack build. |
 | README/submission/video docs | done as drafts | Video is produced and linked. Human reviews it, posts on X, supplies private submission details and consent, then approves the exact form/API payload. |
@@ -24,5 +24,6 @@ Deadline: 2026-11-14 23:59 UTC. Approximate time remaining at update: 72.4 hours
 | NEP-171/245 and spoilage | done | Core NFT views, treasury-preserving transfer, multi-token ship/goods views/transfers, standard metadata, and live `tick_epoch` spoilage are tested and deployed. |
 | Scripted practice mode | done for UI demo | UI is now a clearly labeled guided tutorial; real p1-p4 testnet actions are in `results/round-2026-11-11T14-19-28-579Z.json`. |
 | Vercel deployment | done | Project `frontier` is live at `https://frontier-willy264s-projects.vercel.app`; README and submission JSON are updated. |
-| Final verification | scoped checks pass | Prior sandbox, 48 contract tests, 8 JavaScript tests, TypeScript, and Vercel production build pass. A fresh-account UI loop was recorded with an automation wallet; normal retail wallet login remains unverified. |
+| Final verification | scoped checks pass | 52 Rust tests, 18 frontend tests, TypeScript, Next webpack build, cargo-near build, and live world3 round pass. Normal retail wallet login remains unverified. |
 | CI hardening and final redeploy | done | CI installs cargo-near without the optional Ledger/libudev dependency; audits and non-breaking upgrade decisions are documented in `docs/THREAT_MODEL.md`; the final world responds to economy, NFT, and MT views. |
+| Final tag | done | `hackathon-submission` points to `cda1347` and is pushed to GitHub. |

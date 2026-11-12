@@ -1,6 +1,6 @@
 # FRONTIER handoff
 
-Updated 2026-11-11 23:32 UTC. Deadline: 2026-11-14 23:59 UTC, approximately 72.4 hours remaining.
+Updated 2026-11-12 08:35 UTC. Deadline: 2026-11-14 23:59 UTC.
 
 ## Completed in the narrated-video task
 
@@ -14,11 +14,11 @@ Updated 2026-11-11 23:32 UTC. Deadline: 2026-11-14 23:59 UTC, approximately 72.4
 
 ## Previously completed and retained
 
-World `world.frontier-final.testnet` is deployed. Deployment evidence is in `results/deploy-testnet.json`; the earlier scripted round is `results/round-2026-11-11T14-19-28-579Z.json`. Existing sandbox, 48 Rust tests, cargo-near build, and frontend build checks passed. The app includes trading, browser commit-reveal secrets/backups, fleet actions, contract events, port controls, economy totals, and a guided tutorial. The current deployment does not require a contract upgrade for the video task.
+World `world3.world3.testnet` is deployed and initialized. Deployment evidence is in `results/deploy-testnet.json`; the final scripted round is `results/round-2026-11-12T08-16-16-506Z.json`. The app includes trading, browser commit-reveal secrets/backups, fleet actions, live contract ship positions, escort status, contract events, port controls, economy totals, and a guided tutorial.
 
-## In progress / exact next action
+## Final state / exact next action
 
-The media assets and production verification are complete. Commit the reviewed public files, push main, wait for its GitHub Actions run, and move/push `hackathon-submission` to that commit. If resuming after those steps, inspect `git log -3 --oneline`, the remote tag, and the latest CI run rather than making another duplicate media commit. No render, browser, or development server needs to stay running.
+Concept-alignment work is complete. `main` is at `cda1347`, GitHub Actions run `43181699742` is green, and remote tag `hackathon-submission` points to `cda1347`. No render, browser, development server, or watcher needs to stay running. On resume, inspect `git log -3 --oneline`, the remote tag, and the final round evidence before making changes.
 
 ## Remaining human actions
 
