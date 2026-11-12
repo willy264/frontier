@@ -684,8 +684,10 @@ impl World {
             port.owner_id == env::predecessor_account_id(),
             "ERR_NOT_PORT_OWNER"
         );
+        let old_owner = port.owner_id.clone();
         port.owner_id = receiver_id;
         self.ports.insert(&id, &port);
+        self.emit_nft_transfer(&old_owner, &port.owner_id, &token_id);
         self.emit("port_transferred", &token_id);
     }
     pub fn nft_token(&self, token_id: String) -> Option<NftToken> {
@@ -764,6 +766,7 @@ impl World {
             ship.owner_id = receiver_id.clone();
             self.add_idle_defence(&receiver_id, ship.defence);
             self.ships.insert(&id, &ship);
+            self.emit_mt_transfer(&caller, &receiver_id, &token_id, amount.0);
         } else if let Some(idx) = self.good_token_index(&token_id) {
             let mut sender = self.player_or_panic(&caller);
             require!(sender.goods[idx] >= amount.0, "ERR_MT_TRANSFER");
@@ -772,6 +775,7 @@ impl World {
             let mut receiver = self.player_or_panic(&receiver_id);
             receiver.goods[idx] += amount.0;
             self.players.insert(&receiver_id, &receiver);
+            self.emit_mt_transfer(&caller, &receiver_id, &token_id, amount.0);
         } else {
             env::panic_str("ERR_MT_TOKEN")
         }
@@ -1014,6 +1018,24 @@ impl World {
     }
     fn emit(&self, event: &str, value: &str) {
         env::log_str(&format!("EVENT_JSON:{{\"standard\":\"frontier\",\"version\":\"1.0.0\",\"event\":\"{}\",\"data\":[{{\"value\":\"{}\"}}]}}", event, value));
+    }
+    fn emit_nft_transfer(&self, old_owner: &AccountId, new_owner: &AccountId, token_id: &str) {
+        env::log_str(&format!(
+            "EVENT_JSON:{{\"standard\":\"nep171\",\"version\":\"1.0.0\",\"event\":\"nft_transfer\",\"data\":[{{\"authorized_id\":null,\"old_owner_id\":\"{}\",\"new_owner_id\":\"{}\",\"token_ids\":[\"{}\"],\"memo\":null}}]}}",
+            old_owner, new_owner, token_id
+        ));
+    }
+    fn emit_mt_transfer(
+        &self,
+        old_owner: &AccountId,
+        new_owner: &AccountId,
+        token_id: &str,
+        amount: u128,
+    ) {
+        env::log_str(&format!(
+            "EVENT_JSON:{{\"standard\":\"nep245\",\"version\":\"1.0.0\",\"event\":\"mt_transfer\",\"data\":[{{\"old_owner_id\":\"{}\",\"new_owner_id\":\"{}\",\"token_ids\":[\"{}\"],\"amounts\":[\"{}\"],\"memo\":null}}]}}",
+            old_owner, new_owner, token_id, amount
+        ));
     }
 }
 
@@ -1637,6 +1659,37 @@ mod tests {
         let port = world.get_port(1).unwrap();
         assert_eq!(port.owner_id, "bob.testnet".parse::<AccountId>().unwrap());
         assert_eq!(port.treasury, before);
+    }
+
+    #[test]
+    fn standard_transfer_events_use_nep171_and_nep245() {
+        let mut world = world();
+        testing_env!(context_with_deposit("alice.testnet", 1, 1));
+        world.nft_transfer("bob.testnet".parse().unwrap(), "port-1".into(), None, None);
+        let nft_logs = near_sdk::test_utils::get_logs();
+        assert!(nft_logs
+            .iter()
+            .any(|log| log.contains("\"standard\":\"nep171\"")
+                && log.contains("\"event\":\"nft_transfer\"")));
+
+        let ship = {
+            testing_env!(context("bob.testnet", 2));
+            world.register_player();
+            world.build_ship("sloop".into())
+        };
+        testing_env!(context_with_deposit("bob.testnet", 2, 1));
+        world.mt_transfer(
+            "carol.testnet".parse().unwrap(),
+            format!("ship:{}", ship),
+            U128(1),
+            None,
+            None,
+        );
+        let mt_logs = near_sdk::test_utils::get_logs();
+        assert!(mt_logs
+            .iter()
+            .any(|log| log.contains("\"standard\":\"nep245\"")
+                && log.contains("\"event\":\"mt_transfer\"")));
     }
     proptest! {
         #[test]
