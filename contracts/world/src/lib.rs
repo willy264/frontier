@@ -136,6 +136,7 @@ pub struct Ship {
     pub destination_commit: Option<Vec<u8>>,
     pub escort_ship_id: Option<u64>,
     pub escorting_convoy_id: Option<u64>,
+    pub current_port: Option<u64>,
 }
 
 #[near(serializers = [json, borsh])]
@@ -330,6 +331,7 @@ impl World {
                 destination_commit: None,
                 escort_ship_id: None,
                 escorting_convoy_id: None,
+                current_port: None,
             },
         );
         self.add_idle_defence(&caller, defence);
@@ -411,6 +413,10 @@ impl World {
             "ERR_IN_TRANSIT"
         );
         require!(ship.escorting_convoy_id.is_none(), "ERR_ESCORT_LOCKED");
+        require!(
+            ship.current_port.is_none() || ship.current_port == Some(origin_port),
+            "ERR_ROUTE_ORIGIN"
+        );
         let player = self.player_or_panic(&caller);
         require!(
             cargo.iter().map(|x| x.0).sum::<u128>() <= player.goods.iter().sum(),
@@ -429,6 +435,7 @@ impl World {
         ship.departed_at = env::block_height();
         ship.arrives_at = 0;
         ship.destination_commit = Some(destination_commit);
+        ship.current_port = None;
         self.ships.insert(&ship_id, &ship);
         self.emit("departed", &ship_id.to_string());
     }
@@ -509,6 +516,7 @@ impl World {
         ship.origin_port = None;
         ship.destination_commit = None;
         ship.cargo = [0; 3];
+        ship.current_port = Some(destination);
         if let Some(escort_id) = ship.escort_ship_id.take() {
             let mut escort = self.ship_or_panic(escort_id);
             escort.escorting_convoy_id = None;
@@ -1374,6 +1382,7 @@ mod tests {
         testing_env!(context("alice.testnet", 30));
         world.arrive(ship, 1, 2, "index".into());
         assert_eq!(world.raider_power(&alice), 1);
+        assert_eq!(world.get_ship(ship).unwrap().current_port, Some(2));
     }
     #[test]
     fn distinct_ambush_commits_can_share_a_window() {
