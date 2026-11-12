@@ -19,6 +19,7 @@ enum StorageKey {
     AmbushRoutes,
     AmbushRoute(u64),
     Escorts,
+    IdleDefence,
     PlayerIds,
 }
 
@@ -133,6 +134,8 @@ pub struct Ship {
     pub departed_at: u64,
     pub arrives_at: u64,
     pub destination_commit: Option<Vec<u8>>,
+    pub escort_ship_id: Option<u64>,
+    pub escorting_convoy_id: Option<u64>,
 }
 
 #[near(serializers = [json, borsh])]
@@ -167,6 +170,7 @@ pub struct World {
     ambushes: UnorderedMap<Vec<u8>, Ambush>,
     ambush_routes: UnorderedMap<u64, UnorderedSet<Vec<u8>>>,
     escorts: UnorderedMap<u64, EscortOffer>,
+    idle_defence: UnorderedMap<AccountId, u128>,
     next_ship: u64,
     epoch: u64,
     last_epoch_block: u64,
@@ -189,6 +193,7 @@ impl World {
             ambushes: UnorderedMap::new(StorageKey::Ambushes),
             ambush_routes: UnorderedMap::new(StorageKey::AmbushRoutes),
             escorts: UnorderedMap::new(StorageKey::Escorts),
+            idle_defence: UnorderedMap::new(StorageKey::IdleDefence),
             next_ship: 1,
             epoch: 0,
             last_epoch_block: env::block_height(),
@@ -327,8 +332,11 @@ impl World {
                 departed_at: 0,
                 arrives_at: 0,
                 destination_commit: None,
+                escort_ship_id: None,
+                escorting_convoy_id: None,
             },
         );
+        self.add_idle_defence(&caller, defence);
         self.emit("ship_built", &id.to_string());
         id
     }
@@ -406,6 +414,7 @@ impl World {
             ship.route_id.is_none() && ship.origin_port.is_none(),
             "ERR_IN_TRANSIT"
         );
+        require!(ship.escorting_convoy_id.is_none(), "ERR_ESCORT_LOCKED");
         let player = self.player_or_panic(&caller);
         require!(
             cargo.iter().map(|x| x.0).sum::<u128>() <= player.goods.iter().sum(),
@@ -418,6 +427,7 @@ impl World {
             ship.cargo[idx] = amount.0;
         }
         self.players.insert(&caller, &updated);
+        self.remove_idle_defence(&caller, ship.defence);
         ship.route_id = None;
         ship.origin_port = Some(origin_port);
         ship.departed_at = env::block_height();
@@ -459,7 +469,12 @@ impl World {
         let mut raided = false;
         let mut cargo_loss = 0u128;
         if let Some((key, ambush)) = ambush {
-            let caught = self.raider_power(&ambush.raider) > ship.defence;
+            let escort_defence = ship
+                .escort_ship_id
+                .and_then(|escort_id| self.ships.get(&escort_id))
+                .map(|escort| escort.defence)
+                .unwrap_or(0);
+            let caught = self.raider_power(&ambush.raider) > ship.defence + escort_defence;
             self.ambushes.remove(&key);
             self.remove_ambush_index(route_id, &key);
             self.decrement_active_commit(&ambush.raider);
@@ -498,6 +513,13 @@ impl World {
         ship.origin_port = None;
         ship.destination_commit = None;
         ship.cargo = [0; 3];
+        if let Some(escort_id) = ship.escort_ship_id.take() {
+            let mut escort = self.ship_or_panic(escort_id);
+            escort.escorting_convoy_id = None;
+            self.ships.insert(&escort_id, &escort);
+            self.add_idle_defence(&escort.owner_id, escort.defence);
+        }
+        self.add_idle_defence(&ship.owner_id, ship.defence);
         self.ships.insert(&ship_id, &ship);
         self.emit(
             "arrived",
@@ -567,7 +589,11 @@ impl World {
         self.touch_player(&caller);
         let ship = self.ship_or_panic(ship_id);
         require!(ship.owner_id == caller, "ERR_NOT_SHIP_OWNER");
-        require!(ship.route_id.is_none(), "ERR_IN_TRANSIT");
+        require!(
+            ship.route_id.is_none() && ship.origin_port.is_none(),
+            "ERR_IN_TRANSIT"
+        );
+        require!(ship.escorting_convoy_id.is_none(), "ERR_ESCORT_LOCKED");
         let offer_id = self.escorts.len() + 1;
         self.escorts.insert(
             &offer_id,
@@ -587,15 +613,27 @@ impl World {
         let caller = env::predecessor_account_id();
         self.touch_player(&caller);
         let mut offer = self.escorts.get(&offer_id).expect("ERR_ESCORT_NOT_FOUND");
-        let convoy = self.ship_or_panic(convoy_ship_id);
+        let mut convoy = self.ship_or_panic(convoy_ship_id);
+        let mut escort = self.ship_or_panic(offer.ship_id);
         require!(convoy.owner_id == caller, "ERR_NOT_SHIP_OWNER");
         require!(
             offer.active && offer.owner_id != caller,
             "ERR_ESCORT_INACTIVE"
         );
+        require!(
+            convoy.route_id.is_none() && convoy.origin_port.is_none(),
+            "ERR_IN_TRANSIT"
+        );
+        require!(convoy.escort_ship_id.is_none(), "ERR_ESCORT_INACTIVE");
+        require!(escort.escorting_convoy_id.is_none(), "ERR_ESCORT_INACTIVE");
         self.debit_cred(&caller, offer.price, "ERR_CRED_FUNDS");
         self.credit_cred(&offer.owner_id, offer.price);
         offer.active = false;
+        self.remove_idle_defence(&offer.owner_id, escort.defence);
+        escort.escorting_convoy_id = Some(convoy_ship_id);
+        convoy.escort_ship_id = Some(offer.ship_id);
+        self.ships.insert(&offer.ship_id, &escort);
+        self.ships.insert(&convoy_ship_id, &convoy);
         self.escorts.insert(&offer_id, &offer);
         self.emit("escort_hired", &format!("{}:{}", offer_id, convoy_ship_id));
     }
@@ -726,8 +764,16 @@ impl World {
         if let Some(ship_id) = token_id.strip_prefix("ship:") {
             let id: u64 = ship_id.parse().unwrap_or(0);
             let mut ship = self.ship_or_panic(id);
-            require!(ship.owner_id == caller && amount.0 == 1, "ERR_MT_TRANSFER");
-            ship.owner_id = receiver_id;
+            require!(
+                ship.owner_id == caller
+                    && amount.0 == 1
+                    && ship.escorting_convoy_id.is_none()
+                    && ship.origin_port.is_none(),
+                "ERR_MT_TRANSFER"
+            );
+            self.remove_idle_defence(&caller, ship.defence);
+            ship.owner_id = receiver_id.clone();
+            self.add_idle_defence(&receiver_id, ship.defence);
             self.ships.insert(&id, &ship);
         } else if let Some(idx) = self.good_token_index(&token_id) {
             let mut sender = self.player_or_panic(&caller);
@@ -793,13 +839,19 @@ impl World {
     }
 
     fn raider_power(&self, raider: &AccountId) -> u128 {
-        self.ships
-            .values()
-            .filter(|ship| {
-                ship.owner_id == *raider && ship.route_id.is_none() && ship.origin_port.is_none()
-            })
-            .map(|ship| ship.defence)
-            .sum()
+        self.idle_defence.get(raider).unwrap_or(0)
+    }
+    fn add_idle_defence(&mut self, owner: &AccountId, defence: u128) {
+        let total = self.idle_defence.get(owner).unwrap_or(0) + defence;
+        self.idle_defence.insert(owner, &total);
+    }
+    fn remove_idle_defence(&mut self, owner: &AccountId, defence: u128) {
+        let total = self
+            .idle_defence
+            .get(owner)
+            .unwrap_or(0)
+            .saturating_sub(defence);
+        self.idle_defence.insert(owner, &total);
     }
     fn decrement_active_commit(&mut self, account: &AccountId) {
         let mut player = self.player_or_panic(account);
@@ -1288,6 +1340,62 @@ mod tests {
         assert!(world.ambushes.get(&commit).is_none());
         assert_eq!(bob_after.active_commits, 0);
         assert_eq!(world.sinks, 3);
+    }
+
+    #[test]
+    fn hired_escort_adds_defence_and_blocks_a_raid() {
+        let mut world = world();
+        let alice: AccountId = "alice.testnet".parse().unwrap();
+        let bob: AccountId = "bob.testnet".parse().unwrap();
+        let carol: AccountId = "carol.testnet".parse().unwrap();
+        testing_env!(context("bob.testnet", 2));
+        world.register_player();
+        testing_env!(context("carol.testnet", 2));
+        world.register_player();
+        let escort = {
+            testing_env!(context("alice.testnet", 2));
+            world.build_ship("galleon".into())
+        };
+        let convoy = {
+            testing_env!(context("bob.testnet", 2));
+            world.build_ship("sloop".into())
+        };
+        let raider = {
+            testing_env!(context("carol.testnet", 2));
+            world.build_ship("galleon".into())
+        };
+        let mut bob_player = world.player_or_panic(&bob);
+        bob_player.goods = [10, 0, 0];
+        world.players.insert(&bob, &bob_player);
+        testing_env!(context("alice.testnet", 2));
+        let offer = world.offer_escort(escort, U128(20));
+        testing_env!(context("bob.testnet", 2));
+        world.hire_escort(offer, convoy);
+        assert_eq!(world.get_ship(convoy).unwrap().escort_ship_id, Some(escort));
+        assert_eq!(
+            world.get_ship(escort).unwrap().escorting_convoy_id,
+            Some(convoy)
+        );
+        let salt = "escort-raid";
+        testing_env!(context("carol.testnet", 2));
+        let commit = ambush_commit(1, 3, salt, "carol.testnet");
+        world.commit_ambush(3, commit.clone(), U128(10));
+        world.reveal_ambush(commit, 1, salt.into());
+        testing_env!(context("bob.testnet", 3));
+        world.depart(
+            convoy,
+            1,
+            env::sha256(format!("2:dest:{}", convoy).as_bytes()),
+            [U128(10), U128(0), U128(0)],
+        );
+        testing_env!(context("bob.testnet", 20));
+        world.arrive(convoy, 1, 2, "dest".into());
+        assert_eq!(world.player_or_panic(&bob).goods, [10, 0, 0]);
+        assert_eq!(world.get_ship(convoy).unwrap().escort_ship_id, None);
+        assert_eq!(world.get_ship(escort).unwrap().escorting_convoy_id, None);
+        assert_eq!(world.get_ship(escort).unwrap().origin_port, None);
+        assert_eq!(world.get_ship(raider).unwrap().owner_id, carol);
+        let _ = alice;
     }
     #[test]
     fn unrevealed_ambush_expiry_slashes_stake_and_clears_counter() {
