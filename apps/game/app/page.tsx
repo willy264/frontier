@@ -8,7 +8,7 @@ import { marketQuote } from "./quotes";
 import { builtShipId } from "./transaction-result";
 import { shipPosition } from "./ship-position";
 
-const WORLD = process.env.NEXT_PUBLIC_FRONTIER_WORLD_ACCOUNT ?? "world.frontier-final.testnet";
+const WORLD = process.env.NEXT_PUBLIC_FRONTIER_WORLD_ACCOUNT ?? "world3.world3.testnet";
 const RPC = process.env.NEXT_PUBLIC_FRONTIER_RPC_URL ?? "https://rpc.testnet.fastnear.com";
 const GAME_METHODS = ["register_player", "buy", "sell", "build_ship", "depart", "arrive", "commit_ambush", "reveal_ambush", "offer_escort", "hire_escort", "set_fee", "set_port_sale_price", "buy_port"];
 const provider = new JsonRpcProvider({ url: RPC });

@@ -8,7 +8,7 @@ FRONTIER is a trading and strategy game running in NEAR contracts. Players buy g
 
 [Watch the narrated demo](https://frontier-willy264s-projects.vercel.app/demo/index.html) or [download the MP4](https://frontier-willy264s-projects.vercel.app/demo/frontier-demo.mp4). The video includes captions and shows real testnet purchases, ship construction, a sealed departure, a scripted rival's raid, a sale, and a player ambush reveal.
 
-The recording uses an automated testnet wallet adapter and synthetic narration. Waiting periods are shortened. It does not verify an ordinary retail wallet login or profitable arbitrage. [Transaction evidence](results/video-demo.json), [narration](submission/voiceover-script.md), and [recording instructions](docs/VIDEO.md) are included.
+The recording uses an automated testnet wallet adapter and synthetic narration. Waiting periods are shortened. It does not verify an ordinary retail wallet login, profitable arbitrage, or escort protection; the current escort-blocking round is recorded separately in the live evidence below. [Transaction evidence](results/video-demo.json), [narration](submission/voiceover-script.md), and [recording instructions](docs/VIDEO.md) are included.
 
 ## Try it locally
 
@@ -26,19 +26,21 @@ The scripted economy simulator remains available with `pnpm sim`; its results ar
 
 ## Testnet deployment
 
-- Root: `frontier-final.testnet`
-- World: `world.frontier-final.testnet`
-- Explorer: https://testnet.nearblocks.io/address/world.frontier-final.testnet
+- Root: `world3.testnet`
+- World: `world3.world3.testnet`
+- Explorer: https://testnet.nearblocks.io/address/world3.world3.testnet
 - Deployment and initialization evidence: `results/deploy-testnet.json`
-- Deployment transaction: `AUWBUMuuzLs9KuguHaCmAjN9pK8gXJjFqEgw8XkvAouu`
-- Initialization transaction: `ChPnbDm39eanmyiNdkZw4Ly7EL8ho2EHUrLiwshyX7n`
-- Latest WASM SHA-256: `f7c8cef1e210787f413aa64d357ef1b58e55a02b0c63377164179fb62392fca7`
-- Latest live round evidence: `results/round-2026-11-11T14-19-28-579Z.json`
+- Deployment transaction: `7yBzUscXD4TtziMY9ug81LEN1A64YA1fdkXGmUJZXDS5`
+- Initialization transaction: `4RvJMuDzWCcHVDo9MHm5TJ3oS6tAPRC9dfrSz2aNMoNU`
+- Latest WASM SHA-256: `4bffab9d1cdf21c217ab291eef8c09ee42b3afaf1b9b1904e6ae6f4ecee43b7b`
+- Latest live round evidence: `results/round-2026-11-12T08-16-16-506Z.json`
 - Live URL: https://frontier-willy264s-projects.vercel.app
 
 The deploy command expects the root account credential in the user-level NEAR credential directory and only targets testnet:
 
 ```powershell
+$env:FRONTIER_ROOT_ACCOUNT='world3.testnet'
+$env:FRONTIER_WORLD_ACCOUNT='world3.world3.testnet'
 pnpm deploy:testnet
 pnpm demo:round
 ```
@@ -47,7 +49,7 @@ pnpm demo:round
 
 1. Create a Vercel project from this repository with root directory set to the repository root.
 2. Use `pnpm install --frozen-lockfile` as the install command and `pnpm exec next build apps/game --webpack` as the build command.
-3. Add `NEXT_PUBLIC_FRONTIER_WORLD_ACCOUNT=world.frontier-final.testnet` and `NEXT_PUBLIC_FRONTIER_RPC_URL=https://rpc.testnet.fastnear.com`.
+3. Add `NEXT_PUBLIC_FRONTIER_WORLD_ACCOUNT=world3.world3.testnet` and `NEXT_PUBLIC_FRONTIER_RPC_URL=https://rpc.testnet.fastnear.com`.
 4. Deploy, open the generated URL, connect a testnet wallet, register, buy cargo, build a sloop, and use the hidden departure and ambush panels.
 5. The production deployment is already available at the Live URL above; use that URL for the judge walkthrough.
 

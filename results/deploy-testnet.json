@@ -1,16 +1,16 @@
 {
   "network": "testnet",
-  "root": "frontier-final.testnet",
-  "world": "world.frontier-final.testnet",
+  "root": "world3.testnet",
+  "world": "world3.world3.testnet",
   "players": [
-    "p1.frontier-final.testnet",
-    "p2.frontier-final.testnet",
-    "p3.frontier-final.testnet",
-    "p4.frontier-final.testnet"
+    "p1.world3.testnet",
+    "p2.world3.testnet",
+    "p3.world3.testnet",
+    "p4.world3.testnet"
   ],
-  "deployTx": "AUWBUMuuzLs9KuguHaCmAjN9pK8gXJjFqEgw8XkvAouu",
-  "initializationTx": "ChPnbDm39eanmyiNdkZw4Ly7EL8ho2EHUrLiwshyX7n",
+  "deployTx": "7yBzUscXD4TtziMY9ug81LEN1A64YA1fdkXGmUJZXDS5",
+  "initializationTx": "4RvJMuDzWCcHVDo9MHm5TJ3oS6tAPRC9dfrSz2aNMoNU",
   "initStatus": "initialized",
-  "wasmSha256": "f7c8cef1e210787f413aa64d357ef1b58e55a02b0c63377164179fb62392fca7",
-  "explorer": "https://testnet.nearblocks.io/address/world.frontier-final.testnet"
+  "wasmSha256": "4bffab9d1cdf21c217ab291eef8c09ee42b3afaf1b9b1904e6ae6f4ecee43b7b",
+  "explorer": "https://testnet.nearblocks.io/address/world3.world3.testnet"
 }

@@ -1,0 +1,100 @@
+{
+  "network": "testnet",
+  "world": "world3.world3.testnet",
+  "status": "LIVE_TESTNET_ROUND",
+  "note": "All evidence entries are live testnet transactions. The restricted key rejection is recorded as a successful security assertion.",
+  "evidence": [
+    {
+      "label": "p3 builds raider galleon",
+      "account": "p4.world3.testnet",
+      "method": "build_ship",
+      "tx": "Bosd7EWPL6JQxxe8uveo5USNe6uB1ufQAi9qMTXTf4Qy",
+      "explorer": "https://testnet.nearblocks.io/txns/Bosd7EWPL6JQxxe8uveo5USNe6uB1ufQAi9qMTXTf4Qy",
+      "status": "success"
+    },
+    {
+      "label": "escort linked and locked",
+      "account": "p2.world3.testnet",
+      "method": "get_ship",
+      "status": "success"
+    },
+    {
+      "label": "p3 commits hidden ambush",
+      "account": "p4.world3.testnet",
+      "method": "commit_ambush",
+      "tx": "H9GFpwhu9QrngUr9GsNVbYvHKo69wvQAzEvoGFfE8Xyo",
+      "explorer": "https://testnet.nearblocks.io/txns/H9GFpwhu9QrngUr9GsNVbYvHKo69wvQAzEvoGFfE8Xyo",
+      "status": "success"
+    },
+    {
+      "label": "p2 departs with sealed destination and cargo",
+      "account": "p2.world3.testnet",
+      "method": "depart",
+      "tx": "CXpeYh2YQL5YZ4QBRyrghLj8WuEPvehgxnpTv2pzJLWW",
+      "explorer": "https://testnet.nearblocks.io/txns/CXpeYh2YQL5YZ4QBRyrghLj8WuEPvehgxnpTv2pzJLWW",
+      "status": "success"
+    },
+    {
+      "label": "p3 reveals ambush",
+      "account": "p4.world3.testnet",
+      "method": "reveal_ambush",
+      "tx": "2oJJmP7Wzr5seRVUNj6XLmisEYEnBqBbmY9PLLavSTDP",
+      "explorer": "https://testnet.nearblocks.io/txns/2oJJmP7Wzr5seRVUNj6XLmisEYEnBqBbmY9PLLavSTDP",
+      "status": "success"
+    },
+    {
+      "label": "p2 chooses route and arrives convoy",
+      "account": "p2.world3.testnet",
+      "method": "arrive",
+      "tx": "ZgrYVzadmSG5A8dMn6THnFqxLDfuCNQ5KDnivXRWWKS",
+      "explorer": "https://testnet.nearblocks.io/txns/ZgrYVzadmSG5A8dMn6THnFqxLDfuCNQ5KDnivXRWWKS",
+      "status": "success"
+    },
+    {
+      "label": "escort blocked raid and released at arrival",
+      "account": "p2.world3.testnet",
+      "method": "arrive",
+      "status": "success"
+    },
+    {
+      "label": "world ticks epoch after gate",
+      "account": "world3.world3.testnet",
+      "method": "tick_epoch",
+      "tx": "3FgrP8H5jpUBoaVjCoRYXi92rwsNieZRWxfTrEFvewyY",
+      "explorer": "https://testnet.nearblocks.io/txns/3FgrP8H5jpUBoaVjCoRYXi92rwsNieZRWxfTrEFvewyY",
+      "status": "success"
+    },
+    {
+      "label": "p1 lists port",
+      "account": "p1.world3.testnet",
+      "method": "set_port_sale_price",
+      "tx": "7hVVWmaupWdPTKmrsKJa3eEVf2QdjBN2NXvYdk6KcFn",
+      "explorer": "https://testnet.nearblocks.io/txns/7hVVWmaupWdPTKmrsKJa3eEVf2QdjBN2NXvYdk6KcFn",
+      "status": "success"
+    },
+    {
+      "label": "p2 buys port mid-season",
+      "account": "p2.world3.testnet",
+      "method": "buy_port",
+      "tx": "UtNWPjbTMv5zxjaANsQ6qW5yiNWYNbVhrqpXmXUMtKE",
+      "explorer": "https://testnet.nearblocks.io/txns/UtNWPjbTMv5zxjaANsQ6qW5yiNWYNbVhrqpXmXUMtKE",
+      "status": "success"
+    },
+    {
+      "label": "p2 adds game-only key",
+      "account": "p2.world3.testnet",
+      "method": "add_key",
+      "tx": "79YkQf26oMBBVUXKdHWbEgx1ywGJpAwD4TMjGVNogdEU",
+      "explorer": "https://testnet.nearblocks.io/txns/79YkQf26oMBBVUXKdHWbEgx1ywGJpAwD4TMjGVNogdEU",
+      "status": "success"
+    },
+    {
+      "label": "restricted key build_ship",
+      "account": "p2.world3.testnet",
+      "method": "build_ship",
+      "status": "success",
+      "error": "Access key does not allow method build_ship"
+    }
+  ],
+  "explorer": "https://testnet.nearblocks.io/address/world3.world3.testnet"
+}
