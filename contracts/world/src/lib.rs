@@ -1335,6 +1335,24 @@ mod tests {
         assert_eq!(world.raider_power(&ambush.raider), 2);
         assert_eq!(world.get_ship(ship).unwrap().route_id, None);
     }
+
+    #[test]
+    fn raider_power_uses_idle_index_across_ship_lifecycle() {
+        let mut world = world();
+        let ship = world.build_ship("sloop".into());
+        let alice: AccountId = "alice.testnet".parse().unwrap();
+        assert_eq!(world.raider_power(&alice), 1);
+        world.depart(
+            ship,
+            1,
+            env::sha256(format!("2:index:{}", ship).as_bytes()),
+            [U128(0), U128(0), U128(0)],
+        );
+        assert_eq!(world.raider_power(&alice), 0);
+        testing_env!(context("alice.testnet", 30));
+        world.arrive(ship, 1, 2, "index".into());
+        assert_eq!(world.raider_power(&alice), 1);
+    }
     #[test]
     fn distinct_ambush_commits_can_share_a_window() {
         let mut world = world();
