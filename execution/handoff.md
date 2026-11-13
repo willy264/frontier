@@ -1,5 +1,13 @@
 # FRONTIER handoff
 
+## Active redesign checkpoint, 13 November 2026 18:45 UTC
+
+Frontend-only nautical redesign is implemented locally. Actual kit is under docs/design-kit; licensed local Barlow Condensed and DM Sans replace Google CSS imports. New files: use-game.ts (polling, errors, scoped hidden-order storage), game-state.ts/tests, action-panel.tsx, sea-map.tsx/css. No contract changes. First production build and TypeScript passed. Initial desktop/mobile screenshots are under results/design. Full responsive QA was interrupted by a daemon restart; do not treat it as passed.
+
+Next: rerun scripts/qa-game.mjs against a production server on port 3100, complete axe/Lighthouse and screenshot revision, validate wallet/full testnet loop, verify Vercel environment and deploy. Then record the escort demonstration, update README/evidence, wait for CI, and retag. Existing video still shows the old interface. No final deployment, video replacement, or tag update has been completed for this redesign. Stop redesign at 14 November 12:00 UTC.
+
+Contract limitation: arrived event cannot distinguish an escort blocking a raid from no raid. UI truthfully reports intact escorted cargo. A staged live round must independently prove the ambush window and power before claiming an escort blocked it. Old recording script uses a previous contract and old selectors; update before use. Agent/process IDs were lost in the daemon restart.
+
 Updated 2026-11-12 08:35 UTC. Deadline: 2026-11-14 23:59 UTC.
 
 ## Completed in the narrated-video task

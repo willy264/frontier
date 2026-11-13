@@ -1,5 +1,15 @@
 # FRONTIER Task Ledger
 
+## Frontend redesign, 13 November 2026 18:45 UTC
+
+29h14 to submission deadline; 17h15 to mandatory redesign cutoff.
+
+- Implemented: actual design kit, local fonts, nautical tokens, interactive map, context action panel, inventory-bounded loading, hidden-order backup/restore, polling and RPC recovery, real economy totals, receipt-linked events.
+- Verified: initial Next production build, TypeScript, unit suite. Initial 390px and 1440px screenshots captured.
+- In progress: responsive/axe/Lighthouse QA and visual second pass. Daemon restart interrupted QA, so full gates remain unverified.
+- Remaining: live retail-wallet walkthrough, Vercel deployment/environment verification, escort video capture and narration, README screenshot update, final CI and tag. Contracts unchanged.
+- Exact next action: run production server on port 3100 and scripts/qa-game.mjs; consult execution/handoff.md for limitations.
+
 Updated: 2026-11-12 08:35 UTC (2026-11-12 09:35 WAT)
 
 Deadline: 2026-11-14 23:59 UTC. Approximate time remaining at update: 72.4 hours.

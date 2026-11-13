@@ -1,0 +1,218 @@
+/* =====================================================================
+   theme.css: Tailwind CSS v4 starter for the design kit
+   ---------------------------------------------------------------------
+   Source of truth: core/tokens/tokens.json (DTCG 2025.10). Keep both in sync.
+   Worked example values are Ontiver's [OWN]. A niche profile in
+   niches/<niche>/design-system.md says which values to swap.
+
+   Provenance labels:
+     [OWN] copied from the Ontiver or QuickBite source (clones of 12 Nov 2026)
+     [DOC] primary design-system or standards document
+     [3P]  extracted from a live site by a third party (indicative only)
+     [SYN] synthesis or practitioner convention, not verified
+   Contrast ratios in comments were computed from the hex values for this kit.
+   ===================================================================== */
+
+@import "tailwindcss";
+
+/* Dark mode is opt-in through a data attribute, so the OS setting never
+   flips a page that has no designed dark theme. [SYN] */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ---------------------------------------------------------------------
+   1. COLOUR
+   `--color-*: initial` removes every Tailwind default colour, so
+   `bg-indigo-500` and friends cannot be used. [OWN: QuickBite] [DOC: Tailwind]
+   --------------------------------------------------------------------- */
+@theme static {
+  --color-*: initial;
+
+  /* Primitives: the niche profile swaps these */
+  --color-canvas:        #e9ebe5;  /* [OWN: Ontiver] tinted page, never #fff */
+  --color-canvas-raised: #f3f4ef;  /* [OWN] level-1 elevation (tone shift) */
+  --color-canvas-muted:  #e0e4dc;  /* [OWN] wells, inputs, alt sections */
+  --color-ink:           #002d0e;  /* [OWN] 12.65:1 on canvas; aim 12-18:1 */
+  --color-ink-muted:     #526058;  /* [OWN] 5.51:1 on canvas; aim 5.5-6:1 */
+  --color-brand:         #006b1d;  /* [OWN] the ONE accent; 5.6:1 on canvas */
+
+  /* Derived from the brand with color-mix [OWN: QuickBite method] */
+  --color-brand-strong:  color-mix(in srgb, var(--color-brand) 78%, black);            /* = #005317, 7.77:1 on canvas; white on it 9.33:1 */
+  --color-brand-wash:    color-mix(in srgb, var(--color-brand) 7%, var(--color-canvas)); /* = #d9e2d7, tinted fills only, never text */
+  --color-on-brand:      #e9ebe5;  /* label on brand-strong: 7.77:1 */
+
+  /* Inverse surface for dark bands (closing CTA, footer) [OWN: Ontiver] */
+  --color-inverse:        #002d0e;
+  --color-inverse-raised: #004917;  /* [OWN] spotlight hover fill */
+  --color-on-inverse:     #e9ebe5;  /* 12.65:1 on inverse */
+  --color-accent-on-inverse: #c7e6b5; /* [OWN] icons on dark; 11.16:1 on #002d0e */
+
+  /* Lines and focus */
+  --color-line:        rgb(114 148 117 / 24%);  /* [OWN] hairline, composites to #ccd6ca on canvas */
+  --color-line-strong: rgb(0 45 14 / 22%);      /* [OWN: Ontiver FAQ rules] */
+  /* Focus: Ontiver ships rgb(0 125 33 / 28%), which is only 1.47:1 on canvas.
+     The kit uses the solid brand (5.6:1) so the ring passes 3:1. [SYN] */
+  --color-focus:       var(--color-brand);
+
+  /* Status. [SYN] values from the playbook, checked here on canvas:
+     danger 5.47:1, warning 4.52:1 (fails on canvas-muted: 4.21:1),
+     success darkened from #1f7a3a (4.48:1, fails) to 90% with black. */
+  --color-success: #1c6e34;  /* 5.25:1 on canvas */
+  --color-warning: #9a5b00;  /* text only on canvas or canvas-raised */
+  --color-danger:  #b42318;  /* 5.47:1 on canvas */
+
+  /* Chart tokens: fill per project, 5-6 ordered categorical colours,
+     each >= 3:1 against the surface. [DOC: Atlassian] Leave empty until set. */
+}
+
+/* ---------------------------------------------------------------------
+   2. TYPE, RADIUS, MOTION, BREAKPOINTS
+   --------------------------------------------------------------------- */
+@theme {
+  /* Families: niche profile swaps. Max 2 families + 1 mono. */
+  --font-display: "Aspekta", ui-sans-serif, system-ui, sans-serif;
+  --font-sans:    "Onest", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    "Geist Mono", ui-monospace, monospace;
+
+  /* Fluid scale [OWN: Ontiver tokens.css]. Ontiver's hero line-height is 1.2;
+     the playbook template tightens it to 1.1 [SYN]. */
+  --text-hero:     clamp(2.125rem, 4.722vw, 6.5rem);    --text-hero--line-height: 1.1;
+  --text-section:  clamp(2rem, 3.334vw, 4.5rem);        --text-section--line-height: 1.15;
+  --text-subtitle: clamp(1.25rem, 1.597vw, 1.917rem);   --text-subtitle--line-height: 1.55;
+  --text-card:     clamp(1.375rem, 1.667vw, 2rem);      --text-card--line-height: 1.25;
+  --text-body:     clamp(1rem, 1.25vw, 1.5rem);         --text-body--line-height: 1.65;
+  --text-meta:     clamp(0.8125rem, 0.972vw, 1.167rem); --text-meta--line-height: 1.4;
+  /* Fixed UI sizes for product screens [OWN: Ontiver fixed sizes] */
+  --text-ui-xs: 0.75rem;   /* 12px: the floor. Nothing smaller ships. */
+  --text-ui-sm: 0.875rem;
+  --text-ui-md: 1rem;
+  --text-ui-lg: 1.125rem;
+
+  --tracking-display: -0.04em;   /* [OWN] hero */
+  --tracking-heading: -0.035em;  /* [OWN] H2 */
+  --tracking-eyebrow: 0.13em;    /* [OWN] eyebrow */
+  --tracking-button:  0.15em;    /* [OWN] uppercase buttons, only if the niche uses them */
+
+  /* Radius: 3 meaningful steps + pill. Niche profile swaps. [SYN from OWN] */
+  --radius-control: 0.625rem;  /* buttons, inputs */
+  --radius-card:    1.25rem;   /* cards, media (Ontiver 20px media) */
+  --radius-panel:   1.5rem;    /* large surfaces (Ontiver .surface-card) */
+  --radius-pill:    9999px;
+
+  /* One shadow, for overlays only (menus, dialogs, toasts). [OWN: Ontiver] */
+  --shadow-*: initial;
+  --shadow-overlay: 0 8px 24px #001b1426;
+
+  /* Easing [OWN] house curve + [DOC] M3 utility curves */
+  --ease-*: initial;
+  --ease-reveal:   cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit:     cubic-bezier(0.3, 0, 0.8, 0.15);
+  --ease-linear:   linear;
+
+  --breakpoint-xs: 28.125rem;  /* 450px [OWN: Ontiver xss]; sm/md/lg/xl/2xl stay Tailwind defaults */
+}
+
+/* ---------------------------------------------------------------------
+   3. VARIABLES THAT SHOULD NOT GENERATE UTILITIES
+   --------------------------------------------------------------------- */
+:root {
+  /* Layout [OWN: Ontiver viewport.css] */
+  --gutter: 12px;
+  --section-y: 3rem;
+  --section-y-compact: 2rem;
+  --measure: 45rem;          /* ~720px text cap [OWN] */
+  --measure-narrow: 32.5rem; /* ~520px [OWN] */
+  --container-max: 150rem;   /* 2400px [OWN]; B2B profile uses 75rem (1200px) */
+
+  /* Motion durations: Tailwind has no duration theme namespace, so they live here */
+  --dur-instant: 100ms;   /* press, toggle, colour */
+  --dur-fast: 220ms;      /* hover, focus, arrow slide, dropdown, exits (180-260) */
+  --dur-base: 320ms;      /* modal, drawer, toast, tab content (300-400) */
+  --dur-reveal: 680ms;    /* default scroll reveal [OWN] */
+  --dur-reveal-heading: 850ms;
+  --dur-reveal-action: 600ms;
+  --dur-reveal-card: 800ms;
+  --dur-reveal-media: 1000ms;
+  --dur-showpiece: 850ms; /* single orchestrated moment (650-1100) */
+  --stagger-step: 65ms;   /* [OWN] capped at index 4 */
+}
+@media (min-width: 640px) {
+  :root { --gutter: 24px; --section-y: 4.5rem; --section-y-compact: 2.5rem; }
+}
+@media (min-width: 1024px) {
+  :root {
+    --gutter: clamp(24px, 2.222vw, 64px);
+    --section-y: clamp(4.5rem, 6.667vw, 7rem);
+    --section-y-compact: clamp(2.5rem, 3.334vw, 3.5rem);
+  }
+}
+
+/* ---------------------------------------------------------------------
+   4. DARK THEME (only if the PRD asks for one)
+   Remaps the semantic primitives. Values from Ontiver's dark bands [OWN];
+   ink-muted derived as 70% ink in canvas [SYN]: 6.85:1.
+   --------------------------------------------------------------------- */
+[data-theme="dark"] {
+  --color-canvas:        #002d0e;
+  --color-canvas-raised: #004917;
+  --color-canvas-muted:  #004917;
+  --color-ink:           #e9ebe5;  /* 12.65:1 */
+  --color-ink-muted:     #a3b2a4;  /* 6.85:1 on canvas, 4.81:1 on raised */
+  --color-brand:         #c7e6b5;  /* 11.16:1 on canvas */
+  --color-line:          rgb(233 235 229 / 15%);
+  /* Custom properties that reference other variables resolve where they are
+     declared (:root), so every derived token must be re-declared here. */
+  --color-brand-strong:  #c7e6b5;  /* filled buttons on dark */
+  --color-on-brand:      #002d0e;  /* 11.16:1 on #c7e6b5 */
+  --color-brand-wash:    #184322;  /* 12% brand in canvas; ink on it 9.37:1 */
+  --color-focus:         #c7e6b5;  /* 11.16:1 on canvas */
+}
+
+/* ---------------------------------------------------------------------
+   5. BASE
+   --------------------------------------------------------------------- */
+@layer base {
+  html { background: var(--color-canvas); color: var(--color-ink); }
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; }
+  p { text-wrap: pretty; }
+  :focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; } /* [OWN] 3px / 3px */
+  ::selection { background: var(--color-brand-wash); color: var(--color-ink); }
+  [data-numeric], .tabular { font-variant-numeric: tabular-nums; }
+  /* Keep focused elements clear of the sticky header (WCAG 2.4.11) */
+  html { scroll-padding-top: 6rem; }
+}
+
+/* Section rhythm + hairline between siblings [OWN: Ontiver base.css] */
+@layer components {
+  .site-container { max-width: var(--container-max); margin-inline: auto; padding-inline: var(--gutter); }
+  .section { padding-block: var(--section-y); }
+  .section-compact { padding-block: var(--section-y-compact); }
+  main > section + section { border-block-start: 1px solid var(--color-line); }
+  .eyebrow {
+    font-family: var(--font-sans); font-size: var(--text-meta); font-weight: 700;
+    text-transform: uppercase; letter-spacing: var(--tracking-eyebrow); color: var(--color-brand);
+  }
+  .money { font-variant-numeric: tabular-nums; }
+}
+
+/* ---------------------------------------------------------------------
+   6. MOTION SAFETY: see core/motion.md for the reveal system
+   --------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+html[data-motion="paused"] *, html[data-motion="paused"] *::before, html[data-motion="paused"] *::after {
+  animation-play-state: paused !important;
+}

@@ -1,0 +1,165 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { NearConnector } from "@hot-labs/near-connect";
+import { arrivalMessage, WORLD, RPC, type Port, type Route, type Ship, type Player, type Order, type GameEvent, type EconomySnapshot } from "./game-state";
+
+const METHODS = ["register_player", "buy", "sell", "build_ship", "depart", "arrive", "commit_ambush", "reveal_ambush", "offer_escort", "hire_escort", "set_fee", "set_port_sale_price", "buy_port"];
+const keySlot = `frontier-game-key:${WORLD}`;
+let client: Promise<import("near-api-js").JsonRpcProvider> | undefined;
+const provider = () => client ??= import("near-api-js").then(({ JsonRpcProvider }) => new JsonRpcProvider({ url: RPC }));
+export async function view<T>(method: string, args: Record<string, unknown> = {}) {
+  const p = await provider();
+  const value = await deadline(p.callFunction({ contractId: WORLD, method, args, blockQuery: { finality: "final" } }));
+  if (value === undefined) throw new Error("Empty view response");
+  return value as T;
+}
+async function deadline<T>(promise: Promise<T>): Promise<T> {
+  let timer: ReturnType<typeof setTimeout>;
+  try { return await Promise.race([promise, new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error("Read timed out")), 12000); })]); }
+  finally { clearTimeout(timer!); }
+}
+export async function digest(text: string) { return Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)))); }
+export function seal() { return Array.from(crypto.getRandomValues(new Uint8Array(24)), n => n.toString(16).padStart(2, "0")).join(""); }
+function readOrders(slot: string): Order[] { try { const v: unknown = JSON.parse(localStorage.getItem(slot) ?? "[]"); return Array.isArray(v) ? v : []; } catch { return []; } }
+
+export function useGame() {
+  const [accountId, setAccountId] = useState<string | null>(null);
+  const [ports, setPorts] = useState<Record<number, Port>>({});
+  const [routes, setRoutes] = useState<Route[]>([]);
+  const [ships, setShips] = useState<Array<[number, Ship]>>([]);
+  const [player, setPlayer] = useState<Player | null>(null);
+  const [economy, setEconomy] = useState<EconomySnapshot | null>(null);
+  const [height, setHeight] = useState(0);
+  const [readState, setReadState] = useState<"loading" | "ready" | "error">("loading");
+  const [pending, setPending] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
+  const [events, setEvents] = useState<GameEvent[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [keyReady, setKeyReady] = useState(false);
+  const [refresh, setRefresh] = useState(0);
+  const [snapshots, setSnapshots] = useState<EconomySnapshot[]>([]);
+  const connector = useRef<NearConnector | null>(null);
+  const lock = useRef(false);
+  const ordersRef = useRef<Order[]>([]);
+  const slot = `frontier-orders:${WORLD}:${accountId ?? "guest"}`;
+  const notify = useCallback((text: string, tone: GameEvent["tone"] = "normal", tx?: string) => {
+    setMessage(text);
+    setEvents(items => [{ id: crypto.randomUUID(), text, tone, tx, time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }, ...items].slice(0, 20));
+  }, []);
+  const retry = useCallback(() => setRefresh(n => n + 1), []);
+  const saveOrders = useCallback((next: Order[]) => {
+    // Persist BEFORE signing. If storage is full or blocked, do not sail.
+    localStorage.setItem(slot, JSON.stringify(next));
+    ordersRef.current = next; setOrders(next);
+  }, [slot]);
+  useEffect(() => { const next = readOrders(slot); ordersRef.current = next; setOrders(next); }, [slot]);
+  useEffect(() => { setPlayer(null); setShips([]); setEvents([]); setMessage(""); }, [accountId]);
+  useEffect(() => {
+    let active = true;
+    setReadState("loading");
+    let timer: ReturnType<typeof setTimeout>;
+    const poll = async () => {
+      try {
+        const p = await provider();
+        const [portList, routeList, nextEconomy, block, nextPlayer, nextShips] = await Promise.all([
+          Promise.all([1, 2, 3, 4, 5].map(id => view<Port | null>("get_port", { port_id: id }))),
+          Promise.all([1, 2, 3, 4, 5].map(id => view<Route | null>("get_route", { route_id: id }))),
+          view<EconomySnapshot>("economy_dashboard"), deadline(p.viewBlock({ finality: "final" })),
+          accountId ? view<Player | null>("get_player", { account_id: accountId }) : Promise.resolve(null),
+          accountId ? view<Array<[number, Ship]>>("ships_for_owner", { account_id: accountId }) : Promise.resolve([]),
+        ]);
+        if (!active) return;
+        setPorts(Object.fromEntries(portList.flatMap((port, i) => port ? [[i + 1, port]] : [])));
+        setRoutes(routeList.filter((route): route is Route => route !== null));
+        setEconomy(nextEconomy); setHeight(block.header.height); setPlayer(nextPlayer); setShips(nextShips);
+        setReadState("ready");
+        setSnapshots(items => [...items.filter(item => item.epoch !== nextEconomy.epoch), nextEconomy].slice(-20));
+      } catch { if (active) setReadState("error"); }
+      if (active) timer = setTimeout(poll, 3000);
+    };
+    void poll();
+    return () => { active = false; clearTimeout(timer); };
+  }, [accountId, refresh]);
+  useEffect(() => {
+    let active = true;
+    import("@hot-labs/near-connect").then(async ({ NearConnector }) => {
+      if (!active) return;
+      const next = new NearConnector({ network: "testnet", providers: { testnet: [RPC] }, footerBranding: null });
+      connector.current = next;
+      next.on("wallet:signIn", ({ accounts }) => { if (active) { setAccountId(accounts[0]?.accountId ?? null); setKeyReady(!!sessionStorage.getItem(keySlot)); } });
+      next.on("wallet:signOut", () => { if (active) { setAccountId(null); setKeyReady(false); } });
+      try { const connected = await next.getConnectedWallet(); if (active) { setAccountId(connected.accounts[0]?.accountId ?? null); setKeyReady(!!sessionStorage.getItem(keySlot)); } } catch { /* browsing without a wallet */ }
+    }).catch(() => { if (active) setMessage("Wallet tools could not load. Reload the page to retry."); });
+    return () => { active = false; connector.current?.removeAllListeners(); };
+  }, []);
+  async function connect() {
+    if (lock.current) return;
+    if (!connector.current) { setMessage("Wallet tools are loading. Try again in a moment."); return; }
+    lock.current = true; setPending("connect");
+    try {
+      const { KeyPair } = await import("near-api-js");
+      const key = KeyPair.fromRandom("ed25519");
+      // Store before redirects, without assuming that the wallet approved it.
+      sessionStorage.setItem(keySlot, key.toString());
+      await connector.current.connect({ addFunctionCallKey: { contractId: WORLD, publicKey: key.getPublicKey().toString(), allowMethods: { anyMethod: false, methodNames: METHODS }, gasAllowance: { kind: "limited", amount: "1000000000000000000000000" } } });
+      const connected = await connector.current.getConnectedWallet();
+      setAccountId(connected.accounts[0]?.accountId ?? null); setKeyReady(true);
+      notify("Wallet connected. Your captain is ready to join.");
+    } catch { setKeyReady(false); setMessage("Wallet connection was not completed. Try connecting again."); }
+    finally { lock.current = false; setPending(null); }
+  }
+  async function disconnect() { await connector.current?.disconnect(); setAccountId(null); setKeyReady(false); sessionStorage.removeItem(keySlot); }
+  async function call(method: string, args: Record<string, unknown>, success: string, arrival?: { destination: number; cargo: number[]; escorted: boolean }) {
+    if (lock.current) return null;
+    if (!accountId) { setMessage("Connect your testnet wallet to play."); return null; }
+    const saved = sessionStorage.getItem(keySlot);
+    if (!saved) { setKeyReady(false); setMessage("Enable game controls before playing."); return null; }
+    lock.current = true; setPending(method); setMessage("Sending your order. Waiting for testnet confirmation…");
+    try {
+      const { Account, KeyPairSigner } = await import("near-api-js");
+      const account = new Account(accountId, await provider(), KeyPairSigner.fromSecretKey(saved as import("near-api-js").KeyPairString));
+      const result = await account.callFunctionRaw({ contractId: WORLD, methodName: method, args, gas: 300n * 10n ** 12n, deposit: 0n });
+      if (typeof result.status === "object" && "Failure" in result.status) throw new Error(JSON.stringify(result.status.Failure));
+      const tx = result.transaction.hash;
+      let confirmedMessage = success;
+      let tone: GameEvent["tone"] = "normal";
+      for (const log of result.receipts_outcome.flatMap(r => r.outcome.logs)) {
+        if (!log.startsWith("EVENT_JSON:")) continue;
+        try {
+          const event = JSON.parse(log.slice(11)) as { event: string; data: Array<{ value: string }> };
+          if (event.event === "arrived" && arrival) {
+            confirmedMessage = arrivalMessage(event.data[0].value, arrival.destination, arrival.cargo, arrival.escorted);
+            tone = event.data[0].value.includes("raided=true") ? "danger" : arrival.escorted ? "escort" : "normal";
+          }
+          if (event.event === "trade") {
+            const [side, , good, amount] = event.data[0].value.split(":");
+            confirmedMessage = side === "buy" ? `Bought ${amount} ${["Hashpower", "Liquidity", "Blockspace"][Number(good)]}.` : `Sold cargo for ${amount} CRED.`;
+          }
+        } catch { /* Unknown events stay in the explorer, not invented UI results. */ }
+      }
+      notify(confirmedMessage, tone, tx); retry(); return result;
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      const errors: Record<string, string> = { ERR_SLIPPAGE: "The market price moved. Review the new quote and try again.", ERR_CRED_FUNDS: "You need more CRED for this order.", ERR_CARGO_FUNDS: "Your available cargo changed. Reload the port and adjust the load.", ERR_TOO_EARLY: "Your convoy is still sailing. Wait for the countdown.", ERR_REVEAL_LATE: "The ambush window has closed.", ERR_PLAYER_EXISTS: "This captain is already registered. Refresh your fleet.", ERR_ESCORT_LOCKED: "This ship is escorting a convoy. Wait for its arrival." };
+      if (/AccessKey|InvalidSignature|does not exist.*key/i.test(detail)) setKeyReady(false);
+      setMessage(Object.entries(errors).find(([code]) => detail.includes(code))?.[1] ?? "The order was not confirmed. Refresh before retrying; check your wallet activity if it persists.");
+      return null;
+    } finally { lock.current = false; setPending(null); }
+  }
+  function remember(order: Order) { saveOrders([...ordersRef.current.filter(item => item.id !== order.id), order]); }
+  function removeOrder(id: string) { saveOrders(ordersRef.current.filter(item => item.id !== id)); }
+  function backup() {
+    const blob = new Blob([JSON.stringify({ world: WORLD, accountId, orders: ordersRef.current }, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "frontier-hidden-orders.json"; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  async function restore(file: File) {
+    try {
+      const data = JSON.parse(await file.text()) as { world?: string; accountId?: string; orders?: Order[] };
+      if (data.world !== WORLD || data.accountId !== accountId || !Array.isArray(data.orders)) throw new Error("Wrong captain");
+      if (!data.orders.every(o => ["ambush", "departure"].includes(o.kind) && typeof o.salt === "string" && typeof o.id === "string" && Number.isInteger(o.routeId))) throw new Error("Invalid backup");
+      saveOrders([...ordersRef.current.filter(o => !data.orders!.some(n => n.id === o.id)), ...data.orders]); notify("Hidden orders restored for this captain.");
+    } catch { setMessage("This backup does not match your captain and world, or could not be read."); }
+  }
+  return { accountId, ports, routes, ships, player, economy, height, readState, pending, message, events, orders, keyReady, snapshots, connect, disconnect, call, retry, notify, remember, removeOrder, backup, restore };
+}

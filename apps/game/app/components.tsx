@@ -1,17 +1,7 @@
-"use client";
-
-export type Economy = {
-  cred_supply: string;
-  npc_faucet: string;
-  sinks: string;
-  spoilage: string;
-  epoch: number;
-};
-
-export function Economy({ economy }: { economy: Economy | null }) {
-  return <div className="economy">
-    <div className="economy-head"><span className="eyebrow">ECONOMY PROOF</span><h2>Player behaviour sets the tide.</h2><p>Live faucets and sinks from the deployed world contract.</p></div>
-    <div className="chart"><div className="chart-line" /><div className="chart-labels"><span>SUPPLY</span><span>SINKS</span><span>SPOILAGE</span></div></div>
-    <div className="economy-metrics"><div><small>SUPPLY</small><strong>{economy?.cred_supply ?? "--"}</strong><em>contract state</em></div><div><small>FAUCETS / EPOCH</small><strong>{economy?.npc_faucet ?? "--"}</strong><em>NPC cap 160</em></div><div><small>SPOILAGE SINK</small><strong>{economy?.spoilage ?? "--"}</strong><em>goods lost</em></div></div>
-  </div>;
+import type { EconomySnapshot } from "./game-state";
+export type Economy = EconomySnapshot;
+export function Economy({ economy, state, snapshots, retry }: { economy: EconomySnapshot | null; state: string; snapshots: EconomySnapshot[]; retry: () => void }) {
+  if (state === "error") return <section className="economy"><p>Can’t reach testnet. Retrying…</p><button className="action" onClick={retry}>Retry connection</button></section>;
+  if (!economy) return <section className="economy" aria-busy="true"><p>Loading the economy from testnet…</p></section>;
+  return <section className="economy"><p>Actual world totals. Epoch {economy.epoch}.</p><dl className="economy-metrics"><div><dt>CRED supply</dt><dd>{economy.cred_supply}</dd></div><div><dt>NPC purchases this epoch</dt><dd>{economy.npc_faucet} <small>CRED</small></dd></div><div><dt>Recorded sinks</dt><dd>{economy.sinks}</dd></div><div><dt>Goods spoiled</dt><dd>{economy.spoilage}</dd></div><div><dt>Epoch</dt><dd>{economy.epoch}</dd></div></dl><p className="muted">NPC purchases credit sellers, capped at 160 CRED per epoch. The contract’s sink counter combines CRED costs and burned goods; it is not a CRED-only total. Spoilage is recorded when players next act.</p><h2>Recorded epochs</h2>{snapshots.length < 2 ? <p className="empty-state">No epoch history yet. Keep this page open across an epoch change to record a comparison. No trend is drawn from a single snapshot.</p> : <div className="epoch-table"><table><caption>Epoch snapshots observed during this browser session</caption><thead><tr><th>Epoch</th><th>CRED supply</th><th>NPC CRED</th><th>Spoilage</th></tr></thead><tbody>{snapshots.map(item => <tr key={item.epoch}><td>{item.epoch}</td><td>{item.cred_supply}</td><td>{item.npc_faucet}</td><td>{item.spoilage}</td></tr>)}</tbody></table></div>}</section>;
 }

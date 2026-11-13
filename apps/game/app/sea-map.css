@@ -1,0 +1,466 @@
+.sea-map {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  color: var(--ink);
+  font-family: var(--font-body), sans-serif;
+}
+
+.sea-map button {
+  font: inherit;
+}
+
+.sea-map__mobile-tools {
+  position: absolute;
+  z-index: 20;
+  top: 12px;
+  right: 12px;
+  display: none;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+}
+
+.sea-map__mobile-tools button {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--raised);
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform var(--dur-instant) var(--ease-game);
+}
+
+.sea-map .sea-map__mobile-tools button:hover {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.sea-map__mobile-tools button:active {
+  transform: scale(0.96);
+}
+
+.sea-map__mobile-tools button:focus-visible,
+.sea-island:focus-visible,
+.sea-ship:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.sea-map__mobile-tools svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+
+.sea-map__viewport {
+  width: 100%;
+  height: clamp(560px, 60vw, 680px);
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: var(--canvas);
+  scrollbar-color: var(--line-strong) var(--canvas);
+  scrollbar-width: thin;
+  overscroll-behavior-inline: contain;
+}
+
+.sea-map__viewport:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.sea-map__canvas {
+  width: 100%;
+  min-width: 1000px;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: var(--canvas);
+}
+
+.sea-map__chart,
+.sea-map__islands,
+.sea-map__ships {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sea-map__chart {
+  display: block;
+}
+
+.sea-chart-field {
+  fill: var(--canvas);
+}
+
+.sea-chart-grid-fill {
+  pointer-events: none;
+}
+
+.sea-chart-grid {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+  opacity: 0.44;
+  vector-effect: non-scaling-stroke;
+}
+
+.sea-chart-grid--minor {
+  opacity: 0.2;
+}
+
+.sea-chart-contours {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1.5;
+  opacity: 0.38;
+  vector-effect: non-scaling-stroke;
+}
+
+.sea-chart-north {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  opacity: 0.82;
+  vector-effect: non-scaling-stroke;
+}
+
+.sea-chart-north text {
+  fill: var(--muted);
+  stroke: none;
+  font-family: var(--font-display), sans-serif;
+  font-size: 14px;
+}
+
+.sea-route-group {
+  cursor: pointer;
+  outline: none;
+}
+
+.sea-route-hit {
+  stroke: var(--line);
+  stroke-width: 44;
+  opacity: 0;
+  pointer-events: stroke;
+}
+
+.sea-route-line {
+  stroke: var(--line-strong);
+  stroke-width: 2;
+  stroke-dasharray: 8 8;
+  pointer-events: none;
+  opacity: 0.82;
+  transition: opacity var(--dur-base) var(--ease-game);
+}
+
+.sea-route-endpoint {
+  fill: var(--canvas);
+  stroke: var(--line-strong);
+  stroke-width: 2;
+  pointer-events: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.sea-route-label {
+  pointer-events: none;
+}
+
+.sea-route-label rect {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.sea-route-label text {
+  fill: var(--ink);
+  font-family: var(--font-body), sans-serif;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+}
+
+.sea-route-group:hover .sea-route-line,
+.sea-route-group:focus-visible .sea-route-line,
+.sea-route-group--selected .sea-route-line {
+  stroke: var(--accent);
+  stroke-width: 4;
+  opacity: 1;
+}
+
+.sea-route-group:focus-visible .sea-route-label rect,
+.sea-route-group--selected .sea-route-label rect {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+.sea-route-group:focus-visible .sea-route-label text,
+.sea-route-group--selected .sea-route-label text {
+  fill: var(--canvas);
+}
+
+.sea-route-group:hover .sea-route-endpoint,
+.sea-route-group:focus-visible .sea-route-endpoint,
+.sea-route-group--selected .sea-route-endpoint {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+.sea-chart-harbors {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+  opacity: 0.55;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.sea-map__islands,
+.sea-map__ships {
+  pointer-events: none;
+}
+
+.sea-island {
+  width: 168px;
+  min-height: 76px;
+  position: absolute;
+  z-index: 4;
+  left: var(--sea-x);
+  top: var(--sea-y);
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: stretch;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  pointer-events: auto;
+  text-align: left;
+  transition: transform var(--dur-instant) var(--ease-game);
+}
+
+.sea-map .sea-island:hover {
+  border-color: var(--accent);
+  background: var(--raised);
+}
+
+.sea-map .sea-island:active {
+  transform: translate(-50%, -50%) scale(0.98);
+}
+
+.sea-map .sea-island--selected {
+  z-index: 5;
+  border-color: var(--accent);
+  background: var(--raised);
+  box-shadow: 0 0 0 2px var(--canvas), 0 0 0 4px var(--accent);
+}
+
+.sea-island__code {
+  display: grid;
+  place-items: center;
+  border-right: 1px solid var(--line);
+  background: var(--raised);
+  color: var(--accent);
+  font-family: var(--font-display), sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.sea-island__copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 12px;
+}
+
+.sea-island__copy strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-family: var(--font-display), sans-serif;
+  font-size: 16px;
+  line-height: 1.05;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sea-island__good {
+  padding-top: 6px;
+  border-top: 2px solid var(--muted);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.sea-island--hashpower .sea-island__good {
+  border-color: var(--hashpower);
+}
+
+.sea-island--liquidity .sea-island__good {
+  border-color: var(--liquidity);
+}
+
+.sea-island--blockspace .sea-island__good {
+  border-color: var(--blockspace);
+}
+
+.sea-ship {
+  width: 44px;
+  height: 44px;
+  position: absolute;
+  z-index: 8;
+  left: var(--sea-x);
+  top: var(--sea-y);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--accent);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--accent);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform var(--dur-instant) var(--ease-game);
+}
+
+.sea-map .sea-ship:hover,
+.sea-map .sea-ship--selected {
+  background: var(--accent);
+  color: var(--canvas);
+}
+
+.sea-map .sea-ship--selected {
+  box-shadow: 0 0 0 2px var(--canvas), 0 0 0 4px var(--accent);
+}
+
+.sea-map .sea-ship:active {
+  transform: translate(-50%, -50%) scale(0.96);
+}
+
+.sea-ship__icon {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+
+.sea-ship__callout {
+  min-width: 112px;
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  display: grid;
+  gap: 2px;
+  padding: 7px 9px;
+  transform: translateX(-50%);
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: var(--raised);
+  color: var(--ink);
+  pointer-events: none;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.sea-ship__callout strong {
+  font-family: var(--font-display), sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.sea-ship__callout span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.sea-ship--left .sea-ship__callout {
+  left: 0;
+  transform: none;
+}
+
+.sea-ship--right .sea-ship__callout {
+  right: 0;
+  left: auto;
+  transform: none;
+}
+
+.sea-ship--bottom .sea-ship__callout {
+  top: auto;
+  bottom: 50px;
+}
+
+@media (max-width: 900px) {
+  .sea-map__mobile-tools {
+    display: flex;
+  }
+
+  .sea-map__canvas {
+    min-width: 820px;
+  }
+
+}
+
+@media (max-width: 640px) {
+  .sea-map__viewport {
+    height: 540px;
+  }
+
+  .sea-map__canvas {
+    min-width: 760px;
+  }
+
+  .sea-island {
+    width: 150px;
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .sea-island__copy {
+    padding-inline: 10px;
+  }
+
+  .sea-island__copy strong {
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sea-map *,
+  .sea-map *::before,
+  .sea-map *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
