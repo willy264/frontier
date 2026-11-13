@@ -1,34 +1,21 @@
-# FRONTIER gaming design system
+# Gaming overrides: FRONTIER
 
-## Tokens
+## Color
 
-The implementation source of truth is `apps/game/app/globals.css`.
-
-| Role | Current token | Use |
-|---|---|---|
-| Ink | `--ink` | body text, primary controls, ship markers |
-| Muted | `--muted` | metadata and helper copy |
-| Paper | `--paper` | page background |
-| Cream | `--cream` | framed tool surfaces |
-| Line | `--line` | separators and borders |
-| Sea | `#e9f3f0` | map and economy canvas |
-| Danger | `--red` | ambush and failure actions |
-| Live | `#4f9e7d` | confirmed live state |
+Use the existing sea-green, paper, ink, and restrained island accents in `apps/game/app/globals.css`. The map surface carries the color. Red is danger, green is confirmed live state, and island colors are geography. Do not add purple gradients, neon glow, or arbitrary HUD colors.
 
 ## Type
 
-- Display and controls: Space Grotesk.
-- Contract labels and event output: DM Mono.
-- Maximum two families plus one mono family.
-- Do not introduce a third family for a single component.
+Keep Space Grotesk for readable interface text and DM Mono for contract labels, block windows, and event output. Do not introduce a condensed display font to the operational game screen.
 
 ## Shape and layout
 
-- Existing cards use a restrained 7px radius. Keep new framed tools at 8px or less.
-- Use the 4px spacing scale: 4, 8, 12, 16, 20, 24, 28, 32.
-- The map is an unframed working surface inside the page layout, not a marketing hero.
-- Do not place cards inside cards.
+Use the existing restrained radius, thin borders, stable map dimensions, and 4px spacing rhythm. The map is the focal surface. Cards frame individual tools only; do not nest cards.
 
-## State requirements
+## Components
 
-Every button and input needs hover, focus-visible, active, disabled, and pending treatment. Focus must remain visible. Touch targets should be 44px square or larger where possible, never below 24px.
+Required states include wallet, market, ship, ambush, escort, secret backup, result feed, read-only RPC mode, and transaction failure. Practice mode says `Guided tutorial` unless it actually moves scripted rivals.
+
+## Motion
+
+Low and functional. Animate only transform and opacity, keep markers state-derived, and disable non-essential movement under reduced motion.

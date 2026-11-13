@@ -1,27 +1,38 @@
-# Frontend QA checklist
+# Accessibility and design QA checklist
 
-## Automated
+Report each item as pass or fail with notes. Do not mark an item passed from assumption.
 
-- [ ] `pnpm test`
-- [ ] `pnpm exec tsc --noEmit`
-- [ ] `pnpm exec next build apps/game --webpack`
-- [ ] Relevant contract or integration tests pass.
+## Visual
 
-## Interaction
+- [ ] Only tokens used; raw colors and arbitrary values reviewed.
+- [ ] Two font families maximum plus one mono family.
+- [ ] One accent at about 10%; no banned patterns.
+- [ ] Spacing rhythm and grid alignment checked.
+- [ ] One icon library; no emoji in UI.
+- [ ] Interactive, empty, error, success, and loading states designed.
 
-- [ ] Every control has hover, focus-visible, active, disabled, and loading states.
-- [ ] Keyboard can reach and operate wallet, market, fleet, ambush, backup, and reveal controls.
-- [ ] Success and failure retain useful input and appear in the result feed.
-- [ ] Reduced motion removes non-essential animation.
-- [ ] RPC failure presents read-only mode without a broken layout.
+## Accessibility
 
-## Responsive
+- [ ] Text contrast >= 4.5:1, large text >= 3:1, UI and focus >= 3:1.
+- [ ] Full keyboard access, logical order, visible focus, and skip link where needed.
+- [ ] Focus is not hidden by sticky elements.
+- [ ] Targets >= 24x24px and 44x44px on touch.
+- [ ] Ordered headings, landmarks, and language metadata.
+- [ ] Alt text and accessible names are present.
+- [ ] Fields have labels and linked errors.
+- [ ] Reduced-motion path works and autoplay can pause.
+- [ ] Reflow works at 320px and 200% zoom.
 
-- [ ] 320px
-- [ ] 375px
-- [ ] 768px
-- [ ] 1024px
-- [ ] 1440px
-- [ ] 1920px
+## Responsive and performance
 
-Check normal and reduced-motion modes. Record Lighthouse accessibility and performance results when available; do not claim 100/90 scores without running Lighthouse.
+- [ ] 320, 375, 768, 1024, 1440, and 1920px checked in normal and reduced motion.
+- [ ] No horizontal overflow.
+- [ ] Lighthouse mobile run recorded if required: performance >= 90, accessibility 100, SEO 100.
+- [ ] Metadata, OG, canonical, and structured data are truthful.
+
+## Copy
+
+- [ ] Humanizer rules pass.
+- [ ] CTAs use verb plus object.
+- [ ] Every number has a source in the PRD or evidence.
+- [ ] Future work is not presented as live functionality.

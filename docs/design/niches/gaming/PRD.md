@@ -1,24 +1,22 @@
 # Gaming niche pack: FRONTIER
 
-## Direction
+FRONTIER is an on-chain strategy game, not a game marketing landing page. The live map and contract state are the first-viewport experience.
 
-Make the contract state feel like the game world. Prefer a readable command surface, map geography, status feeds, and meaningful risk indicators over decorative game chrome.
+## Goals
 
-## Visual decisions
+- Let a judge complete one readable trade, sail, escort, ambush, and arrival loop.
+- Make ownership, hidden information, and market risk legible.
+- Keep testnet limits and future systems explicit.
 
-- Use the existing sea-green paper, ink, and restrained island accents.
-- Keep the map as the largest visual surface.
-- Use mono labels for contract state, block windows, balances, and event output.
-- Reserve red for danger or rejected actions, green for confirmed live state, and island colors for geography.
-- Avoid fantasy ornament that implies systems the contract does not implement.
+## Required surfaces
 
-## Interaction decisions
+- Map with meaningful routes and live ship state.
+- Market with real quote, amount, and slippage.
+- Fleet with cargo and hidden destination.
+- Ambush commit and reveal with local backup.
+- Result feed with contract events.
+- Guided tutorial labelled accurately.
 
-- A judge should understand the next action without reading a long manual.
-- Every hidden-information action must expose its local backup and reveal path.
-- State is more important than animation. Markers and status labels must come from contract reads.
-- Practice mode must say `Guided tutorial` unless it is actually moving rival accounts.
+## Motion
 
-## Motion level
-
-Low. Use short opacity and transform transitions for state changes only. Disable non-essential movement under reduced motion.
+Motion level 1-2 for the operational game surface. Use expressive motion only for a future launch page with a static fallback. A 3D scene or hero effect is not part of this MVP.

@@ -1,12 +1,6 @@
 # UX principles and section blueprints
 
-## Principles
-
-1. Contract state outranks decoration.
-2. The next meaningful action is always visible.
-3. Hidden information gets a local backup and a clear reveal action.
-4. Errors preserve user input and explain recovery.
-5. Read-only and scripted states are labeled.
+One focal point per viewport. Use proximity, similarity, alignment, system status, real-world language, consistency, error recovery, recognition over recall, and minimalist presentation. Nothing essential is hover-only. A primary CTA follows the reading path. On long pages, keep the mobile primary action visible without blocking content.
 
 ## FRONTIER blueprint
 
@@ -19,3 +13,7 @@
 7. Ambush: route, stake, commit, backup, reveal.
 8. Result feed: contract events and transaction outcomes.
 9. Limits: future systems and testnet scope remain honest.
+
+## Responsive rules
+
+Stack in reading order. Use horizontal scroll only for carousels with visible overflow and controls. Test 320, 375, 414, 768, 1024, 1280, 1440, and 1920px. The live map is the product surface, not a decorative marketing hero.
