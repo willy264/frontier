@@ -11,16 +11,18 @@
 }
 
 .sea-map__mobile-tools {
-  position: absolute;
+  position: relative;
   z-index: 20;
-  top: 12px;
-  right: 12px;
+  top: 0;
+  right: 0;
   display: none;
   gap: 4px;
-  padding: 4px;
+  padding: var(--space-3);
   border: 1px solid var(--line-strong);
   background: var(--surface);
 }
+.sea-map__mobile-tools span { flex: 1; font-size: var(--text-xs); color: var(--muted); align-self: center; }
+.sea-direction { fill: none; stroke: var(--muted); stroke-width: 3; }
 
 .sea-map__mobile-tools button {
   width: 44px;

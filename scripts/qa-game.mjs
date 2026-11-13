@@ -1,10 +1,12 @@
-// Optional local QA tools live under ignored data/video-tools, never in the app bundle.
+// Root development dependency; this script is never imported by the Next app.
 import fs from 'node:fs/promises';
-import { chromium } from '../data/video-tools/node_modules/playwright/index.mjs';
+import { chromium } from 'playwright';
 const site = process.env.FRONTIER_QA_URL ?? 'http://localhost:3100';
 const out = 'results/design';
 await fs.mkdir(out, { recursive: true });
-const browser = await chromium.launch({ channel: 'msedge', headless: true });
+let browser;
+try { browser = await chromium.launch({ channel: 'msedge', headless: true }); }
+catch { browser = await chromium.launch({ headless: true }); }
 const results = [];
 try {
   for (const width of [320, 360, 390, 450, 768, 1024, 1280, 1440, 1536, 1920]) {
@@ -24,4 +26,8 @@ try {
   }
   await fs.writeFile(`${out}/responsive.json`, JSON.stringify({ site, checkedAt: new Date().toISOString(), results }, null, 2));
   console.log(JSON.stringify(results, null, 2));
+  if (results.some(result => result.scrollWidth > result.viewport || result.errors.length || result.targets.length)) {
+    console.error('Responsive QA failed: overflow, page errors, or targets below 24px.');
+    process.exitCode = 1;
+  }
 } finally { await browser.close(); }

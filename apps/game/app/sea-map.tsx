@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, type CSSProperties, type KeyboardEvent } from "react";
+import { useEffect, useId, useRef, type CSSProperties, type KeyboardEvent } from "react";
 
 export type SeaMapIsland = {
   id: number;
@@ -111,6 +111,9 @@ export function SeaMap({
   const viewportRef = useRef<HTMLDivElement>(null);
   const patternId = `sea-chart-${useId().replaceAll(":", "")}`;
   const islandById = new Map(islands.map((island) => [island.id, island]));
+  useEffect(() => {
+    viewportRef.current?.querySelector<HTMLElement>(`[data-port="${selectedIsland}"]`)?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "instant" });
+  }, [selectedIsland]);
 
   function pan(direction: -1 | 1) {
     const viewport = viewportRef.current;
@@ -127,6 +130,7 @@ export function SeaMap({
   return (
     <section className="sea-map" aria-label="Archipelago navigation map">
       <div className="sea-map__mobile-tools" aria-label="Map controls">
+        <span>Swipe or use arrows to see all ports.</span>
         <button type="button" onClick={() => pan(-1)} aria-label="Pan map left" title="Pan map left">
           <ControlIcon direction="left" />
         </button>
@@ -185,7 +189,7 @@ export function SeaMap({
                   role="button"
                   tabIndex={0}
                   aria-pressed={selected}
-                  aria-label={`${from.name} to ${to.name}, ${route.blocks} travel blocks`}
+                  aria-label={`From ${from.name} to ${to.name}, ${route.blocks} travel blocks`}
                   onClick={() => onRoute(route.id)}
                   onKeyDown={(event) => handleRouteKey(event, route.id)}
                 >
@@ -206,6 +210,7 @@ export function SeaMap({
                     vectorEffect="non-scaling-stroke"
                   />
                   <circle className="sea-route-endpoint" cx={points.x1} cy={points.y1} r="5" />
+                  <path className="sea-direction" d="M-8-7L3 0-8 7" transform={`translate(${points.x1 + (points.x2 - points.x1) * .7} ${points.y1 + (points.y2 - points.y1) * .7}) rotate(${Math.atan2(points.y2 - points.y1, points.x2 - points.x1) * 180 / Math.PI})`} aria-hidden="true" />
                   <circle className="sea-route-endpoint" cx={points.x2} cy={points.y2} r="5" />
                   <g className="sea-route-label" transform={`translate(${points.labelX} ${points.labelY})`}>
                     <rect x="-43" y="-14" width="86" height="28" />
@@ -232,6 +237,7 @@ export function SeaMap({
               return (
                 <button
                   key={island.id}
+                  data-port={island.id}
                   type="button"
                   className={`sea-island ${goodClass(island.good)}${selected ? " sea-island--selected" : ""}`}
                   style={positionStyle(island.x, island.y)}
