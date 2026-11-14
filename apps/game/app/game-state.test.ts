@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SESSION_METHODS, WALLET_METHODS, ambushWindow, arrivalMessage, dockedAt, isFinalHarbour, minimumOutput, voyageProgress, wholeAmount, type Ship } from "./game-state";
+import { SESSION_METHODS, WALLET_METHODS, ambushWindow, isRejected, arrivalMessage, dockedAt, isFinalHarbour, minimumOutput, voyageProgress, wholeAmount, type Ship } from "./game-state";
 describe("game presentation from contract state", () => {
   const ship = { origin_port: null, current_port: null, departed_at: 0 } as Ship;
   it("does not put a newly built ship at sea", () => expect(voyageProgress(ship, undefined, 100).sailing).toBe(false));
@@ -44,5 +44,13 @@ describe("game presentation from contract state", () => {
     for (const method of WALLET_METHODS) expect(SESSION_METHODS).not.toContain(method);
     expect(WALLET_METHODS).toEqual(expect.arrayContaining(["hire_escort", "buy_port", "set_port_sale_price"]));
     expect(SESSION_METHODS).toEqual(expect.arrayContaining(["buy", "sell", "depart", "arrive", "commit_ambush", "reveal_ambush"]));
+  });
+  it("drops hidden orders only when the chain rejected them", () => {
+    expect(isRejected('{"ActionError":{"index":0,"kind":{"FunctionCallError":{"ExecutionError":"Smart contract panicked: ERR_COMMIT_SPAM"}}}}')).toBe(true);
+    expect(isRejected("[publishing_transaction_failed_final_execution_outcome]")).toBe(true);
+    expect(isRejected("Smart contract panicked: panicked at src/lib.rs:565:56: ERR_NO_AMBUSH")).toBe(true);
+    expect(isRejected("TypeError: fetch failed")).toBe(false);
+    expect(isRejected("User rejected the request")).toBe(false);
+    expect(isRejected("Access key ed25519:abc does not exist at block height 1")).toBe(false);
   });
 });

@@ -5,7 +5,7 @@ import type { NearConnector } from "@hot-labs/near-connect";
 import { hasGameKey, readRpc, view } from "./read-rpc";
 import { createReadCache, pollDelay } from "./read-cache";
 export { view } from "./read-rpc";
-import { arrivalMessage, WORLD, RPC, SESSION_METHODS, WALLET_METHODS, type Port, type Route, type Ship, type Player, type Order, type GameEvent, type EconomySnapshot } from "./game-state";
+import { arrivalMessage, isRejected, WORLD, RPC, SESSION_METHODS, WALLET_METHODS, type Port, type Route, type Ship, type Player, type Order, type GameEvent, type EconomySnapshot } from "./game-state";
 
 const keySlot = `frontier-game-key:${WORLD}`;
 const GAME_KEY_ALLOWANCE = "1000000000000000000000000";
@@ -164,7 +164,7 @@ export function useGame() {
     finally { lock.current = false; setPending(null); }
   }
   async function disconnect() { await connector.current?.disconnect(); setAccountId(null); setKeyReady(false); sessionStorage.removeItem(keySlot); }
-  async function call(method: string, args: Record<string, unknown>, success: string, arrival?: { destination: number; cargo: number[]; escorted: boolean }) {
+  async function call(method: string, args: Record<string, unknown>, success: string, arrival?: { destination: number; cargo: number[]; escorted: boolean }, onRejected?: () => void) {
     if (lock.current) return null;
     if (!accountId) { setMessage("Connect your testnet wallet to play."); return null; }
     if (!connector.current) { setMessage("Wallet tools are still loading. Try again in a moment."); return null; }
@@ -199,8 +199,10 @@ export function useGame() {
       notify(confirmedMessage, tone, tx); retry(); return result;
     } catch (error) {
       const detail = error instanceof Error ? error.message : String(error);
-      const errors: Record<string, string> = { ERR_SLIPPAGE: "The market price moved. Review the new quote and try again.", ERR_CRED_FUNDS: "You need more CRED for this order.", ERR_CARGO_FUNDS: "Your available cargo changed. Reload the port and adjust the load.", ERR_TOO_EARLY: "Your convoy is still sailing. Wait for the countdown.", ERR_REVEAL_LATE: "The ambush window has closed.", ERR_PLAYER_EXISTS: "This captain is already registered. Refresh your fleet.", ERR_ESCORT_LOCKED: "This ship is escorting a convoy. Wait for its arrival.", ERR_WINDOW: "That ambush window had already started. Choose a later window and try again.", ERR_COMMIT_SPAM: "You already have three active ambushes. Spring one or wait for it to expire.", publishing_transaction_failed: "The contract rejected this order. For ambushes this usually means the window passed while the wallet was open; check the countdown and try again." };
+      const errors: Record<string, string> = { ERR_SLIPPAGE: "The market price moved. Review the new quote and try again.", ERR_CRED_FUNDS: "You need more CRED for this order.", ERR_CARGO_FUNDS: "Your available cargo changed. Reload the port and adjust the load.", ERR_TOO_EARLY: "Your convoy is still sailing. Wait for the countdown.", ERR_REVEAL_LATE: "The ambush window has closed.", ERR_PLAYER_EXISTS: "This captain is already registered. Refresh your fleet.", ERR_ESCORT_LOCKED: "This ship is escorting a convoy. Wait for its arrival.", ERR_WINDOW: "That ambush window had already started. Choose a later window and try again.", ERR_COMMIT_SPAM: "You already have three active ambushes. Spring one or wait for it to expire.", publishing_transaction_failed: "The contract rejected this order. Refresh the world, then check your CRED, cargo, active ambushes and the ambush countdown before retrying." };
       if (isKeyMissing(error)) { signer.current = "wallet"; setMessage("Your wallet could not sign this order. Try again; your wallet may ask you to approve it."); return null; }
+      // A rejected order never reached contract state, so drop any hidden order saved for it.
+      if (isRejected(detail)) onRejected?.();
       setMessage(Object.entries(errors).find(([code]) => detail.includes(code))?.[1] ?? "The order was not confirmed. Refresh before retrying; check your wallet activity if it persists.");
       return null;
     } finally { lock.current = false; setPending(null); }

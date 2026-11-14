@@ -24,6 +24,9 @@ export const AMBUSH_SPAN = 20;
 export const AMBUSH_LEAD_OPTIONS = [30, 60, 120];
 export const BLOCK_SECONDS = 0.65;
 export const aboutSeconds = (blocks: number) => `about ${Math.max(1, Math.round(blocks * BLOCK_SECONDS))} s`;
+// The chain executed an order and rejected it (contract panic, or a wallet reporting a failed outcome).
+// Network errors are not rejections: the order may still have landed, so its hidden salt must be kept.
+export const isRejected = (detail: string) => /ERR_[A-Z_]+|Smart contract panicked|publishing_transaction_failed|ActionError|FunctionCallError/.test(detail);
 export const portName = (id: number) => ISLANDS.find(p => p.id === id)?.name ?? "an unknown port";
 // Client rule: the contract does not check where goods are, so this client only sells where a ship is docked.
 export const dockedAt = (ships: Array<[number, Ship]>, portId: number) => ships.some(([, s]) => s.current_port === portId && s.origin_port === null);
