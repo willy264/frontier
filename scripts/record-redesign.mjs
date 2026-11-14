@@ -417,7 +417,8 @@ try {
   assert.equal(Number(route.from_port), 1);
   assert.equal(Number(route.to_port), 2);
   const beforeAmbushHeight = Number((await provider.viewBlock({ finality: "final" })).header.height);
-  const windowStart = beforeAmbushHeight + 15;
+  // Slow RPCs need several seconds per call, so leave enough blocks for the rival commit to land first.
+  const windowStart = beforeAmbushHeight + 40;
   const windowEnd = windowStart + 20;
   const ambushSalt = `redesign-${randomBytes(12).toString("hex")}`;
   const ambushCommit = hash(`1:${windowStart}:${ambushSalt}:${rivalId}`);
@@ -465,10 +466,10 @@ try {
   const finalPlayer = await waitView("get_player", { account_id: captainId }, player => Number(player?.goods?.[goodIndex]) === 0);
   assert(Number(finalPlayer.cred) > Number(afterArrival.cred));
 
-  begin("raid", "07 / SET AND SPRING AN AMBUSH", "Now the captain turns raider. The idle sloop sets an ambush on the Bitcoin Isle to Solana Reef route with a window opening in 10 blocks, then springs it through the interface.", started);
+  begin("raid", "07 / SET AND SPRING AN AMBUSH", "Now the captain turns raider. The idle sloop sets an ambush on the Bitcoin Isle to Solana Reef route with a window opening in 30 blocks, then springs it through the interface.", started);
   const captainBeforeRaid = await view("get_player", { account_id: captainId });
   await page.getByRole("button", { name: "Ambush", exact: true }).click();
-  await page.getByRole("combobox", { name: /Window opens in/ }).selectOption("10");
+  await page.getByRole("combobox", { name: /Window opens in/ }).selectOption("30");
   await scanAccessibility("authenticated-ambush");
   const raidCommitReceipt = await uiTransaction("Set ambush", "commit_ambush", "UI: captain commits ambush with chosen window", "Ambush set");
   const raidRevealReceipt = await uiTransaction("Spring ambush", "reveal_ambush", "UI: captain springs ambush", "Ambush sprung");

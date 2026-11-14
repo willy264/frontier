@@ -2,7 +2,7 @@
 import { useState } from "react";
 import type { Game, Mode } from "./page";
 import { digest, seal, view } from "./use-game";
-import { AMBUSH_LEAD_OPTIONS, GOODS, ISLANDS, ambushWindow, dockedAt, isFinalHarbour, minimumOutput, portName, voyageProgress, wholeAmount, type Order, type Ship } from "./game-state";
+import { AMBUSH_LEAD_OPTIONS, AMBUSH_SPAN, GOODS, ISLANDS, aboutSeconds, ambushWindow, dockedAt, isFinalHarbour, minimumOutput, portName, voyageProgress, wholeAmount, type Order, type Ship } from "./game-state";
 import { marketQuote } from "./quotes";
 import { builtShipId } from "./transaction-result";
 import { openEscortOffers, type EscortOffer } from "./escort-board";
@@ -20,7 +20,7 @@ export function ActionPanel({ game, mode, setMode, portId, setPortId, shipId, se
   const [offerId, setOfferId] = useState("");
   const [offer, setOffer] = useState<{ ship_id: number; owner_id: string; price: number; defence: number; active: boolean } | null>(null);
   const [offerState, setOfferState] = useState("");
-  const [lead, setLead] = useState(30);
+  const [lead, setLead] = useState(60);
   const [board, setBoard] = useState<Array<EscortOffer & { offer_id: number }> | null>(null);
   const [boardState, setBoardState] = useState("");
   const busy = !!game.pending || game.readState !== "ready";
@@ -72,6 +72,10 @@ export function ActionPanel({ game, mode, setMode, portId, setPortId, shipId, se
     } catch { game.notify("Your ambush could not be prepared. Check your connection and browser storage, then try again.", "danger"); }
   }
   async function spring(order: Order) {
+    // The polled height can be seconds old. Check the chain before sending a reveal that would fail late.
+    const now = (await readRpc<{ header: { height: number } }>("block", { finality: "final" })).header.height;
+    const closes = (order.window ?? 0) + AMBUSH_SPAN;
+    if (now >= closes) { game.notify(`This ambush window closed at block ${closes}. Unsprung stakes are lost when the epoch advances.`, "danger"); return; }
     const result = await game.call("reveal_ambush", { commit_id: await digest(`${order.routeId}:${order.window}:${order.salt}:${game.accountId}`), route_id: order.routeId, salt: order.salt }, `Ambush sprung on the ${portName(order.destination)} route. Waiting for a convoy.`);
     if (result) game.remember({ ...order, revealed: true, confirmed: true });
   }
@@ -101,9 +105,9 @@ export function ActionPanel({ game, mode, setMode, portId, setPortId, shipId, se
     <details><summary>Port ownership</summary><p>Fee {port.fee_bps / 100}%. Treasury {port.treasury} CRED.</p>{port.owner_id === game.accountId ? <><label>Trading fee (%)<input type="number" min="0.3" max="10" step="0.1" value={fee} onChange={e => setFee(e.target.value)} /></label>{action("Set port fee", () => game.call("set_fee", { port_id: portId, fee_bps: Math.round(Number(fee) * 100) }, "Port fee updated."), !Number.isFinite(Number(fee)) || Number(fee) < .3 || Number(fee) > 10)}</> : port.sale_price > 0 ? <>{action(`Buy port · ${port.sale_price}`, () => game.call("buy_port", { port_id: portId }, "Port purchased, including its treasury."), game.player.cred < port.sale_price)}<small>Your wallet asks you to approve port purchases. Port fees stay in the port treasury; the current contract has no withdrawal.</small></> : <p>This port is not for sale.</p>}</details>
   </>}</>;
   else if (activeMode === "ambush") content = <><span className="eyebrow danger-text">Route ambush</span><h2>Wait in the narrows.</h2><p>{ambushRoute ? `${portName(ambushRoute.from_port)} to ${portName(ambushRoute.to_port)}` : "Select a route on the map."}</p><p>Your idle ships supply attack power. An ambush catches convoys that set sail on this route during its 20-block window.</p><p className="muted">Stake 10 CRED. Spring the ambush before those convoys reach harbour. A sprung ambush is public contract state. Unsprung ambushes lose the stake.</p>
-    <label>Window opens in<select value={lead} onChange={e => setLead(Number(e.target.value))}>{AMBUSH_LEAD_OPTIONS.map(n => <option key={n} value={n}>{n} blocks</option>)}</select></label>
+    <label>Window opens in<select value={lead} onChange={e => setLead(Number(e.target.value))}>{AMBUSH_LEAD_OPTIONS.map(n => <option key={n} value={n}>{n} blocks ({aboutSeconds(n)})</option>)}</select></label>
     {action("Set ambush", setAmbush, !ambushRoute || game.player.cred < 10 || !game.ships.some(([, s]) => s.origin_port === null && s.escorting_convoy_id === null), true)}
-    {game.orders.filter(o => o.kind === "ambush").map(order => { const w = ambushWindow(order, game.height); return <div className="order" key={order.id}><h3>{portName(order.destination)} route</h3><p>{order.revealed ? `Ambush sprung. Departures in blocks ${w.start} to ${w.end} face your raid.` : w.opensIn > 0 ? `Window opens in ${w.opensIn} blocks and covers departures in blocks ${w.start} to ${w.end}.` : w.remaining > 0 ? `${w.remaining} blocks left to spring the ambush` : "Window closed. Unopened stakes are lost when the epoch advances."}</p><progress max={w.span} value={w.remaining} aria-label="Ambush window remaining" />{!order.revealed && action("Spring ambush", () => spring(order), w.remaining === 0, true)}{order.confirmed === false && <small>Confirmation uncertain. Check wallet activity before retrying.</small>}</div>; })}<button className="secondary" onClick={game.backup} disabled={!game.orders.length}>Back up hidden orders</button>
+    {game.orders.filter(o => o.kind === "ambush").map(order => { const w = ambushWindow(order, game.height); return <div className="order" key={order.id}><h3>{portName(order.destination)} route</h3><p>{order.revealed ? `Ambush sprung. Departures in blocks ${w.start} to ${w.end} face your raid.` : w.opensIn > 0 ? `Window opens in ${w.opensIn} blocks and covers departures in blocks ${w.start} to ${w.end}. Spring it before block ${w.end} (${aboutSeconds(w.remaining)} left).` : w.remaining > 0 ? `${w.remaining} blocks left to spring the ambush (${aboutSeconds(w.remaining)}).` : "Window closed. Unopened stakes are lost when the epoch advances."}</p><progress max={w.span} value={w.remaining} aria-label="Ambush window remaining" />{!order.revealed && action("Spring ambush", () => spring(order), w.remaining === 0, true)}{order.confirmed === false && <small>Confirmation uncertain. Check wallet activity before retrying.</small>}</div>; })}<button className="secondary" onClick={game.backup} disabled={!game.orders.length}>Back up hidden orders</button>
   </>;
   else content = <><span className="eyebrow">Your fleet</span><h2>{game.ships.length ? "Make sail, captain." : "Your cargo needs a ship."}</h2>
     {!game.ships.length ? <><p>A sloop costs 100 CRED and has 1 defence. A galleon costs 350 CRED and has 3 defence.</p>{action("Build sloop · 100", () => build("sloop"), game.player.cred < 100)}<button className="secondary" disabled={busy || game.player.cred < 350} onClick={() => build("galleon")}>Build galleon · 350</button></> : <>

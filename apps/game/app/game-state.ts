@@ -20,7 +20,10 @@ export const SESSION_METHODS = ["register_player", "buy", "sell", "build_ship", 
 // These move CRED or ports to another account, so the wallet signs each one.
 export const WALLET_METHODS = ["hire_escort", "buy_port", "set_port_sale_price"];
 export const AMBUSH_SPAN = 20;
-export const AMBUSH_LEAD_OPTIONS = [10, 30, 60, 120];
+// Wallet prompts take seconds, so the shortest lead leaves room to approve. Testnet blocks are about 0.65 s.
+export const AMBUSH_LEAD_OPTIONS = [30, 60, 120];
+export const BLOCK_SECONDS = 0.65;
+export const aboutSeconds = (blocks: number) => `about ${Math.max(1, Math.round(blocks * BLOCK_SECONDS))} s`;
 export const portName = (id: number) => ISLANDS.find(p => p.id === id)?.name ?? "an unknown port";
 // Client rule: the contract does not check where goods are, so this client only sells where a ship is docked.
 export const dockedAt = (ships: Array<[number, Ship]>, portId: number) => ships.some(([, s]) => s.current_port === portId && s.origin_port === null);
