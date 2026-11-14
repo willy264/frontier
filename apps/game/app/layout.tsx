@@ -31,8 +31,10 @@ const bodyFont = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://frontier-willy264s-projects.vercel.app"),
   title: "FRONTIER | On-chain trading empire",
-  description: "A persistent strategy and trading game on NEAR."
+  description: "Trade cargo, sail hidden routes and hire escorts in FRONTIER, a strategy game on NEAR testnet.",
+  twitter: { card: "summary_large_image" }
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

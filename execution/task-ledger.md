@@ -1,5 +1,9 @@
 # FRONTIER Task Ledger
 
+## Preview checks, 14 November 2026 00:10 UTC
+
+11h50 to redesign cutoff; 23h49 to submission. redesign pushed at 374da82; preview dpl_829b4f37JbQgVD8j3Per9DWhmZ4q. Responsive QA passes 20 viewport/motion combinations. Axe/assets/keyboard/RPC-error checks, Lighthouse, updated build and fresh testnet escort round in progress. Production remains old verified version; tag unchanged. Pending local polish and metadata fix require new preview verification before release.
+
 ## Release hold, 13 November 2026 19:12 UTC
 
 Local implementation progress: portable QA script/root Playwright installed; mobile controls/hint/selection scrolling and route arrows implemented; sail favicon/app icons/manifest/OG generated. TypeScript passes for map changes. Full QA, preview, live loop, promotion/tag, video remain pending. Keep main unpushed to preserve the public alias.

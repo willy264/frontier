@@ -1,0 +1,186 @@
+{
+  "site": "https://frontier-jkp1mo85m-willy264s-projects.vercel.app",
+  "checkedAt": "2026-11-14T00:05:56.843Z",
+  "results": [
+    {
+      "width": 320,
+      "reducedMotion": "no-preference",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 320,
+      "reducedMotion": "reduce",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 360,
+      "reducedMotion": "no-preference",
+      "viewport": 360,
+      "scrollWidth": 360,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 360,
+      "reducedMotion": "reduce",
+      "viewport": 360,
+      "scrollWidth": 360,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 390,
+      "reducedMotion": "reduce",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 450,
+      "reducedMotion": "no-preference",
+      "viewport": 450,
+      "scrollWidth": 450,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 450,
+      "reducedMotion": "reduce",
+      "viewport": 450,
+      "scrollWidth": 450,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 768,
+      "reducedMotion": "no-preference",
+      "viewport": 768,
+      "scrollWidth": 768,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 768,
+      "reducedMotion": "reduce",
+      "viewport": 768,
+      "scrollWidth": 768,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "reducedMotion": "no-preference",
+      "viewport": 1024,
+      "scrollWidth": 1024,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "reducedMotion": "reduce",
+      "viewport": 1024,
+      "scrollWidth": 1024,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 1280,
+      "reducedMotion": "no-preference",
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 1280,
+      "reducedMotion": "reduce",
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "reducedMotion": "no-preference",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 1536,
+      "reducedMotion": "no-preference",
+      "viewport": 1536,
+      "scrollWidth": 1536,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 1536,
+      "reducedMotion": "reduce",
+      "viewport": 1536,
+      "scrollWidth": 1536,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 1920,
+      "reducedMotion": "no-preference",
+      "viewport": 1920,
+      "scrollWidth": 1920,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    },
+    {
+      "width": 1920,
+      "reducedMotion": "reduce",
+      "viewport": 1920,
+      "scrollWidth": 1920,
+      "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
+      "targets": [],
+      "errors": []
+    }
+  ]
+}

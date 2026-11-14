@@ -1,0 +1,97 @@
+{
+  "site": "https://frontier-jkp1mo85m-willy264s-projects.vercel.app",
+  "evidence": [
+    {
+      "width": 390,
+      "violations": [],
+      "assets": [
+        {
+          "kind": "icon",
+          "url": "https://frontier-jkp1mo85m-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
+          "status": 200
+        },
+        {
+          "kind": "manifest",
+          "url": "https://frontier-jkp1mo85m-willy264s-projects.vercel.app/manifest.webmanifest",
+          "status": 200
+        },
+        {
+          "kind": "og",
+          "url": "https://frontier-git-redesign-willy264s-projects.vercel.app/opengraph-image.png?cda4905d5b12be5c",
+          "status": 200
+        }
+      ],
+      "cls": 0,
+      "ports": [
+        {
+          "name": "Bitcoin Isle",
+          "visible": true
+        },
+        {
+          "name": "Solana Reef",
+          "visible": true
+        },
+        {
+          "name": "Base Harbor",
+          "visible": true
+        },
+        {
+          "name": "Tron Bay",
+          "visible": true
+        },
+        {
+          "name": "NEAR Capital",
+          "visible": true
+        }
+      ],
+      "errorState": true,
+      "keyboardDialog": true
+    },
+    {
+      "width": 1440,
+      "violations": [],
+      "assets": [
+        {
+          "kind": "icon",
+          "url": "https://frontier-jkp1mo85m-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
+          "status": 200
+        },
+        {
+          "kind": "manifest",
+          "url": "https://frontier-jkp1mo85m-willy264s-projects.vercel.app/manifest.webmanifest",
+          "status": 200
+        },
+        {
+          "kind": "og",
+          "url": "https://frontier-git-redesign-willy264s-projects.vercel.app/opengraph-image.png?cda4905d5b12be5c",
+          "status": 200
+        }
+      ],
+      "cls": 0.004414196400583526,
+      "ports": [
+        {
+          "name": "Bitcoin Isle",
+          "visible": true
+        },
+        {
+          "name": "Solana Reef",
+          "visible": true
+        },
+        {
+          "name": "Base Harbor",
+          "visible": true
+        },
+        {
+          "name": "Tron Bay",
+          "visible": true
+        },
+        {
+          "name": "NEAR Capital",
+          "visible": true
+        }
+      ],
+      "errorState": true,
+      "keyboardDialog": true
+    }
+  ]
+}
