@@ -34,6 +34,12 @@ const captainId = process.env.FRONTIER_VIDEO_ACCOUNT ?? `cap${accountSuffix}.${r
 const escortId = process.env.FRONTIER_ESCORT_ACCOUNT ?? `esc${accountSuffix}.${rootId}`;
 const rivalId = process.env.FRONTIER_RIVAL_ACCOUNT ?? `riv${accountSuffix}.${rootId}`;
 const existingOfferId = Number(process.env.FRONTIER_ESCORT_OFFER_ID ?? 0);
+// Each round moves both markets, so the cargo good and spend are configurable to keep the sale above zero.
+const goods = ["Hashpower", "Liquidity", "Blockspace"];
+const goodIndex = goods.indexOf(process.env.FRONTIER_ROUND_GOOD ?? "Liquidity");
+const goodName = goods[goodIndex];
+const spendCred = Number(process.env.FRONTIER_ROUND_SPEND ?? 400);
+assert(goodIndex >= 0 && Number.isSafeInteger(spendCred) && spendCred > 0 && spendCred <= 700, "FRONTIER_ROUND_GOOD or FRONTIER_ROUND_SPEND is invalid");
 
 for (const accountId of [rootId, world, captainId, escortId, rivalId]) assert(accountId.endsWith(".testnet"), `Refusing non-testnet account: ${accountId}`);
 await fs.mkdir(out, { recursive: true });
@@ -342,11 +348,12 @@ try {
   await recoverReads(spendInput, "ready market controls");
   await scanAccessibility("authenticated-market");
 
-  begin("trade-build", "02 / BUY CARGO AND BUILD A SLOOP", "The captain spends CRED for Hashpower and builds a defence-one sloop. The market quote and resulting inventory both come from the deployed contract.", started);
-  await spendInput.fill("300");
-  const buyReceipt = await uiTransaction("Buy cargo", "buy", "UI: buy Hashpower cargo", "Bought");
-  const afterBuy = await waitView("get_player", { account_id: captainId }, player => Number(player?.goods?.[0]) > 0);
-  const purchasedCargo = Number(afterBuy.goods[0]);
+  begin("trade-build", "02 / BUY CARGO AND BUILD A SLOOP", `The captain spends ${spendCred} CRED on ${goodName} and builds a defence-one sloop. The market quote and resulting inventory both come from the deployed contract.`, started);
+  await page.getByRole("combobox", { name: /^Good/ }).selectOption(String(goodIndex));
+  await spendInput.fill(String(spendCred));
+  const buyReceipt = await uiTransaction("Buy cargo", "buy", `UI: buy ${goodName} cargo`, "Bought");
+  const afterBuy = await waitView("get_player", { account_id: captainId }, player => Number(player?.goods?.[goodIndex]) > 0);
+  const purchasedCargo = Number(afterBuy.goods[goodIndex]);
   const buildButton = page.getByRole("button", { name: /Build sloop/ }).first();
   await recoverReads(buildButton, "enabled sloop build action");
   const buildReceipt = await uiTransaction(buildButton, "build_ship", "UI: build captain sloop", "Sloop built");
@@ -393,9 +400,9 @@ try {
   assert(departureBlock >= windowStart && departureBlock <= windowEnd, `Departure ${departureBlock} missed ambush window ${windowStart}-${windowEnd}`);
   assert.equal(Number(departedShip.escort_ship_id), escortShipId);
   const loadedCargo = departedShip.cargo.map(Number);
-  assert.equal(loadedCargo[0], purchasedCargo);
-  assert.equal(loadedCargo[1] + loadedCargo[2], 0);
-  const beforeArrivalPlayer = await waitView("get_player", { account_id: captainId }, player => Number(player?.goods?.[0]) === 0);
+  assert.equal(loadedCargo[goodIndex], purchasedCargo);
+  assert.equal(loadedCargo.reduce((total, value) => total + value, 0), purchasedCargo);
+  const beforeArrivalPlayer = await waitView("get_player", { account_id: captainId }, player => Number(player?.goods?.[goodIndex]) === 0);
   await page.screenshot({ path: path.join(out, "escorted-departure.png") });
 
   begin("arrive", "05 / ARRIVE WITH FULL CARGO", "The contract resolves the voyage after the route distance. The proof compares the loaded ship cargo with the captain's credited inventory, alongside the exact rival power and window, rather than inferring protection from an event flag.", started);
@@ -412,21 +419,22 @@ try {
   assert.equal(arrivedEscort.escorting_convoy_id, null);
   assert.equal(Number(arrivedEscort.current_port), 2);
   await page.screenshot({ path: path.join(out, "full-cargo-arrival.png") });
-  const sellInput = page.getByLabel("Sell Hashpower", { exact: true });
+  const sellInput = page.getByLabel(`Sell ${goodName}`, { exact: true });
   await recoverReads(sellInput, "ready destination market controls");
 
-  begin("sell", "06 / SELL AT THE DESTINATION", "At Solana Reef, the captain sells every surviving unit through the live market. The final state confirms the Hashpower inventory was sold after arriving intact.", started);
-  const sellAmount = Number(afterArrival.goods[0]);
-  assert.equal(sellAmount, loadedCargo[0]);
+  begin("sell", "06 / SELL AT THE DESTINATION", `At Solana Reef, the captain sells every surviving unit through the live market. The final state confirms the ${goodName} inventory was sold after arriving intact. The sale price is whatever the live market pays; this voyage is not a profit claim.`, started);
+  const sellAmount = Number(afterArrival.goods[goodIndex]);
+  assert.equal(sellAmount, loadedCargo[goodIndex]);
   await sellInput.fill(String(sellAmount));
   const sellReceipt = await uiTransaction("Sell cargo", "sell", "UI: sell full preserved cargo", "Sold cargo");
-  const finalPlayer = await waitView("get_player", { account_id: captainId }, player => Number(player?.goods?.[0]) === 0);
+  const finalPlayer = await waitView("get_player", { account_id: captainId }, player => Number(player?.goods?.[goodIndex]) === 0);
   assert(Number(finalPlayer.cred) > Number(afterArrival.cred));
 
   begin("raid", "07 / SET AND SPRING AN AMBUSH", "Now the captain turns raider. The idle sloop sets an ambush on the Bitcoin Isle to Solana Reef route with a window opening in 10 blocks, then springs it through the interface.", started);
   const captainBeforeRaid = await view("get_player", { account_id: captainId });
   await page.getByRole("button", { name: "Ambush", exact: true }).click();
-  await page.getByLabel("Window opens in", { exact: true }).selectOption("10");
+  await page.getByRole("combobox", { name: /Window opens in/ }).selectOption("10");
+  await scanAccessibility("authenticated-ambush");
   const raidCommitReceipt = await uiTransaction("Set ambush", "commit_ambush", "UI: captain commits ambush with chosen window", "Ambush set");
   const raidRevealReceipt = await uiTransaction("Spring ambush", "reveal_ambush", "UI: captain springs ambush", "Ambush sprung");
   const captainAfterRaid = await waitView("get_player", { account_id: captainId }, player => Number(player?.active_commits) === Number(captainBeforeRaid.active_commits) + 1);
@@ -455,13 +463,13 @@ try {
     accessibility,
     proof: {
       freshCaptain: { initialPlayer: initialCaptain, registeredPlayer: registeredCaptain, registerReceipt: registerReceipt.explorer },
-      purchaseAndSloop: { purchasedHashpower: purchasedCargo, captainShipId, defence: 1, buyReceipt: buyReceipt.explorer, buildReceipt: buildReceipt.explorer },
+      purchaseAndSloop: { good: goodName, spentCred: spendCred, purchasedUnits: purchasedCargo, captainShipId, defence: 1, buyReceipt: buyReceipt.explorer, buildReceipt: buildReceipt.explorer },
       escort: { offerId, shipId: escortShipId, defence: Number(escortOffer.defence), ownerId: escortOffer.owner_id, hireReceipt: hireReceipt.explorer, linkedConvoyShipId: Number(linkedEscort.escorting_convoy_id) },
       rivalPower: { exactIdlePower: rivalPower, requiredBounds: { greaterThan: 1, lessThanOrEqual: 4 }, withinRequiredBounds: rivalPower > 1 && rivalPower <= 4, basis: "The rival account's complete ships_for_owner result contained exactly two idle defence-1 sloops and no other ships.", ships: rivalShips.map(([id, ship]) => ({ shipId: Number(id), defence: Number(ship.defence), routeId: ship.route_id, originPort: ship.origin_port, escortingConvoyId: ship.escorting_convoy_id })) },
       ambushWindow: { routeId: 1, fromPort: Number(route.from_port), toPort: Number(route.to_port), windowStart, windowEnd, departureBlock, enclosesDeparture: windowStart <= departureBlock && departureBlock <= windowEnd, rivalActiveCommits: { before: Number(rivalBeforeAmbush.active_commits), afterReveal: Number(rivalAfterReveal.active_commits), afterArrival: Number(rivalAfterArrival.active_commits), targetedAmbushResolved: Number(rivalBeforeAmbush.active_commits) === 0 && Number(rivalAfterReveal.active_commits) === 1 && Number(rivalAfterArrival.active_commits) === 0 }, commitReceipt: commitCall.receipt.explorer, revealReceipt: revealCall.receipt.explorer, departReceipt: departReceipt.explorer },
       cargoPreservation: { loadedCargo, captainGoodsBeforeArrival: beforeArrivalPlayer.goods.map(Number), captainGoodsAfterArrival: afterArrival.goods.map(Number), fullCargoPreserved: afterArrival.goods.every((value, index) => Number(value) === Number(beforeArrivalPlayer.goods[index]) + loadedCargo[index]), arrivalReceipt: arriveReceipt.explorer },
       captainAmbush: { activeCommits: { before: Number(captainBeforeRaid.active_commits), after: Number(captainAfterRaid.active_commits) }, stakeCred: Number(captainBeforeRaid.cred) - Number(captainAfterRaid.cred), commitReceipt: raidCommitReceipt.explorer, revealReceipt: raidRevealReceipt.explorer },
-      sale: { soldHashpower: sellAmount, finalGoods: finalPlayer.goods.map(Number), finalCred: Number(finalPlayer.cred), saleReceipt: sellReceipt.explorer },
+      sale: { good: goodName, soldUnits: sellAmount, creditedCred: Number(finalPlayer.cred) - Number(afterArrival.cred), finalGoods: finalPlayer.goods.map(Number), finalCred: Number(finalPlayer.cred), saleReceipt: sellReceipt.explorer },
     },
     uiTransactions: [registerReceipt, buyReceipt, buildReceipt, hireReceipt, departReceipt, arriveReceipt, sellReceipt, raidCommitReceipt, raidRevealReceipt].map(entry => ({ method: entry.method, tx: entry.tx, explorer: entry.explorer, executionBlock: entry.executionBlock })),
   };
