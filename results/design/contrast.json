@@ -1,0 +1,131 @@
+{
+  "source": "apps/game/app/globals.css",
+  "pairs": [
+    {
+      "foreground": "ink",
+      "background": "canvas",
+      "ratio": 14.09,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "ink",
+      "background": "surface",
+      "ratio": 12.03,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "ink",
+      "background": "raised",
+      "ratio": 10.26,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "muted",
+      "background": "canvas",
+      "ratio": 9.09,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "muted",
+      "background": "surface",
+      "ratio": 7.76,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "muted",
+      "background": "raised",
+      "ratio": 6.62,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "accent",
+      "background": "canvas",
+      "ratio": 9.35,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "accent",
+      "background": "surface",
+      "ratio": 7.98,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "accent",
+      "background": "raised",
+      "ratio": 6.81,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "danger",
+      "background": "canvas",
+      "ratio": 8.27,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "danger",
+      "background": "surface",
+      "ratio": 7.06,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "danger",
+      "background": "raised",
+      "ratio": 6.02,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "liquidity",
+      "background": "canvas",
+      "ratio": 9.88,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "liquidity",
+      "background": "surface",
+      "ratio": 8.43,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "liquidity",
+      "background": "raised",
+      "ratio": 7.2,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "blockspace",
+      "background": "canvas",
+      "ratio": 9.43,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "blockspace",
+      "background": "surface",
+      "ratio": 8.05,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "blockspace",
+      "background": "raised",
+      "ratio": 6.87,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "line-strong",
+      "background": "canvas",
+      "ratio": 4.92,
+      "minimum": 3
+    },
+    {
+      "foreground": "line-strong",
+      "background": "surface",
+      "ratio": 4.2,
+      "minimum": 3
+    },
+    {
+      "foreground": "line-strong",
+      "background": "raised",
+      "ratio": 3.58,
+      "minimum": 3
+    }
+  ]
+}

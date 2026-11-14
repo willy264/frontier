@@ -301,3 +301,13 @@ Success copy uses confirmed values:
 - Errors say what happened and what to do next.
 - Empty states say what will appear and identify the next action.
 - No added feature, partner, metric, player, rival, or production claim appears.
+
+## Preview QA copy additions, 14 November 2026
+
+- Map pan hint: Swipe or use arrows to see all ports.
+- Map refresh: Refresh world
+- Map error: Can’t reach testnet. Retrying…
+- Recovery action: Retry connection
+- Guest primary heading: Make your own fortune.
+- Guest instruction: Buy cargo, sail between player-owned ports and watch for raiders.
+- Read-only top-bar text: Explore before connecting

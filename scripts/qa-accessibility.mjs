@@ -22,8 +22,13 @@ try {
    const visible=await button.evaluate(el=>{const r=el.getBoundingClientRect(),v=el.closest('.sea-map__viewport').getBoundingClientRect();return r.left>=v.left&&r.right<=v.right;}); ports.push({name,visible});
   }
   await page.screenshot({path:`results/design/verified-${width}.png`,fullPage:true});
-  await page.route('**/*',r=>r.request().method()==='POST' ? r.abort() : r.continue()); await page.getByRole('button',{name:'Economy',exact:true}).click(); await page.getByText('Can’t reach testnet. Retrying…',{exact:true}).waitFor({timeout:45000});
-  evidence.push({width,violations:axe.violations,assets,cls:icons.cls,ports,errorState:true,keyboardDialog:true}); await context.close();
+  const stageTop = await page.locator('.world-stage').evaluate(el=>el.getBoundingClientRect().top + scrollY);
+  await page.route('**/*',r=>r.request().method()==='POST' ? r.abort() : r.continue());
+  await page.locator('.height-label').getByText('Can’t reach testnet. Retrying…',{exact:true}).waitFor({timeout:45000});
+  const failedStageTop = await page.locator('.world-stage').evaluate(el=>el.getBoundingClientRect().top + scrollY);
+  assert(Math.abs(stageTop-failedStageTop)<1,'RPC failure moved the map');
+  await page.getByRole('button',{name:'Economy',exact:true}).click(); await page.getByText('Can’t reach testnet. Retrying…',{exact:true}).waitFor({timeout:45000});
+  evidence.push({width,violations:axe.violations,assets,cls:icons.cls,ports,errorState:true,errorLayoutShift:Math.abs(stageTop-failedStageTop),keyboardDialog:true}); await context.close();
  }
  await fs.writeFile('results/design/accessibility.json',JSON.stringify({site,evidence},null,2));
  if(evidence.some(e=>e.violations.length||e.cls>.1||e.assets.some(a=>a.status!==200)||e.ports.some(p=>!p.visible))) process.exitCode=1;

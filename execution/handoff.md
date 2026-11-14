@@ -1,5 +1,10 @@
 # FRONTIER handoff
 
+## QA follow-up, 14 November 2026 00:32 UTC
+
+Build/typecheck pass for stable RPC status header. A forced RPC outage previously inserted a banner and produced CLS0.112 in Lighthouse; the banner is removed, with status/retry reserved in the map header. QA now asserts no map displacement on RPC failure. Latest deployed d8159f9 passes20 responsive combinations and both CI jobs;21 token contrast pairs pass. Lighthouse varies with local load and did not reach90. Fresh-account loop is blocked by intermittent public reads after registration; diagnostic work ongoing. Do not release yet.11h28 to redesign cutoff;23h27 to submission. Contracts unchanged.
+
+
 ## Current release checkpoint, 14 November 2026 00:20 UTC
 
 Branch: redesign. Production remains on verified deployment dpl_DcZi2CL6qgX3fDxeG9eUnywvfrhG via the canonical alias. Do not push main until preview QA and live loop pass. Remote hackathon-submission remains 84a49a6. Contracts unchanged.

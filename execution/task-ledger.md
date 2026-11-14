@@ -1,5 +1,10 @@
 # FRONTIER Task Ledger
 
+## QA follow-up, 14 November 2026 00:32 UTC
+
+Build/typecheck pass for stable RPC status header. A forced RPC outage previously inserted a banner and produced CLS0.112 in Lighthouse; the banner is removed, with status/retry reserved in the map header. QA now asserts no map displacement on RPC failure. Latest deployed d8159f9 passes20 responsive combinations and both CI jobs;21 token contrast pairs pass. Lighthouse varies with local load and did not reach90. Fresh-account loop is blocked by intermittent public reads after registration; diagnostic work ongoing. Do not release yet.11h28 to redesign cutoff;23h27 to submission. Contracts unchanged.
+
+
 ## Active checkpoint, 14 November 2026 00:20 UTC
 
 19 tests and typecheck pass. Latest preview961686f passes read-only accessibility, keyboard, icons and RPC-error checks. Performance73 mobile remains below90; public reads now avoid signing bundle, build pending. Fresh-account loop is in progress with worker Laplace. Release/tag/video still pending. Production stays on verified rollback.11h40 to redesign cutoff;23h39 to submission. See current handoff; older entries are historical.
