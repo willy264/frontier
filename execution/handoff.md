@@ -1,14 +1,14 @@
 # FRONTIER handoff
 
-## Preview QA in progress, 14 November 2026 00:10 UTC
+## Current release checkpoint, 14 November 2026 00:20 UTC
 
-Follow-up 6bd676e pushed to redesign, preview dpl_E6hNkw4sUPYWLfMZAh7WbqFQ7gJt at https://frontier-9241yrpb9-willy264s-projects.vercel.app. Initial preview axe zero violations at 390/1440, all selected ports visible, keyboard dialog passed, RPC-error state passed, icon/manifest/OG 200. Lighthouse accessibility100 both sizes; performance76 mobile/78 desktop, LCP1.6s/1.8s, CLS0 in Lighthouse. Reports committed. Full build and14 unique tests passed. Deferred wallet download until Connect to reduce idle loading; typecheck passed, needs next-preview verification. Production and tag still unchanged. Fresh-account worker continues; do not promote until loop evidence is reviewed.
+Branch: redesign. Production remains on verified deployment dpl_DcZi2CL6qgX3fDxeG9eUnywvfrhG via the canonical alias. Do not push main until preview QA and live loop pass. Remote hackathon-submission remains 84a49a6. Contracts unchanged.
 
-Branch redesign created and pushed at 374da82. Vercel preview dpl_829b4f37JbQgVD8j3Per9DWhmZ4q serves https://frontier-jkp1mo85m-willy264s-projects.vercel.app. Canonical production remains assigned to old verified deployment. All ten widths with both motion preferences passed scripts/qa-game.mjs: no overflow, page errors or buttons under 24px. results/design/responsive.json and updated screenshots are actual preview evidence.
+Latest deployed preview before this checkpoint: 961686fa0b63a0862b4bfd804c935cb621860d2c, dpl_DJrXeA8dAVvZyhw3sUkFQafL5gGT, https://frontier-26bz9yhzk-willy264s-projects.vercel.app. Axe zero violations at390/1440, selected ports fully reachable, keyboard dialog and RPC error recovery tested; icon/manifest/OG return200. CLS .000043 mobile/.004418 desktop. Lighthouse mobile performance73/accessibility100, LCP1.6s, CLS0; performance target90 is not achieved. Field INP unavailable.
 
-Local follow-up fixes not yet previewed: metadataBase for absolute OG URLs, quieter guest action panel and shorter desktop map. Root axe/Lighthouse development dependencies installed; scripts/qa-accessibility.mjs checks assets, keyboard dialog, selected-port visibility and RPC failure. These checks and Lighthouse are still running; do not mark passed yet. vitest.config.ts excludes the ignored old clone to avoid duplicate test counts. A first build compiled and generated routes but its wrapper failed while pnpm changed dependencies; rerunning after install.
+Current change separates public RPC reads from the signing bundle with abortable12-second reads and5 tests.19 unique tests and typecheck pass; production build in progress. CI now also runs on redesign. Next: push this change to redesign after build; rerun preview performance and responsiveness. Worker Laplace owns scripts/record-redesign.mjs and is debugging a fresh-account live loop. Earlier attempt timed out waiting for an enabled UI control; no completed round evidence yet. Keys remain outside git.
 
-Active worker Laplace is preparing scripts/record-redesign.mjs and a fresh-account preview escort/ambush loop; no round has yet been certified. Next collect browser reports, fix violations, commit/push only redesign, verify updated preview, then release per user instructions. No production promotion or tag move yet.
+Remaining: complete preview full-loop proof including escort blocking raid; QA authenticated states; release/promote verified source; verify canonical domain and CI; record production video, update README/screenshots, align final tag and deployment. Deadline fallback at12:00 UTC only if still failing: icons/OG/manifest on old verified source. Redesign cutoff11h40 away; submission23h39 away. Historical entries below are superseded by this checkpoint.
 
 ## Release hold, 13 November 2026 19:12 UTC
 

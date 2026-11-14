@@ -1,5 +1,5 @@
 {
-  "site": "https://frontier-jkp1mo85m-willy264s-projects.vercel.app",
+  "site": "https://frontier-26bz9yhzk-willy264s-projects.vercel.app",
   "evidence": [
     {
       "width": 390,
@@ -7,12 +7,12 @@
       "assets": [
         {
           "kind": "icon",
-          "url": "https://frontier-jkp1mo85m-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
+          "url": "https://frontier-26bz9yhzk-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
           "status": 200
         },
         {
           "kind": "manifest",
-          "url": "https://frontier-jkp1mo85m-willy264s-projects.vercel.app/manifest.webmanifest",
+          "url": "https://frontier-26bz9yhzk-willy264s-projects.vercel.app/manifest.webmanifest",
           "status": 200
         },
         {
@@ -21,7 +21,7 @@
           "status": 200
         }
       ],
-      "cls": 0,
+      "cls": 0.000043106249999999994,
       "ports": [
         {
           "name": "Bitcoin Isle",
@@ -53,12 +53,12 @@
       "assets": [
         {
           "kind": "icon",
-          "url": "https://frontier-jkp1mo85m-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
+          "url": "https://frontier-26bz9yhzk-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
           "status": 200
         },
         {
           "kind": "manifest",
-          "url": "https://frontier-jkp1mo85m-willy264s-projects.vercel.app/manifest.webmanifest",
+          "url": "https://frontier-26bz9yhzk-willy264s-projects.vercel.app/manifest.webmanifest",
           "status": 200
         },
         {
@@ -67,7 +67,7 @@
           "status": 200
         }
       ],
-      "cls": 0.004414196400583526,
+      "cls": 0.004418323417004244,
       "ports": [
         {
           "name": "Bitcoin Isle",

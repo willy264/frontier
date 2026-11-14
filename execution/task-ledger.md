@@ -1,5 +1,9 @@
 # FRONTIER Task Ledger
 
+## Active checkpoint, 14 November 2026 00:20 UTC
+
+19 tests and typecheck pass. Latest preview961686f passes read-only accessibility, keyboard, icons and RPC-error checks. Performance73 mobile remains below90; public reads now avoid signing bundle, build pending. Fresh-account loop is in progress with worker Laplace. Release/tag/video still pending. Production stays on verified rollback.11h40 to redesign cutoff;23h39 to submission. See current handoff; older entries are historical.
+
 ## Preview checks, 14 November 2026 00:10 UTC
 
 Completed: read-only axe/keyboard/asset/RPC-failure checks on initial preview, desktop/mobile Lighthouse reports, clean build and14 unique tests. Follow-up preview6bd676e ready. Deferred wallet loading is next performance change; authenticated loop and release/video still outstanding. Performance scores76/78 are recorded honestly, not90+.

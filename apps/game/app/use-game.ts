@@ -2,23 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { NearConnector } from "@hot-labs/near-connect";
+import { readRpc, view } from "./read-rpc";
+export { view } from "./read-rpc";
 import { arrivalMessage, WORLD, RPC, type Port, type Route, type Ship, type Player, type Order, type GameEvent, type EconomySnapshot } from "./game-state";
 
 const METHODS = ["register_player", "buy", "sell", "build_ship", "depart", "arrive", "commit_ambush", "reveal_ambush", "offer_escort", "hire_escort", "set_fee", "set_port_sale_price", "buy_port"];
 const keySlot = `frontier-game-key:${WORLD}`;
 let client: Promise<import("near-api-js").JsonRpcProvider> | undefined;
 const provider = () => client ??= import("near-api-js").then(({ JsonRpcProvider }) => new JsonRpcProvider({ url: RPC }));
-export async function view<T>(method: string, args: Record<string, unknown> = {}) {
-  const p = await provider();
-  const value = await deadline(p.callFunction({ contractId: WORLD, method, args, blockQuery: { finality: "final" } }));
-  if (value === undefined) throw new Error("Empty view response");
-  return value as T;
-}
-async function deadline<T>(promise: Promise<T>): Promise<T> {
-  let timer: ReturnType<typeof setTimeout>;
-  try { return await Promise.race([promise, new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error("Read timed out")), 12000); })]); }
-  finally { clearTimeout(timer!); }
-}
 export async function digest(text: string) { return Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)))); }
 export function seal() { return Array.from(crypto.getRandomValues(new Uint8Array(24)), n => n.toString(16).padStart(2, "0")).join(""); }
 function readOrders(slot: string): Order[] { try { const v: unknown = JSON.parse(localStorage.getItem(slot) ?? "[]"); return Array.isArray(v) ? v : []; } catch { return []; } }
@@ -63,11 +54,10 @@ export function useGame() {
     let timer: ReturnType<typeof setTimeout>;
     const poll = async () => {
       try {
-        const p = await provider();
         const [portList, routeList, nextEconomy, block, nextPlayer, nextShips] = await Promise.all([
           Promise.all([1, 2, 3, 4, 5].map(id => view<Port | null>("get_port", { port_id: id }))),
           Promise.all([1, 2, 3, 4, 5].map(id => view<Route | null>("get_route", { route_id: id }))),
-          view<EconomySnapshot>("economy_dashboard"), deadline(p.viewBlock({ finality: "final" })),
+          view<EconomySnapshot>("economy_dashboard"), readRpc<{ header: { height: number } }>("block", { finality: "final" }),
           accountId ? view<Player | null>("get_player", { account_id: accountId }) : Promise.resolve(null),
           accountId ? view<Array<[number, Ship]>>("ships_for_owner", { account_id: accountId }) : Promise.resolve([]),
         ]);
