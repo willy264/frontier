@@ -1,11 +1,11 @@
 # Submission package draft
 
-Project: FRONTIER. Intended tracks: `games`, `nfts`. Testnet world: `world.frontier-final.testnet`.
+Project: FRONTIER. Intended tracks: `games`, `nfts`. Testnet world: `world3.world3.testnet`.
 
 - Repository: https://github.com/willy264/frontier
 - Play: https://frontier-willy264s-projects.vercel.app
 - Video: https://frontier-willy264s-projects.vercel.app/demo/index.html
-- Evidence: `results/deploy-testnet.json`, `results/round-2026-11-11T14-19-28-579Z.json`, and `results/video-demo.json`.
+- Evidence: `results/deploy-testnet.json`, `results/production-ui-round.json`, `results/video-demo.json`, and `results/video-hosting.json`.
 - Post draft: `x-post-draft.md`; attach the exported MP4.
 
 `submission.json` is a public project/evidence manifest, not the organizer's submission API payload. It must not be posted directly to the API. No submission has been sent.

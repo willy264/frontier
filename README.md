@@ -101,7 +101,7 @@ Next.js 16, React 19, TypeScript, Vitest, NEAR Connect, near-api-js, near-sdk, c
 
 Codex assisted with implementation, test authoring, debugging, and documentation. The guided tutorial is a deterministic local walkthrough, the live p1-p4 demo is scripted, and the contract NPC buyer follows deterministic island demand; no AI agent controls gameplay or NPC decisions.
 
-The demo was recorded with Playwright and Edge, edited with FFmpeg, and narrated locally using Windows System.Speech (Microsoft Hazel Desktop). The voice is synthetic. No external voice account or voice clone was used.
+The demo was recorded with Playwright and Chromium, edited with FFmpeg, and narrated locally using Windows System.Speech (Microsoft Zira Desktop). The voice is synthetic. No external voice account or voice clone was used.
 
 ## Related projects
 

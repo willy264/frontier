@@ -4,12 +4,11 @@ The completed narrated video is at https://frontier-willy264s-projects.vercel.ap
 
 For a live presentation:
 
-1. Open the public app and connect a supported testnet wallet. Register a fresh captain for 1,000 non-redeemable CRED.
-2. At Bitcoin Isle, enter 300 Buy CRED and buy at the live quote. The quote includes the deployed contract's minimum fee; small purchases can quote zero.
-3. Build a sloop; its returned ID is selected automatically. Load an amount no greater than the displayed inventory.
-4. Select origin Bitcoin Isle and destination Solana Reef. Depart, save the salt backup, and reveal arrival after the route time. A rival ambush requires another actor; the guided tutorial does not create one.
-5. Read the result feed, then sell the available goods at the selected market. No profit is guaranteed. The filmed sale uses Bitcoin Isle's market.
-6. Choose an ambush route, commit, and reveal in its block window. Open Economy to inspect current totals.
+1. Open the public app and connect a testnet wallet that the wallet list offers (for example Meteor; MyNearWallet and HOT are not listed on testnet). Approve the game key, then register a fresh captain for 1,000 non-redeemable CRED.
+2. At Bitcoin Isle, buy a good at the live quote. Each trade pays at least 30 CRED in fees, so small purchases can quote zero.
+3. Build a sloop. Under "Hire or offer an escort", choose "Show open offers" and hire one; the wallet asks you to approve the hire.
+4. Choose a route, load the cargo, seal the destination and sail. Save the hidden-orders backup, wait for the countdown, then arrive. A rival ambush requires another captain; the guided tutorial does not create one.
+5. Sell where your ship docked. No profit is guaranteed.
+6. Open the Ambush tab, choose a route and window, set the ambush and spring it before convoys reach harbour. Open Economy to inspect current totals.
 
-For a reproducible rival-assisted capture use `scripts/record-demo.mjs`, documented in `docs/VIDEO.md`. It performs real testnet actions through the UI while a scripted rival supplies the ambush. Public account IDs and explorer links can be shown; private credentials and secret backups must remain private.
-
+For a reproducible rival-assisted capture use `scripts/record-redesign.mjs`, documented in `docs/VIDEO.md`. It performs real testnet actions through the UI while scripted escort and rival captains supply the escort offer and the ambush. Public account IDs and explorer links can be shown; private credentials and secret backups must remain private.

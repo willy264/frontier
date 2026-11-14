@@ -44,6 +44,6 @@ The second screenshot review removed redundant guest-panel headings, reduced the
 
 The first live loop exposed FastNEAR rate limiting under14 concurrent requests every3seconds. Routes now cache for the page session. Ports and economy refresh every30seconds and after an action. Captain, ships and block height refresh every6seconds. Failed polls back off to12,24 and30seconds. No balances or transaction results are fabricated to mask an outage.
 
-## Remaining release checks
+## Release
 
-Complete a fresh-account preview round and verify actual escort protection from chain state and receipts. Run final preview checks, promote the verified source, verify the canonical domain and green CI, record the new production video, and align the release tag and handoff. The current public video predates the redesign.
+Released 14 November 2026. `main` daa9528 runs on the canonical domain (deployment dpl_5ZLvtQmpuiEzTPXmXEVEoNe8V63j). A production fresh-account round passed (`results/production-ui-round.json`) and the published demo video was recorded from it. See `execution/handoff.md`.

@@ -2,13 +2,17 @@
   "status": "draft",
   "kind": "project evidence manifest; not a submission API payload",
   "project": "FRONTIER",
-  "tracks": ["games", "nfts"],
+  "tracks": [
+    "games",
+    "nfts"
+  ],
   "network": "testnet",
-  "world_account": "world.frontier-final.testnet",
-  "explorer": "https://testnet.nearblocks.io/address/world.frontier-final.testnet",
+  "world_account": "world3.world3.testnet",
+  "explorer": "https://testnet.nearblocks.io/address/world3.world3.testnet",
   "evidence": [
     "results/deploy-testnet.json",
-    "results/round-2026-11-11T14-19-28-579Z.json",
+    "results/production-ui-round.json",
+    "results/preview-round.json",
     "results/video-demo.json",
     "results/video-hosting.json"
   ],

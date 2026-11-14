@@ -6,9 +6,9 @@ The exported MP4, separate MP3 narration, subtitles, and poster are in `apps/gam
 
 The footage shows the deployed website, not a mockup. The recording connects a fresh testnet captain through an injected recording wallet, provisions a real contract-restricted function-call key, and performs the game actions through UI controls. A Node process signs the wallet's key approval using credentials in the user-level NEAR directory; full-access keys never enter the browser. The restricted recording key is revoked when capture ends.
 
-The rival ambush is scripted and clearly disclosed. The finished edit shortens waits and holds some frames for narration. The voice is Microsoft Hazel Desktop, synthesized locally with Windows System.Speech; it is not a human voice clone. Captions are burned into the image, with a separate SRT for editing.
+The rival ambush is scripted and clearly disclosed. The finished edit shortens waits and holds some frames for narration. The current video's voice is Microsoft Zira Desktop, synthesized locally with Windows System.Speech; it is not a human voice clone. Captions are burned into the image, with a separate SRT for editing.
 
-This is not verification of a normal third-party wallet login. It also does not demonstrate profitable arbitrage, escort protection, port transfer, cross-chain settlement, or season rollover. The sale uses the selected market. Earlier scripted-round evidence is separate from the filmed sequence.
+The current video shows a defence-3 escort protecting a convoy from a revealed raid; the proof compares rival power, the ambush window, the departure block and loaded versus arrived cargo. It is not verification of a normal third-party wallet login. It does not demonstrate profitable trading (the filmed voyage sells at a loss), port transfer, cross-chain settlement, or season rollover.
 
 ## Regenerate on Windows
 
@@ -26,9 +26,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/narrate-demo.ps1
 node scripts/render-demo.mjs
 ```
 
+The 14 November video was produced from WSL with these differences: `FRONTIER_ROOT_ACCOUNT` was a faucet-funded testnet account, `FRONTIER_ROUND_GOOD=Blockspace` kept the sale quote above zero (each round moves prices), narration ran through `powershell.exe` with `-VoiceName 'Microsoft Zira Desktop'`, and `FRONTIER_VOICE='Microsoft Zira Desktop' node scripts/render-demo.mjs` used the system FFmpeg.
+
 The redesigned recorder checks the exact departure block against the revealed ambush window, the rival's actual idle defence, the linked escort, and loaded versus arrived cargo. It also records authenticated accessibility checks. Run with `FRONTIER_VIDEO_CAPTURE=0` for a preview walkthrough without raw video. An existing escort offer and rival can be reused through `FRONTIER_ESCORT_ACCOUNT`, `FRONTIER_ESCORT_OFFER_ID`, and `FRONTIER_RIVAL_ACCOUNT`; the captain must still be unregistered.
 
-The commands below describe the older recording retained until the redesigned production capture passes.
+The commands below describe the older, superseded recorder for the pre-redesign interface.
 
 Requirements: Node, pnpm, Windows PowerShell with Microsoft Hazel Desktop, Edge, and testnet account credentials already stored outside the repository. Install the optional recording tools into the ignored data directory:
 

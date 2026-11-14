@@ -1,50 +1,53 @@
 {
-  "checkedAt": "2026-11-11T23:32:02.513Z",
+  "checkedAt": "2026-11-14T07:55:55Z",
   "watchUrl": "https://frontier-willy264s-projects.vercel.app/demo/index.html",
-  "deployment": "https://vercel.com/willy264s-projects/frontier/DcZi2CL6qgX3fDxeG9eUnywvfrhG",
+  "releaseCommit": "daa9528",
+  "videoCommit": "02e8863",
   "assets": [
     {
       "url": "https://frontier-willy264s-projects.vercel.app/demo/index.html",
       "status": 200,
-      "contentType": "text/html; charset=utf-8"
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 2389
     },
     {
       "url": "https://frontier-willy264s-projects.vercel.app/demo/frontier-demo.mp4",
       "status": 200,
-      "contentType": "video/mp4"
+      "contentType": "video/mp4",
+      "bytes": 5190579
     },
     {
       "url": "https://frontier-willy264s-projects.vercel.app/demo/frontier-voiceover.mp3",
       "status": 200,
-      "contentType": "audio/mpeg"
+      "contentType": "audio/mpeg",
+      "bytes": 1097260
     },
     {
       "url": "https://frontier-willy264s-projects.vercel.app/demo/frontier-demo.srt",
       "status": 200,
-      "contentType": "application/x-subrip"
+      "contentType": "application/x-subrip",
+      "bytes": 2536
     },
     {
       "url": "https://frontier-willy264s-projects.vercel.app/demo/poster.jpg",
       "status": 200,
-      "contentType": "image/jpeg"
+      "contentType": "image/jpeg",
+      "bytes": 200054
     }
   ],
-  "downloadedBytes": 5770709,
-  "sha256": "d0ee104bd1d4de5c7a89cf9b867570f6911521b39728e11c022494abf9008be3",
+  "downloadedBytes": 5190579,
+  "sha256": "3a6086b753f147e57635ecf2f14bed21c071622401e136e96fe3bc5b8213c095",
   "checksumMatchesLocal": true,
   "byteRangeStatus": 206,
-  "browser": "Microsoft Edge / Playwright",
-  "playback": {
-    "durationSeconds": 117.887333,
+  "contentRange": "bytes 0-1023/5190579",
+  "export": {
+    "durationSeconds": 98.27000000000001,
     "width": 1920,
     "height": 1080,
-    "mediaError": null,
-    "played": true,
-    "seekNearEndPassed": true
+    "videoCodec": "H.264",
+    "audioCodec": "AAC 48 kHz",
+    "voice": "Microsoft Zira Desktop (synthetic)",
+    "ffmpegFullDecode": "passed during render"
   },
-  "mobileViewport": {
-    "viewportWidth": 390,
-    "documentWidth": 390,
-    "videoWidth": 350
-  }
+  "browserPlayback": "Not re-run on the recording machine: Playwright's bundled Chromium has no H.264 decoder. The previous Edge playback check applied to the earlier video."
 }
