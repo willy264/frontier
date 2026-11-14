@@ -12,6 +12,24 @@ This is not verification of a normal third-party wallet login. It also does not 
 
 ## Regenerate on Windows
 
+For the nautical redesign, use `scripts/record-redesign.mjs`. It requires a fresh, unregistered captain, a defence-three escort and a scripted rival with two defence-one idle ships. The script can create testnet sub-accounts under `world3.testnet`; it refuses non-testnet account names. Set the site to the verified production URL only after release:
+
+```powershell
+$env:FRONTIER_VIDEO_SITE='https://frontier-willy264s-projects.vercel.app'
+$env:FRONTIER_DEPLOYMENT_COMMIT=(git rev-parse HEAD)
+$env:FRONTIER_VIDEO_OUT='data/video'
+$env:FRONTIER_ROUND_RESULT='results/production-ui-round.json'
+$env:FRONTIER_WORLD_ACCOUNT='world3.world3.testnet'
+$env:FRONTIER_ROOT_ACCOUNT='world3.testnet'
+node scripts/record-redesign.mjs
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/narrate-demo.ps1
+node scripts/render-demo.mjs
+```
+
+The redesigned recorder checks the exact departure block against the revealed ambush window, the rival's actual idle defence, the linked escort, and loaded versus arrived cargo. It also records authenticated accessibility checks. Run with `FRONTIER_VIDEO_CAPTURE=0` for a preview walkthrough without raw video. An existing escort offer and rival can be reused through `FRONTIER_ESCORT_ACCOUNT`, `FRONTIER_ESCORT_OFFER_ID`, and `FRONTIER_RIVAL_ACCOUNT`; the captain must still be unregistered.
+
+The commands below describe the older recording retained until the redesigned production capture passes.
+
 Requirements: Node, pnpm, Windows PowerShell with Microsoft Hazel Desktop, Edge, and testnet account credentials already stored outside the repository. Install the optional recording tools into the ignored data directory:
 
 ```powershell

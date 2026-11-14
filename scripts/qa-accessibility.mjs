@@ -21,6 +21,16 @@ try {
    const button=page.getByRole('button',{name:new RegExp(`Select ${name}`)}); await button.focus(); await page.keyboard.press('Enter');
    const visible=await button.evaluate(el=>{const r=el.getBoundingClientRect(),v=el.closest('.sea-map__viewport').getBoundingClientRect();return r.left>=v.left&&r.right<=v.right;}); ports.push({name,visible});
   }
+  const routeControls=page.getByRole('button',{name:/^From .+ to .+, \d+ travel blocks$/});
+  const routeKeyboard=[];
+  for(let index=0;index<await routeControls.count();index++) {
+   const route=routeControls.nth(index); await route.focus(); await page.keyboard.press('Enter');
+   const selected=await route.getAttribute('aria-pressed')==='true'; assert(selected,'Keyboard route selection failed');
+   routeKeyboard.push({name:await route.getAttribute('aria-label'),selected});
+  }
+  assert.equal(routeKeyboard.length,5,'Expected five keyboard-operable routes');
+  await page.getByRole('button',{name:/Select Bitcoin Isle/}).click();
+  await page.evaluate(()=>{ document.activeElement?.blur(); scrollTo(0,0); });
   await page.screenshot({path:`results/design/verified-${width}.png`,fullPage:true});
   const stageTop = await page.locator('.world-stage').evaluate(el=>el.getBoundingClientRect().top + scrollY);
   await page.route('**/*',r=>r.request().method()==='POST' ? r.abort() : r.continue());
@@ -29,7 +39,7 @@ try {
   assert(Math.abs(stageTop-failedStageTop)<1,'RPC failure moved the map');
   await page.getByRole('button',{name:'Economy',exact:true}).click(); await page.getByText('Can’t reach testnet. Retrying…',{exact:true}).waitFor({timeout:45000});
   const interactionDurations=await page.evaluate(()=>window.__interactions);
-  evidence.push({width,interactionDurations,violations:axe.violations,assets,cls:icons.cls,ports,errorState:true,errorLayoutShift:Math.abs(stageTop-failedStageTop),keyboardDialog:true}); await context.close();
+  evidence.push({width,interactionDurations,routeKeyboard,violations:axe.violations,assets,cls:icons.cls,ports,errorState:true,errorLayoutShift:Math.abs(stageTop-failedStageTop),keyboardDialog:true}); await context.close();
  }
  await fs.writeFile('results/design/accessibility.json',JSON.stringify({site,evidence},null,2));
  if(evidence.some(e=>e.violations.length||e.cls>.1||e.assets.some(a=>a.status!==200)||e.ports.some(p=>!p.visible))) process.exitCode=1;
