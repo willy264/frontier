@@ -199,7 +199,7 @@ export function useGame() {
       notify(confirmedMessage, tone, tx); retry(); return result;
     } catch (error) {
       const detail = error instanceof Error ? error.message : String(error);
-      const errors: Record<string, string> = { ERR_SLIPPAGE: "The market price moved. Review the new quote and try again.", ERR_CRED_FUNDS: "You need more CRED for this order.", ERR_CARGO_FUNDS: "Your available cargo changed. Reload the port and adjust the load.", ERR_TOO_EARLY: "Your convoy is still sailing. Wait for the countdown.", ERR_REVEAL_LATE: "The ambush window has closed.", ERR_PLAYER_EXISTS: "This captain is already registered. Refresh your fleet.", ERR_ESCORT_LOCKED: "This ship is escorting a convoy. Wait for its arrival.", ERR_WINDOW: "That ambush window had already started. Choose a later window and try again.", ERR_COMMIT_SPAM: "You already have three active ambushes. Spring one or wait for it to expire.", publishing_transaction_failed: "The contract rejected this order. Refresh the world, then check your CRED, cargo, active ambushes and the ambush countdown before retrying." };
+      const errors: Record<string, string> = { ERR_SLIPPAGE: "The market price moved. Review the new quote and try again.", ERR_CRED_FUNDS: "You need more CRED for this order.", ERR_CARGO_FUNDS: "Your available cargo changed. Reload the port and adjust the load.", ERR_TOO_EARLY: "Your convoy is still sailing. Wait for the countdown.", ERR_REVEAL_LATE: "The ambush window has closed.", ERR_PLAYER_EXISTS: "This captain is already registered. Refresh your fleet.", ERR_ESCORT_LOCKED: "This ship is escorting a convoy. Wait for its arrival.", ERR_WINDOW: "That ambush window had already started. Choose a later window and try again.", ERR_COMMIT_SPAM: "You already have three active ambushes. Spring one or wait for it to expire.", ERR_EPOCH_TOO_EARLY: "The epoch advanced less than 100 blocks (about 65 s) ago. Try again in a minute.", publishing_transaction_failed: "The contract rejected this order. Refresh the world, then check your CRED, cargo, active ambushes and the ambush countdown before retrying." };
       if (isKeyMissing(error)) { signer.current = "wallet"; setMessage("Your wallet could not sign this order. Try again; your wallet may ask you to approve it."); return null; }
       // A rejected order never reached contract state, so drop any hidden order saved for it.
       if (isRejected(detail)) onRejected?.();
@@ -209,6 +209,7 @@ export function useGame() {
   }
   function remember(order: Order) { saveOrders([...ordersRef.current.filter(item => item.id !== order.id), order]); }
   function removeOrder(id: string) { saveOrders(ordersRef.current.filter(item => item.id !== id)); }
+  function removeOrders(ids: string[]) { if (ids.length) saveOrders(ordersRef.current.filter(item => !ids.includes(item.id))); }
   function backup() {
     const blob = new Blob([JSON.stringify({ world: WORLD, accountId, orders: ordersRef.current }, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "frontier-hidden-orders.json"; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
@@ -221,5 +222,5 @@ export function useGame() {
       saveOrders([...ordersRef.current.filter(o => !data.orders!.some(n => n.id === o.id)), ...data.orders]); notify("Hidden orders restored for this captain.");
     } catch { setMessage("This backup does not match your captain and world, or could not be read."); }
   }
-  return { accountId, ports, routes, ships, player, economy, height, readState, pending, message, events, orders, keyReady, snapshots, connect, enableControls, disconnect, call, retry, notify, remember, removeOrder, backup, restore };
+  return { accountId, ports, routes, ships, player, economy, height, readState, pending, message, events, orders, keyReady, snapshots, connect, enableControls, disconnect, call, retry, notify, remember, removeOrder, removeOrders, backup, restore };
 }

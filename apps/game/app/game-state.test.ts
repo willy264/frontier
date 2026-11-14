@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SESSION_METHODS, WALLET_METHODS, ambushWindow, isRejected, arrivalMessage, dockedAt, isFinalHarbour, minimumOutput, voyageProgress, wholeAmount, type Ship } from "./game-state";
+import { SESSION_METHODS, WALLET_METHODS, ambushWindow, closedAmbushOrders, isRejected, arrivalMessage, dockedAt, isFinalHarbour, minimumOutput, voyageProgress, wholeAmount, type Ship } from "./game-state";
 describe("game presentation from contract state", () => {
   const ship = { origin_port: null, current_port: null, departed_at: 0 } as Ship;
   it("does not put a newly built ship at sea", () => expect(voyageProgress(ship, undefined, 100).sailing).toBe(false));
@@ -52,5 +52,16 @@ describe("game presentation from contract state", () => {
     expect(isRejected("TypeError: fetch failed")).toBe(false);
     expect(isRejected("User rejected the request")).toBe(false);
     expect(isRejected("Access key ed25519:abc does not exist at block height 1")).toBe(false);
+  });
+  it("treats an ambush as closed only after its last reveal block", () => {
+    const orders = [
+      { kind: "ambush" as const, id: "a", routeId: 1, window: 100, destination: 2, salt: "s", createdAt: "" },
+      { kind: "ambush" as const, id: "b", routeId: 1, window: 200, destination: 2, salt: "s", createdAt: "" },
+      { kind: "departure" as const, id: "c", routeId: 1, destination: 2, salt: "s", createdAt: "" },
+    ];
+    expect(closedAmbushOrders(orders, 120).map(o => o.id)).toEqual([]);
+    expect(closedAmbushOrders(orders, 121).map(o => o.id)).toEqual(["a"]);
+    expect(closedAmbushOrders(orders, 500).map(o => o.id)).toEqual(["a", "b"]);
+    expect(closedAmbushOrders(orders, 0)).toEqual([]);
   });
 });

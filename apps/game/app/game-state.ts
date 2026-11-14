@@ -17,8 +17,8 @@ export type Order = { kind: "ambush" | "departure"; id: string; routeId: number;
 export type GameEvent = { id: string; text: string; tone: "normal" | "danger" | "escort"; tx?: string; time: string };
 // The game-only key may sign these without a wallet prompt.
 export const SESSION_METHODS = ["register_player", "buy", "sell", "build_ship", "depart", "arrive", "commit_ambush", "reveal_ambush", "offer_escort", "set_fee"];
-// These move CRED or ports to another account, so the wallet signs each one.
-export const WALLET_METHODS = ["hire_escort", "buy_port", "set_port_sale_price"];
+// These move CRED or ports to another account, or advance the world for everyone, so the wallet signs each one.
+export const WALLET_METHODS = ["hire_escort", "buy_port", "set_port_sale_price", "tick_epoch"];
 export const AMBUSH_SPAN = 20;
 // Wallet prompts take seconds, so the shortest lead leaves room to approve. Testnet blocks are about 0.65 s.
 export const AMBUSH_LEAD_OPTIONS = [30, 60, 120];
@@ -27,6 +27,8 @@ export const aboutSeconds = (blocks: number) => `about ${Math.max(1, Math.round(
 // The chain executed an order and rejected it (contract panic, or a wallet reporting a failed outcome).
 // Network errors are not rejections: the order may still have landed, so its hidden salt must be kept.
 export const isRejected = (detail: string) => /ERR_[A-Z_]+|Smart contract panicked|publishing_transaction_failed|ActionError|FunctionCallError/.test(detail);
+// The contract accepts a reveal up to window_start + 20, so an order is closed only after that block.
+export const closedAmbushOrders = (orders: Order[], height: number) => height > 0 ? orders.filter(o => o.kind === "ambush" && (o.window ?? 0) + AMBUSH_SPAN < height) : [];
 export const portName = (id: number) => ISLANDS.find(p => p.id === id)?.name ?? "an unknown port";
 // Client rule: the contract does not check where goods are, so this client only sells where a ship is docked.
 export const dockedAt = (ships: Array<[number, Ship]>, portId: number) => ships.some(([, s]) => s.current_port === portId && s.origin_port === null);
