@@ -119,7 +119,13 @@ export function useGame() {
     if (!saved) return "wallet";
     const { KeyPair } = await import("near-api-js");
     const publicKey = KeyPair.fromString(saved as import("near-api-js").KeyPairString).getPublicKey().toString();
-    return await hasGameKey(account, publicKey).catch(() => false) ? "session" : "wallet";
+    // A key added at sign-in can take a few blocks to reach the RPC's final view; check again before
+    // handing every call to the wallet.
+    for (let attempt = 0; attempt < 4; attempt++) {
+      if (await hasGameKey(account, publicKey).catch(() => false)) return "session";
+      if (attempt < 3) await new Promise(resolve => setTimeout(resolve, 1500));
+    }
+    return "wallet";
   }
   async function sendViaWallet(method: string, args: Record<string, unknown>) {
     const wallet = await connector.current!.wallet();
