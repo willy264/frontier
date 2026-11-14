@@ -1,10 +1,11 @@
 {
   "site": "https://frontier-git-redesign-willy264s-projects.vercel.app/",
-  "checkedAt": "2026-11-14T02:35:25.343Z",
+  "checkedAt": "2026-11-14T08:43:34.198Z",
   "results": [
     {
       "width": 320,
       "reducedMotion": "no-preference",
+      "readState": "live",
       "viewport": 320,
       "scrollWidth": 320,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -14,6 +15,7 @@
     {
       "width": 320,
       "reducedMotion": "reduce",
+      "readState": "live",
       "viewport": 320,
       "scrollWidth": 320,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -23,6 +25,7 @@
     {
       "width": 360,
       "reducedMotion": "no-preference",
+      "readState": "live",
       "viewport": 360,
       "scrollWidth": 360,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -32,6 +35,7 @@
     {
       "width": 360,
       "reducedMotion": "reduce",
+      "readState": "live",
       "viewport": 360,
       "scrollWidth": 360,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -41,6 +45,7 @@
     {
       "width": 390,
       "reducedMotion": "no-preference",
+      "readState": "live",
       "viewport": 390,
       "scrollWidth": 390,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -50,6 +55,7 @@
     {
       "width": 390,
       "reducedMotion": "reduce",
+      "readState": "live",
       "viewport": 390,
       "scrollWidth": 390,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -59,6 +65,7 @@
     {
       "width": 450,
       "reducedMotion": "no-preference",
+      "readState": "live",
       "viewport": 450,
       "scrollWidth": 450,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -68,6 +75,7 @@
     {
       "width": 450,
       "reducedMotion": "reduce",
+      "readState": "live",
       "viewport": 450,
       "scrollWidth": 450,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -77,6 +85,7 @@
     {
       "width": 768,
       "reducedMotion": "no-preference",
+      "readState": "live",
       "viewport": 768,
       "scrollWidth": 768,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -86,6 +95,7 @@
     {
       "width": 768,
       "reducedMotion": "reduce",
+      "readState": "live",
       "viewport": 768,
       "scrollWidth": 768,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -95,6 +105,7 @@
     {
       "width": 1024,
       "reducedMotion": "no-preference",
+      "readState": "live",
       "viewport": 1024,
       "scrollWidth": 1024,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -104,6 +115,7 @@
     {
       "width": 1024,
       "reducedMotion": "reduce",
+      "readState": "outage",
       "viewport": 1024,
       "scrollWidth": 1024,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -113,6 +125,7 @@
     {
       "width": 1280,
       "reducedMotion": "no-preference",
+      "readState": "live",
       "viewport": 1280,
       "scrollWidth": 1280,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -122,6 +135,7 @@
     {
       "width": 1280,
       "reducedMotion": "reduce",
+      "readState": "live",
       "viewport": 1280,
       "scrollWidth": 1280,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -131,6 +145,7 @@
     {
       "width": 1440,
       "reducedMotion": "no-preference",
+      "readState": "live",
       "viewport": 1440,
       "scrollWidth": 1440,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -140,6 +155,7 @@
     {
       "width": 1440,
       "reducedMotion": "reduce",
+      "readState": "live",
       "viewport": 1440,
       "scrollWidth": 1440,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -149,6 +165,7 @@
     {
       "width": 1536,
       "reducedMotion": "no-preference",
+      "readState": "live",
       "viewport": 1536,
       "scrollWidth": 1536,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -158,6 +175,7 @@
     {
       "width": 1536,
       "reducedMotion": "reduce",
+      "readState": "live",
       "viewport": 1536,
       "scrollWidth": 1536,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -167,6 +185,7 @@
     {
       "width": 1920,
       "reducedMotion": "no-preference",
+      "readState": "live",
       "viewport": 1920,
       "scrollWidth": 1920,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",
@@ -176,6 +195,7 @@
     {
       "width": 1920,
       "reducedMotion": "reduce",
+      "readState": "live",
       "viewport": 1920,
       "scrollWidth": 1920,
       "font": "displayFont, \"displayFont Fallback\", \"Arial Narrow\", Arial, sans-serif, Impact, sans-serif",

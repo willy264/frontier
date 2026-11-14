@@ -4,37 +4,136 @@
     {
       "width": 390,
       "interactionDurations": [
-        56,
-        56,
-        56,
+        24,
+        24,
+        24,
+        16,
+        16,
+        16,
         40,
-        32,
-        32,
-        32,
-        24,
-        32,
-        32,
-        32,
-        24,
-        24,
-        24,
-        24,
-        24,
-        32,
+        40,
+        40,
         32,
         32,
         32,
         32,
         40,
-        56,
-        48,
+        40,
+        40,
+        24,
+        16,
+        16,
+        16,
+        24,
         32,
+        32,
+        32,
+        24,
+        32,
+        24,
+        24,
+        32,
+        32,
+        32,
+        32,
+        32
+      ],
+      "routeKeyboard": [
+        {
+          "name": "12 blocks from Bitcoin Isle to Solana Reef",
+          "selected": true
+        },
+        {
+          "name": "15 blocks from Solana Reef to Base Harbor",
+          "selected": true
+        },
+        {
+          "name": "18 blocks from Bitcoin Isle to Tron Bay",
+          "selected": true
+        },
+        {
+          "name": "20 blocks from Tron Bay to NEAR Capital",
+          "selected": true
+        },
+        {
+          "name": "14 blocks from Base Harbor to NEAR Capital",
+          "selected": true
+        }
+      ],
+      "violations": [],
+      "assets": [
+        {
+          "kind": "icon",
+          "url": "https://frontier-git-redesign-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
+          "status": 200
+        },
+        {
+          "kind": "manifest",
+          "url": "https://frontier-git-redesign-willy264s-projects.vercel.app/manifest.webmanifest",
+          "status": 200
+        },
+        {
+          "kind": "og",
+          "url": "https://frontier-git-redesign-willy264s-projects.vercel.app/opengraph-image.png?cda4905d5b12be5c",
+          "status": 200
+        }
+      ],
+      "cls": 0.09143765865384615,
+      "ports": [
+        {
+          "name": "Bitcoin Isle",
+          "visible": true
+        },
+        {
+          "name": "Solana Reef",
+          "visible": true
+        },
+        {
+          "name": "Base Harbor",
+          "visible": true
+        },
+        {
+          "name": "Tron Bay",
+          "visible": true
+        },
+        {
+          "name": "NEAR Capital",
+          "visible": true
+        }
+      ],
+      "errorState": true,
+      "errorLayoutShift": 0,
+      "keyboardDialog": true
+    },
+    {
+      "width": 1440,
+      "interactionDurations": [
+        120,
+        120,
+        120,
+        88,
+        16,
+        24,
+        24,
+        24,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        40,
         40,
         40,
         32,
         24,
+        32,
+        24,
         40,
+        32,
         40,
+        32,
         40,
         40,
         32,
@@ -81,117 +180,7 @@
           "status": 200
         }
       ],
-      "cls": 0.09742900528846155,
-      "ports": [
-        {
-          "name": "Bitcoin Isle",
-          "visible": true
-        },
-        {
-          "name": "Solana Reef",
-          "visible": true
-        },
-        {
-          "name": "Base Harbor",
-          "visible": true
-        },
-        {
-          "name": "Tron Bay",
-          "visible": true
-        },
-        {
-          "name": "NEAR Capital",
-          "visible": true
-        }
-      ],
-      "errorState": true,
-      "errorLayoutShift": 0,
-      "keyboardDialog": true
-    },
-    {
-      "width": 1440,
-      "interactionDurations": [
-        128,
-        128,
-        128,
-        88,
-        32,
-        32,
-        32,
-        24,
-        48,
-        48,
-        48,
-        40,
-        56,
-        56,
-        56,
-        40,
-        24,
-        24,
-        24,
-        16,
-        24,
-        24,
-        24,
-        56,
-        48,
-        32,
-        56,
-        64,
-        56,
-        40,
-        40,
-        40,
-        56,
-        56,
-        56,
-        56,
-        40,
-        40,
-        40
-      ],
-      "routeKeyboard": [
-        {
-          "name": "12 blocks from Bitcoin Isle to Solana Reef",
-          "selected": true
-        },
-        {
-          "name": "15 blocks from Solana Reef to Base Harbor",
-          "selected": true
-        },
-        {
-          "name": "18 blocks from Bitcoin Isle to Tron Bay",
-          "selected": true
-        },
-        {
-          "name": "20 blocks from Tron Bay to NEAR Capital",
-          "selected": true
-        },
-        {
-          "name": "14 blocks from Base Harbor to NEAR Capital",
-          "selected": true
-        }
-      ],
-      "violations": [],
-      "assets": [
-        {
-          "kind": "icon",
-          "url": "https://frontier-git-redesign-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
-          "status": 200
-        },
-        {
-          "kind": "manifest",
-          "url": "https://frontier-git-redesign-willy264s-projects.vercel.app/manifest.webmanifest",
-          "status": 200
-        },
-        {
-          "kind": "og",
-          "url": "https://frontier-git-redesign-willy264s-projects.vercel.app/opengraph-image.png?cda4905d5b12be5c",
-          "status": 200
-        }
-      ],
-      "cls": 0.01787491947880498,
+      "cls": 0.01694037697120949,
       "ports": [
         {
           "name": "Bitcoin Isle",
