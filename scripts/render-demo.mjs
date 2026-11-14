@@ -41,7 +41,7 @@ for (const scene of capture.scenes) {
   const sentences = scene.narration.match(/[^.!?]+[.!?]+/g)?.map(s=>s.trim()) ?? [scene.narration];
   let t = 0.18;
   let events = `Dialogue: 0,0:00:00.00,${assTime(length)},Title,,0,0,0,,${scene.title}\n`;
-  const note = scene.id === 'depart' || scene.id === 'arrive' ? 'LIVE TESTNET / SCRIPTED RIVAL / WAITS SHORTENED' : 'LIVE TESTNET / SYNTHETIC VOICEOVER';
+  const note = scene.id.includes('depart') || scene.id === 'arrive' ? 'LIVE TESTNET / SCRIPTED RIVAL / WAITS SHORTENED' : 'LIVE TESTNET / SYNTHETIC VOICEOVER';
   events += `Dialogue: 0,0:00:00.00,${assTime(length)},Note,,0,0,0,,${note}\n`;
   for (const sentence of sentences) {
     const d = spoken * sentence.length / sentences.join('').length;
@@ -54,9 +54,9 @@ for (const scene of capture.scenes) {
     events += `Dialogue: 2,0:00:00.00,${assTime(length)},Outro,,0,0,0,,{\\fs76}FRONTIER\\N{\\fs40}frontier-willy264s-projects.vercel.app\\N{\\fs30}github.com/willy264/frontier\\N\\N{\\fs26}Built at NEAR HACKATHON / Testnet MVP\n`;
   }
   const subtitlePath = `data/video/${scene.id}.ass`;
-  await fs.writeFile(subtitlePath, header.replaceAll('&H00152936', '&H00362915') + events);
+  await fs.writeFile(subtitlePath, header.replaceAll('&H00152936', '&H00291D09') + events);
   const segment = `data/video/${scene.id}.mp4`;
-  const filter = `setpts=${speed}*(PTS-STARTPTS),fps=30,tpad=stop_mode=clone:stop_duration=${length},scale=1728:972,pad=1920:1080:96:54:color=0x152936,ass=${subtitlePath}`;
+  const filter = `setpts=${speed}*(PTS-STARTPTS),fps=30,tpad=stop_mode=clone:stop_duration=${length},scale=1728:972,pad=1920:1080:96:54:color=0x091d29,ass=${subtitlePath}`;
   run(['-ss', String(scene.start), '-t', String(sourceLength), '-i', 'data/video/capture.webm', '-i', audioFile, '-vf', filter, '-af', 'apad,loudnorm=I=-16:TP=-1.5:LRA=11', '-t', length.toFixed(3), '-c:v', 'libx264', '-preset', 'fast', '-crf', '22', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-ar', '48000', '-b:a', '160k', '-movflags', '+faststart', segment]);
   console.log(`Rendered ${scene.id}: ${length.toFixed(1)}s`);
   segments.push(`file '${scene.id}.mp4'`);

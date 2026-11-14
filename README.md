@@ -6,11 +6,15 @@ FRONTIER is a trading and strategy game running in NEAR contracts. Players buy g
 
 ## Watch the demo
 
+Video recorded before the 13 November visual redesign. A new production recording is being verified before this link is replaced.
+
 [Watch the narrated demo](https://frontier-willy264s-projects.vercel.app/demo/index.html) or [download the MP4](https://frontier-willy264s-projects.vercel.app/demo/frontier-demo.mp4). The video includes captions and shows real testnet purchases, ship construction, a sealed departure, a scripted rival's raid, a sale, and a player ambush reveal.
 
 The recording uses an automated testnet wallet adapter and synthetic narration. Waiting periods are shortened. It does not verify an ordinary retail wallet login, profitable arbitrage, or escort protection; the current escort-blocking round is recorded separately in the live evidence below. [Transaction evidence](results/video-demo.json), [narration](submission/voiceover-script.md), and [recording instructions](docs/VIDEO.md) are included.
 
 ## Try it locally
+
+The nautical redesign is being verified on the `redesign` preview branch. [Desktop screenshot](results/design/verified-1440.png), [mobile screenshot](results/design/verified-390.png), and [QA evidence](docs/REDESIGN_QA.md) document the current preview. The public production domain remains on the previously verified release until the live testnet walkthrough passes.
 
 ```powershell
 pnpm install

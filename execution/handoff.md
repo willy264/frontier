@@ -1,5 +1,10 @@
 # FRONTIER handoff
 
+## Live preview underway, 14 November 2026 00:41 UTC
+
+Polling fix9247212 deployed READY as dpl_4TyYmFW94AquZzcT8dkQ9777UdAJ at https://frontier-n537ycjzv-willy264s-projects.vercel.app. Both CI jobs green. Fresh-account worker has reached the authenticated market and saved its axe screenshot; full round remains pending. Local follow-up adds explicit failed-balance text and disables refresh while loading, records lab interaction timings in QA, and prepares nautical video captions. Typecheck passes; build pending. Do not publish main yet.11h19 to redesign cutoff;23h18 to submission.
+
+
 ## Polling diagnosis, 14 November 2026 00:34 UTC
 
 Fresh-account registration succeeded, but14 concurrent reads every3 seconds exhausted FastNEAR limits. Node saw429; browser saw CORS MissingAllowOriginHeader/Failed to fetch. This is not a contract-method failure. Local fix caches immutable routes, refreshes ports/economy every30seconds or after an action, and polls captain/ships/height every6seconds with12/24/30second failure backoff. Initial port and route groups read sequentially to reduce bursts.22 tests pass including cache expiry/invalidation, failed-read eviction, concurrent deduplication and backoff. Typecheck/build verification in progress. Next push fixed polling to redesign and rerun live round with worker Laplace. No release/tag/video yet.11h26 to redesign cutoff;23h25 to submission.

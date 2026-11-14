@@ -10,7 +10,7 @@ const evidence=[];
 try {
  for (const width of [390,1440]) {
   const context=await browser.newContext({viewport:{width,height:1000}});
-  await context.addInitScript(()=>{ localStorage.setItem('frontier-intro-seen','yes'); window.__cls=0; new PerformanceObserver(list=>{for(const e of list.getEntries()) if(!e.hadRecentInput) window.__cls+=e.value;}).observe({type:'layout-shift',buffered:true}); });
+  await context.addInitScript(()=>{ localStorage.setItem('frontier-intro-seen','yes'); window.__cls=0; window.__interactions=[]; new PerformanceObserver(list=>{for(const e of list.getEntries()) if(e.interactionId) window.__interactions.push(e.duration);}).observe({type:"event",durationThreshold:16,buffered:true}); new PerformanceObserver(list=>{for(const e of list.getEntries()) if(!e.hadRecentInput) window.__cls+=e.value;}).observe({type:'layout-shift',buffered:true}); });
   const page=await context.newPage(); await page.goto(site); await page.waitForFunction(()=>document.querySelector('.height-label')?.textContent.includes('Block'),null,{timeout:45000});
   const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
   const icons=await page.evaluate(()=>({icon:document.querySelector('link[rel="icon"]')?.href,manifest:document.querySelector('link[rel="manifest"]')?.href,og:document.querySelector('meta[property="og:image"]')?.content,cls:window.__cls}));
@@ -28,7 +28,8 @@ try {
   const failedStageTop = await page.locator('.world-stage').evaluate(el=>el.getBoundingClientRect().top + scrollY);
   assert(Math.abs(stageTop-failedStageTop)<1,'RPC failure moved the map');
   await page.getByRole('button',{name:'Economy',exact:true}).click(); await page.getByText('Can’t reach testnet. Retrying…',{exact:true}).waitFor({timeout:45000});
-  evidence.push({width,violations:axe.violations,assets,cls:icons.cls,ports,errorState:true,errorLayoutShift:Math.abs(stageTop-failedStageTop),keyboardDialog:true}); await context.close();
+  const interactionDurations=await page.evaluate(()=>window.__interactions);
+  evidence.push({width,interactionDurations,violations:axe.violations,assets,cls:icons.cls,ports,errorState:true,errorLayoutShift:Math.abs(stageTop-failedStageTop),keyboardDialog:true}); await context.close();
  }
  await fs.writeFile('results/design/accessibility.json',JSON.stringify({site,evidence},null,2));
  if(evidence.some(e=>e.violations.length||e.cls>.1||e.assets.some(a=>a.status!==200)||e.ports.some(p=>!p.visible))) process.exitCode=1;

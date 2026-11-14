@@ -311,3 +311,5 @@ Success copy uses confirmed values:
 - Guest primary heading: Make your own fortune.
 - Guest instruction: Buy cargo, sail between player-owned ports and watch for raiders.
 - Read-only top-bar text: Explore before connecting
+
+- Failed balance read: Balance unavailable
