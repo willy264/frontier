@@ -41,6 +41,8 @@ const goodName = goods[goodIndex];
 const spendCred = Number(process.env.FRONTIER_ROUND_SPEND ?? 400);
 // "own-key" emulates wallets such as Meteor that add their own key at sign-in and ignore the app's key.
 const walletEmulation = process.env.FRONTIER_WALLET_EMULATION ?? "requested-key";
+// Optional: route the page's FastNEAR reads to another RPC when this machine's IP is being throttled.
+const browserRpc = process.env.FRONTIER_BROWSER_RPC ?? null;
 let walletKeyPair = null;
 let walletSilentCalls = 0;
 const gameKeyMethods = ["register_player", "buy", "sell", "build_ship", "depart", "arrive", "commit_ambush", "reveal_ambush", "offer_escort", "set_fee"];
@@ -309,6 +311,7 @@ try {
     });
   }, { origin: site, captain: captainId });
 
+  if (browserRpc) await context.route("https://rpc.testnet.fastnear.com/**", route => route.continue({ url: browserRpc }));
   page = await context.newPage();
   video = captureVideo ? page.video() : null;
   page.on("response", response => {
@@ -490,6 +493,7 @@ try {
     site: siteUrl.href,
     deploymentCommit,
     walletEmulation,
+    browserRpcOverride: browserRpc,
     walletKey: walletKeyPair ? { publicKey: walletKeyPair.getPublicKey().toString(), initialAllowanceNear: 0.25, remainingAllowanceNear: walletKeyState ? Number(BigInt(walletKeyState.permission?.FunctionCall?.allowance ?? 0n)) / 1e24 : null, silentCalls: walletSilentCalls } : null,
     world,
     accounts: {
