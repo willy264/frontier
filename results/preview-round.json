@@ -1,0 +1,662 @@
+{
+  "network": "testnet",
+  "status": "LIVE_PREVIEW_UI_ESCORT_ROUND",
+  "recordedAt": "2026-11-14T02:38:28.879Z",
+  "site": "https://frontier-git-redesign-willy264s-projects.vercel.app/",
+  "deploymentCommit": "3b7c04f",
+  "world": "world3.world3.testnet",
+  "accounts": {
+    "captain": {
+      "accountId": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "freshBeforeRound": true
+    },
+    "escort": {
+      "accountId": "escmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "freshBeforeRound": true
+    },
+    "rival": {
+      "accountId": "rivmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "freshBeforeRound": true
+    }
+  },
+  "automationDisclosure": "An injected automation wallet approved a real contract-restricted function-call key for the captain. Full-access credentials remained in Node and in ~/.near-credentials/testnet; no retail-wallet walkthrough is claimed.",
+  "scriptedRivalDisclosure": "The rival account was rule-based test automation, not autonomous AI. Its registration, ship builds, ambush commit, and reveal were live testnet transactions.",
+  "accessibility": [
+    {
+      "label": "authenticated-market",
+      "passes": 44,
+      "incomplete": 2,
+      "violations": []
+    },
+    {
+      "label": "authenticated-fleet",
+      "passes": 44,
+      "incomplete": 2,
+      "violations": []
+    },
+    {
+      "label": "authenticated-escort",
+      "passes": 44,
+      "incomplete": 2,
+      "violations": []
+    },
+    {
+      "label": "authenticated-ambush",
+      "passes": 43,
+      "incomplete": 2,
+      "violations": []
+    }
+  ],
+  "proof": {
+    "freshCaptain": {
+      "initialPlayer": null,
+      "registeredPlayer": {
+        "cred": 1000,
+        "goods": [
+          0,
+          0,
+          0
+        ],
+        "defence": 0,
+        "active_commits": 0,
+        "last_epoch_seen": 1
+      },
+      "registerReceipt": "https://testnet.nearblocks.io/txns/4ttbYX2u36b9RvLkiUF36Fucq1rqbeCSi9b8j6zPWAM5"
+    },
+    "purchaseAndSloop": {
+      "good": "Liquidity",
+      "spentCred": 400,
+      "purchasedUnits": 39,
+      "captainShipId": 28,
+      "defence": 1,
+      "buyReceipt": "https://testnet.nearblocks.io/txns/AeE6XFJ4YNAkGgS4PzotWqPJqrXbU9rD4ZovSWdhWbwD",
+      "buildReceipt": "https://testnet.nearblocks.io/txns/FtL1UhiMwzXx7PGLkvgNLZ11CdrockQ65PLnRVLnu6T5"
+    },
+    "escort": {
+      "offerId": 8,
+      "shipId": 25,
+      "defence": 3,
+      "ownerId": "escmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "hireReceipt": "https://testnet.nearblocks.io/txns/4ZKHtyGWQrgbTEjbxZUMu5JtCzxh2Rnrga553VKEAJAS",
+      "linkedConvoyShipId": 28
+    },
+    "rivalPower": {
+      "exactIdlePower": 2,
+      "requiredBounds": {
+        "greaterThan": 1,
+        "lessThanOrEqual": 4
+      },
+      "withinRequiredBounds": true,
+      "basis": "The rival account's complete ships_for_owner result contained exactly two idle defence-1 sloops and no other ships.",
+      "ships": [
+        {
+          "shipId": 26,
+          "defence": 1,
+          "routeId": null,
+          "originPort": null,
+          "escortingConvoyId": null
+        },
+        {
+          "shipId": 27,
+          "defence": 1,
+          "routeId": null,
+          "originPort": null,
+          "escortingConvoyId": null
+        }
+      ]
+    },
+    "ambushWindow": {
+      "routeId": 1,
+      "fromPort": 1,
+      "toPort": 2,
+      "windowStart": 277596677,
+      "windowEnd": 277596697,
+      "departureBlock": 277596684,
+      "enclosesDeparture": true,
+      "rivalActiveCommits": {
+        "before": 0,
+        "afterReveal": 1,
+        "afterArrival": 0,
+        "targetedAmbushResolved": true
+      },
+      "commitReceipt": "https://testnet.nearblocks.io/txns/CU5qhZ6w2EZnnEZZd1UeUzx1dwJyAyefoCavLuV76XVS",
+      "revealReceipt": "https://testnet.nearblocks.io/txns/AFTjVCPGw5wr2CVqYWVVtWxbPj9KrTJ4n6toFonHisTS",
+      "departReceipt": "https://testnet.nearblocks.io/txns/6RE9yvNQifoWqjAbkXcYhkGVowCYBcRPVNhJVL79xbLp"
+    },
+    "cargoPreservation": {
+      "loadedCargo": [
+        0,
+        39,
+        0
+      ],
+      "captainGoodsBeforeArrival": [
+        0,
+        0,
+        0
+      ],
+      "captainGoodsAfterArrival": [
+        0,
+        39,
+        0
+      ],
+      "fullCargoPreserved": true,
+      "arrivalReceipt": "https://testnet.nearblocks.io/txns/BhiDYhh669PJ5PxnF6EKkoBAHajMkZD8kMSBUhzJjzAC"
+    },
+    "captainAmbush": {
+      "activeCommits": {
+        "before": 0,
+        "after": 1
+      },
+      "stakeCred": 10,
+      "commitReceipt": "https://testnet.nearblocks.io/txns/FPdwPZRMgaawk8x2vGVmqw7e4ga1m8p8ykHyemWc9oa2",
+      "revealReceipt": "https://testnet.nearblocks.io/txns/38AFxXuGv9LJkUfxqmRcr6iyfjYfUqmsd8hFk227LC5E"
+    },
+    "sale": {
+      "good": "Liquidity",
+      "soldUnits": 39,
+      "creditedCred": 16,
+      "finalGoods": [
+        0,
+        0,
+        0
+      ],
+      "finalCred": 496,
+      "saleReceipt": "https://testnet.nearblocks.io/txns/B8iYecyxjmRXNYpdmjFytbvoEZEL4zDKxmNN5KxnADVW"
+    }
+  },
+  "uiTransactions": [
+    {
+      "method": "register_player",
+      "tx": "4ttbYX2u36b9RvLkiUF36Fucq1rqbeCSi9b8j6zPWAM5",
+      "explorer": "https://testnet.nearblocks.io/txns/4ttbYX2u36b9RvLkiUF36Fucq1rqbeCSi9b8j6zPWAM5",
+      "executionBlock": 277596610
+    },
+    {
+      "method": "buy",
+      "tx": "AeE6XFJ4YNAkGgS4PzotWqPJqrXbU9rD4ZovSWdhWbwD",
+      "explorer": "https://testnet.nearblocks.io/txns/AeE6XFJ4YNAkGgS4PzotWqPJqrXbU9rD4ZovSWdhWbwD",
+      "executionBlock": 277596631
+    },
+    {
+      "method": "build_ship",
+      "tx": "FtL1UhiMwzXx7PGLkvgNLZ11CdrockQ65PLnRVLnu6T5",
+      "explorer": "https://testnet.nearblocks.io/txns/FtL1UhiMwzXx7PGLkvgNLZ11CdrockQ65PLnRVLnu6T5",
+      "executionBlock": 277596637
+    },
+    {
+      "method": "hire_escort",
+      "tx": "4ZKHtyGWQrgbTEjbxZUMu5JtCzxh2Rnrga553VKEAJAS",
+      "explorer": "https://testnet.nearblocks.io/txns/4ZKHtyGWQrgbTEjbxZUMu5JtCzxh2Rnrga553VKEAJAS",
+      "executionBlock": 277596660
+    },
+    {
+      "method": "depart",
+      "tx": "6RE9yvNQifoWqjAbkXcYhkGVowCYBcRPVNhJVL79xbLp",
+      "explorer": "https://testnet.nearblocks.io/txns/6RE9yvNQifoWqjAbkXcYhkGVowCYBcRPVNhJVL79xbLp",
+      "executionBlock": 277596684
+    },
+    {
+      "method": "arrive",
+      "tx": "BhiDYhh669PJ5PxnF6EKkoBAHajMkZD8kMSBUhzJjzAC",
+      "explorer": "https://testnet.nearblocks.io/txns/BhiDYhh669PJ5PxnF6EKkoBAHajMkZD8kMSBUhzJjzAC",
+      "executionBlock": 277596713
+    },
+    {
+      "method": "sell",
+      "tx": "B8iYecyxjmRXNYpdmjFytbvoEZEL4zDKxmNN5KxnADVW",
+      "explorer": "https://testnet.nearblocks.io/txns/B8iYecyxjmRXNYpdmjFytbvoEZEL4zDKxmNN5KxnADVW",
+      "executionBlock": 277596731
+    },
+    {
+      "method": "commit_ambush",
+      "tx": "FPdwPZRMgaawk8x2vGVmqw7e4ga1m8p8ykHyemWc9oa2",
+      "explorer": "https://testnet.nearblocks.io/txns/FPdwPZRMgaawk8x2vGVmqw7e4ga1m8p8ykHyemWc9oa2",
+      "executionBlock": 277596740
+    },
+    {
+      "method": "reveal_ambush",
+      "tx": "38AFxXuGv9LJkUfxqmRcr6iyfjYfUqmsd8hFk227LC5E",
+      "explorer": "https://testnet.nearblocks.io/txns/38AFxXuGv9LJkUfxqmRcr6iyfjYfUqmsd8hFk227LC5E",
+      "executionBlock": 277596747
+    }
+  ],
+  "keyCleanup": [
+    {
+      "publicKey": "ed25519:E7gmtdKr9WRw3to5dUKUcbACjQZKc3p8ZUH8PktfGpcA",
+      "status": "revoked",
+      "tx": "FBTwUg5H6vUMqUCTvK9eTuj8M6eguy8zefCRwPeGF6Cx",
+      "explorer": "https://testnet.nearblocks.io/txns/FBTwUg5H6vUMqUCTvK9eTuj8M6eguy8zefCRwPeGF6Cx"
+    }
+  ],
+  "transactions": [
+    {
+      "source": "setup: create capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "method": "create_account",
+      "tx": "H9KXfZYuStq77WkqnQzMsv2VtD5SdPkqqXi6cQfv4rD8",
+      "explorer": "https://testnet.nearblocks.io/txns/H9KXfZYuStq77WkqnQzMsv2VtD5SdPkqqXi6cQfv4rD8",
+      "signer": "frontierqa-11140241-8f06.testnet",
+      "receiver": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "executionBlock": 277596547,
+      "status": "success",
+      "events": []
+    },
+    {
+      "source": "setup: create escmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "method": "create_account",
+      "tx": "D2v6GrfJTb1WbduJriVugjekJBo8htxd7gWac9G7rtSE",
+      "explorer": "https://testnet.nearblocks.io/txns/D2v6GrfJTb1WbduJriVugjekJBo8htxd7gWac9G7rtSE",
+      "signer": "frontierqa-11140241-8f06.testnet",
+      "receiver": "escmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "executionBlock": 277596551,
+      "status": "success",
+      "events": []
+    },
+    {
+      "source": "setup: create rivmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "method": "create_account",
+      "tx": "8vdiYnaysiwxoo6PqNRzAoWsMGv6UrWH5XUx88VErU8X",
+      "explorer": "https://testnet.nearblocks.io/txns/8vdiYnaysiwxoo6PqNRzAoWsMGv6UrWH5XUx88VErU8X",
+      "signer": "frontierqa-11140241-8f06.testnet",
+      "receiver": "rivmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "executionBlock": 277596555,
+      "status": "success",
+      "events": []
+    },
+    {
+      "source": "setup: register escort captain",
+      "method": "register_player",
+      "tx": "A6KUvV7ciwgsymqWUU5NYuXKv5DvCXPnsUTqsMRYZy1v",
+      "explorer": "https://testnet.nearblocks.io/txns/A6KUvV7ciwgsymqWUU5NYuXKv5DvCXPnsUTqsMRYZy1v",
+      "signer": "escmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596563,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "player_registered",
+          "data": [
+            {
+              "value": "escmwfsnwm94613.frontierqa-11140241-8f06.testnet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "setup: build defence-3 escort galleon",
+      "method": "build_ship",
+      "tx": "GEfXBxkKtwnub8fHYsoqDeFSD3TiNJvetV276Ly9djvL",
+      "explorer": "https://testnet.nearblocks.io/txns/GEfXBxkKtwnub8fHYsoqDeFSD3TiNJvetV276Ly9djvL",
+      "signer": "escmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596567,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ship_built",
+          "data": [
+            {
+              "value": "25"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "setup: offer defence-3 escort",
+      "method": "offer_escort",
+      "tx": "FPy52tyqMUFA5nJiG1AU48ZaYheqtewi6MxN3LjdFJej",
+      "explorer": "https://testnet.nearblocks.io/txns/FPy52tyqMUFA5nJiG1AU48ZaYheqtewi6MxN3LjdFJej",
+      "signer": "escmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596571,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "escort_offered",
+          "data": [
+            {
+              "value": "8"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "setup: register scripted rival",
+      "method": "register_player",
+      "tx": "9Qz9oqEe7TkfkMtqgURYeDG1CeZRuWXEnZzYspGk9Yq1",
+      "explorer": "https://testnet.nearblocks.io/txns/9Qz9oqEe7TkfkMtqgURYeDG1CeZRuWXEnZzYspGk9Yq1",
+      "signer": "rivmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596579,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "player_registered",
+          "data": [
+            {
+              "value": "rivmwfsnwm94613.frontierqa-11140241-8f06.testnet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "setup: build rival sloop 1",
+      "method": "build_ship",
+      "tx": "oZXE4aWXKaBsckcTv55gxMwFCSbBoeEtgvW7hDM2C4D",
+      "explorer": "https://testnet.nearblocks.io/txns/oZXE4aWXKaBsckcTv55gxMwFCSbBoeEtgvW7hDM2C4D",
+      "signer": "rivmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": null,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ship_built",
+          "data": [
+            {
+              "value": "26"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "setup: build rival sloop 2",
+      "method": "build_ship",
+      "tx": "9sss7Jc2BpFN6WV7v5NkUjMnPcknGmmKJZFSGjcJRqLA",
+      "explorer": "https://testnet.nearblocks.io/txns/9sss7Jc2BpFN6WV7v5NkUjMnPcknGmmKJZFSGjcJRqLA",
+      "signer": "rivmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596587,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ship_built",
+          "data": [
+            {
+              "value": "27"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "recording wallet: scoped game-key approval",
+      "method": "add_key",
+      "tx": "8haq4H6VohsfkQJ55Y33R9JyP1zAGnFa8P2ZhKjR7CpB",
+      "explorer": "https://testnet.nearblocks.io/txns/8haq4H6VohsfkQJ55Y33R9JyP1zAGnFa8P2ZhKjR7CpB",
+      "signer": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "executionBlock": 277596604,
+      "status": "success",
+      "events": []
+    },
+    {
+      "source": "UI: register fresh captain",
+      "method": "register_player",
+      "tx": "4ttbYX2u36b9RvLkiUF36Fucq1rqbeCSi9b8j6zPWAM5",
+      "explorer": "https://testnet.nearblocks.io/txns/4ttbYX2u36b9RvLkiUF36Fucq1rqbeCSi9b8j6zPWAM5",
+      "signer": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596610,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "player_registered",
+          "data": [
+            {
+              "value": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "UI: buy Liquidity cargo",
+      "method": "buy",
+      "tx": "AeE6XFJ4YNAkGgS4PzotWqPJqrXbU9rD4ZovSWdhWbwD",
+      "explorer": "https://testnet.nearblocks.io/txns/AeE6XFJ4YNAkGgS4PzotWqPJqrXbU9rD4ZovSWdhWbwD",
+      "signer": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596631,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "trade",
+          "data": [
+            {
+              "value": "buy:1:1:39"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "UI: build captain sloop",
+      "method": "build_ship",
+      "tx": "FtL1UhiMwzXx7PGLkvgNLZ11CdrockQ65PLnRVLnu6T5",
+      "explorer": "https://testnet.nearblocks.io/txns/FtL1UhiMwzXx7PGLkvgNLZ11CdrockQ65PLnRVLnu6T5",
+      "signer": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596637,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ship_built",
+          "data": [
+            {
+              "value": "28"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "UI: hire defence-3 galleon",
+      "method": "hire_escort",
+      "tx": "4ZKHtyGWQrgbTEjbxZUMu5JtCzxh2Rnrga553VKEAJAS",
+      "explorer": "https://testnet.nearblocks.io/txns/4ZKHtyGWQrgbTEjbxZUMu5JtCzxh2Rnrga553VKEAJAS",
+      "signer": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596660,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "escort_hired",
+          "data": [
+            {
+              "value": "8:28"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "scripted rival: commit ambush",
+      "method": "commit_ambush",
+      "tx": "CU5qhZ6w2EZnnEZZd1UeUzx1dwJyAyefoCavLuV76XVS",
+      "explorer": "https://testnet.nearblocks.io/txns/CU5qhZ6w2EZnnEZZd1UeUzx1dwJyAyefoCavLuV76XVS",
+      "signer": "rivmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596668,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ambush_committed",
+          "data": [
+            {
+              "value": "[240, 129, 118, 252, 92, 164, 10, 122, 207, 199, 55, 248, 69, 67, 110, 55, 45, 177, 96, 58, 235, 134, 60, 34, 31, 226, 173, 80, 27, 235, 53, 237]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "scripted rival: reveal ambush",
+      "method": "reveal_ambush",
+      "tx": "AFTjVCPGw5wr2CVqYWVVtWxbPj9KrTJ4n6toFonHisTS",
+      "explorer": "https://testnet.nearblocks.io/txns/AFTjVCPGw5wr2CVqYWVVtWxbPj9KrTJ4n6toFonHisTS",
+      "signer": "rivmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596672,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ambush_revealed",
+          "data": [
+            {
+              "value": "[240, 129, 118, 252, 92, 164, 10, 122, 207, 199, 55, 248, 69, 67, 110, 55, 45, 177, 96, 58, 235, 134, 60, 34, 31, 226, 173, 80, 27, 235, 53, 237]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "UI: depart escorted convoy with sealed destination",
+      "method": "depart",
+      "tx": "6RE9yvNQifoWqjAbkXcYhkGVowCYBcRPVNhJVL79xbLp",
+      "explorer": "https://testnet.nearblocks.io/txns/6RE9yvNQifoWqjAbkXcYhkGVowCYBcRPVNhJVL79xbLp",
+      "signer": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596684,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "departed",
+          "data": [
+            {
+              "value": "28"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "UI: reveal destination and arrive",
+      "method": "arrive",
+      "tx": "BhiDYhh669PJ5PxnF6EKkoBAHajMkZD8kMSBUhzJjzAC",
+      "explorer": "https://testnet.nearblocks.io/txns/BhiDYhh669PJ5PxnF6EKkoBAHajMkZD8kMSBUhzJjzAC",
+      "signer": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596713,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "arrived",
+          "data": [
+            {
+              "value": "28:raided=false:loss=0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "UI: sell full preserved cargo",
+      "method": "sell",
+      "tx": "B8iYecyxjmRXNYpdmjFytbvoEZEL4zDKxmNN5KxnADVW",
+      "explorer": "https://testnet.nearblocks.io/txns/B8iYecyxjmRXNYpdmjFytbvoEZEL4zDKxmNN5KxnADVW",
+      "signer": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596731,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "trade",
+          "data": [
+            {
+              "value": "sell:2:1:16"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "UI: captain commits ambush with chosen window",
+      "method": "commit_ambush",
+      "tx": "FPdwPZRMgaawk8x2vGVmqw7e4ga1m8p8ykHyemWc9oa2",
+      "explorer": "https://testnet.nearblocks.io/txns/FPdwPZRMgaawk8x2vGVmqw7e4ga1m8p8ykHyemWc9oa2",
+      "signer": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596740,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ambush_committed",
+          "data": [
+            {
+              "value": "[19, 180, 22, 5, 251, 246, 2, 31, 181, 55, 235, 70, 168, 20, 48, 58, 67, 50, 88, 174, 222, 71, 52, 229, 107, 160, 249, 77, 89, 130, 224, 171]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "UI: captain springs ambush",
+      "method": "reveal_ambush",
+      "tx": "38AFxXuGv9LJkUfxqmRcr6iyfjYfUqmsd8hFk227LC5E",
+      "explorer": "https://testnet.nearblocks.io/txns/38AFxXuGv9LJkUfxqmRcr6iyfjYfUqmsd8hFk227LC5E",
+      "signer": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277596747,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ambush_revealed",
+          "data": [
+            {
+              "value": "[19, 180, 22, 5, 251, 246, 2, 31, 181, 55, 235, 70, 168, 20, 48, 58, 67, 50, 88, 174, 222, 71, 52, 229, 107, 160, 249, 77, 89, 130, 224, 171]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "recording wallet: scoped key revoked",
+      "method": "delete_key",
+      "tx": "FBTwUg5H6vUMqUCTvK9eTuj8M6eguy8zefCRwPeGF6Cx",
+      "explorer": "https://testnet.nearblocks.io/txns/FBTwUg5H6vUMqUCTvK9eTuj8M6eguy8zefCRwPeGF6Cx",
+      "signer": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "receiver": "capmwfsnwm94613.frontierqa-11140241-8f06.testnet",
+      "executionBlock": 277596755,
+      "status": "success",
+      "events": []
+    }
+  ]
+}

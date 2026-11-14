@@ -2,6 +2,22 @@
 
 Release candidate checks run against Vercel previews. Production stays on the verified pre-redesign deployment until the live round and preview checks pass. Contracts are unchanged.
 
+## Release candidate 3b7c04f, 14 November 2026 02:40 UTC
+
+Checked on preview deployment `dpl_212YGd3gDaMJCZ8h88jNUHNinMDy` (commit 3b7c04f) through `frontier-git-redesign-willy264s-projects.vercel.app`. CI `app` and `contract` jobs passed on 3b7c04f. Contracts unchanged.
+
+| Gate | Result | Evidence |
+|---|---|---|
+| Live fresh-account round | Pass. Fresh captain, escort and rival. Register, buy 400 CRED of Liquidity, build sloop, hire defence-3 escort (wallet-signed), depart at block 277596684 inside the rival's revealed window 277596677 to 277596697, arrive with all 39 units, sell for 16 CRED, then set and spring a UI ambush. 22 transactions succeeded; the scoped key was revoked. | [preview-round.json](../results/preview-round.json) |
+| Escort blocks raid | Pass. Rival idle power 2 is above the sloop's 1 and below sloop plus escort (4). The rival's active commits went 0, 1, 0, so the ambush matched this convoy, and loaded cargo equals arrived cargo. | `proof.rivalPower`, `proof.ambushWindow`, `proof.cargoPreservation` |
+| Accessibility | Pass. axe with `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`: zero violations at 390 and 1440. Every axe rule on the four signed-in panels: zero violations. Keyboard dialog, five ports and five routes pass. | [accessibility.json](../results/design/accessibility.json), `preview-round.json` `accessibility` |
+| Responsive | Pass. 10 widths by 2 motion settings: no overflow, no buttons under 24px, no page errors. | [responsive.json](../results/design/responsive.json) |
+| Assets | Pass. Favicon, manifest and OG image return 200. | `accessibility.json` |
+| Core Web Vitals (lab) | Pass. Lighthouse mobile: LCP 1.4 s, CLS 0, TBT 580 ms, performance 85, accessibility 100. Scripted interactions took at most 128 ms. The QA session sum of unexpected shifts was 0.0974 at 390px, under 0.1 but close; field INP and CLS need real traffic. | [lighthouse-mobile-release.json](../results/design/lighthouse-mobile-release.json) |
+| Unit tests and types | Pass. 29 tests, app and root TypeScript. | CI `app` job |
+
+Fixed during this pass: a 10-block ambush lead could be stale and fail with `ERR_WINDOW` (now reads a fresh block), and 11 map controls failed WCAG 2.5.3 Label in Name (the earlier axe tag list omitted `wcag21a`).
+
 ## Visual review
 
 The map occupies the main stage. Amber marks actions and Hashpower; the other goods have labelled semantic colours. Barlow Condensed and DM Sans are self-hosted. No glass panels, gradient buttons, decorative statistics, stock photography or repeated marketing cards were added.

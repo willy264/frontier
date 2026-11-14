@@ -1,18 +1,78 @@
 {
-  "site": "https://frontier-7j4r5bwaj-willy264s-projects.vercel.app",
+  "site": "https://frontier-git-redesign-willy264s-projects.vercel.app/",
   "evidence": [
     {
       "width": 390,
+      "interactionDurations": [
+        56,
+        56,
+        56,
+        40,
+        32,
+        32,
+        32,
+        24,
+        32,
+        32,
+        32,
+        24,
+        24,
+        24,
+        24,
+        24,
+        32,
+        32,
+        32,
+        32,
+        32,
+        40,
+        56,
+        48,
+        32,
+        40,
+        40,
+        32,
+        24,
+        40,
+        40,
+        40,
+        40,
+        32,
+        32,
+        32
+      ],
+      "routeKeyboard": [
+        {
+          "name": "12 blocks from Bitcoin Isle to Solana Reef",
+          "selected": true
+        },
+        {
+          "name": "15 blocks from Solana Reef to Base Harbor",
+          "selected": true
+        },
+        {
+          "name": "18 blocks from Bitcoin Isle to Tron Bay",
+          "selected": true
+        },
+        {
+          "name": "20 blocks from Tron Bay to NEAR Capital",
+          "selected": true
+        },
+        {
+          "name": "14 blocks from Base Harbor to NEAR Capital",
+          "selected": true
+        }
+      ],
       "violations": [],
       "assets": [
         {
           "kind": "icon",
-          "url": "https://frontier-7j4r5bwaj-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
+          "url": "https://frontier-git-redesign-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
           "status": 200
         },
         {
           "kind": "manifest",
-          "url": "https://frontier-7j4r5bwaj-willy264s-projects.vercel.app/manifest.webmanifest",
+          "url": "https://frontier-git-redesign-willy264s-projects.vercel.app/manifest.webmanifest",
           "status": 200
         },
         {
@@ -21,7 +81,7 @@
           "status": 200
         }
       ],
-      "cls": 0,
+      "cls": 0.09742900528846155,
       "ports": [
         {
           "name": "Bitcoin Isle",
@@ -50,16 +110,79 @@
     },
     {
       "width": 1440,
+      "interactionDurations": [
+        128,
+        128,
+        128,
+        88,
+        32,
+        32,
+        32,
+        24,
+        48,
+        48,
+        48,
+        40,
+        56,
+        56,
+        56,
+        40,
+        24,
+        24,
+        24,
+        16,
+        24,
+        24,
+        24,
+        56,
+        48,
+        32,
+        56,
+        64,
+        56,
+        40,
+        40,
+        40,
+        56,
+        56,
+        56,
+        56,
+        40,
+        40,
+        40
+      ],
+      "routeKeyboard": [
+        {
+          "name": "12 blocks from Bitcoin Isle to Solana Reef",
+          "selected": true
+        },
+        {
+          "name": "15 blocks from Solana Reef to Base Harbor",
+          "selected": true
+        },
+        {
+          "name": "18 blocks from Bitcoin Isle to Tron Bay",
+          "selected": true
+        },
+        {
+          "name": "20 blocks from Tron Bay to NEAR Capital",
+          "selected": true
+        },
+        {
+          "name": "14 blocks from Base Harbor to NEAR Capital",
+          "selected": true
+        }
+      ],
       "violations": [],
       "assets": [
         {
           "kind": "icon",
-          "url": "https://frontier-7j4r5bwaj-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
+          "url": "https://frontier-git-redesign-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
           "status": 200
         },
         {
           "kind": "manifest",
-          "url": "https://frontier-7j4r5bwaj-willy264s-projects.vercel.app/manifest.webmanifest",
+          "url": "https://frontier-git-redesign-willy264s-projects.vercel.app/manifest.webmanifest",
           "status": 200
         },
         {
@@ -68,7 +191,7 @@
           "status": 200
         }
       ],
-      "cls": 0.004473129114221644,
+      "cls": 0.01787491947880498,
       "ports": [
         {
           "name": "Bitcoin Isle",

@@ -1,5 +1,17 @@
 # FRONTIER handoff
 
+## Release checkpoint, 14 November 2026 02:42 UTC
+
+Work continued from a second machine (no Vercel login, no `world3.testnet` keys). Branch `redesign`; contracts unchanged. Remote tag `hackathon-submission` still 84a49a6; production still on dpl_DcZi2CL6qgX3fDxeG9eUnywvfrhG.
+
+Review findings (contract frozen, so mitigated in the client and disclosed in README "Known limits"): trades are not location-checked, NPC demand pays from port reserves in registration order, `arrive` has no deadline, routes dead-end at NEAR Capital, port treasuries cannot be withdrawn, a 30 CRED fee floor, and a model-only property test. Do not run a `tick_epoch` keeper: `p2.world3.testnet` holds 159 Hashpower and would take the whole NPC cap while draining Bitcoin Isle's reserve.
+
+Changes since 1a9b73c: sell only where a ship is docked; final-harbour warning; ambush window picker (fresh block height); escort offer board; `hire_escort`, `buy_port` and `set_port_sale_price` are wallet-signed, not game-key methods; WCAG 2.5.3 fixes on map controls; tldts pinned to 7.5.1 for pnpm 12's package age policy; recorder supports wallet signing, configurable cargo, and a UI ambush scene.
+
+Preview release candidate 3b7c04f (dpl_212YGd3gDaMJCZ8h88jNUHNinMDy) passes the live fresh-account escort round, axe, responsive, assets, lab Web Vitals and CI. Evidence: docs/REDESIGN_QA.md and results/preview-round.json. QA test accounts are sub-accounts of the faucet account `frontierqa-11140241-8f06.testnet`; keys stay in ~/.near-credentials on that machine.
+
+Next: merge to main, verify the canonical domain and a production live round, then move the tag and record the production video.
+
 ## Live preview underway, 14 November 2026 00:41 UTC
 
 Polling fix9247212 deployed READY as dpl_4TyYmFW94AquZzcT8dkQ9777UdAJ at https://frontier-n537ycjzv-willy264s-projects.vercel.app. Both CI jobs green. Fresh-account worker has reached the authenticated market and saved its axe screenshot; full round remains pending. Local follow-up adds explicit failed-balance text and disables refresh while loading, records lab interaction timings in QA, and prepares nautical video captions. Typecheck passes; build pending. Do not publish main yet.11h19 to redesign cutoff;23h18 to submission.

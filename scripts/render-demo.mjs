@@ -2,9 +2,13 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 const root = process.cwd();
-const ffmpeg = path.resolve('data/video-tools/node_modules/@ffmpeg-installer/win32-x64/ffmpeg.exe');
+const bundledFfmpeg = path.resolve('data/video-tools/node_modules/@ffmpeg-installer/win32-x64/ffmpeg.exe');
+const ffmpeg = process.env.FFMPEG_PATH ?? (existsSync(bundledFfmpeg) ? bundledFfmpeg : 'ffmpeg');
+// Record the narration voice that narrate-demo.ps1 actually used.
+const voice = process.env.FRONTIER_VOICE ?? 'Microsoft Hazel Desktop';
 const capture = JSON.parse(await fs.readFile('data/video/capture.json', 'utf8'));
 const finalDir = 'apps/game/public/demo';
 await fs.mkdir(finalDir, { recursive: true });
@@ -69,7 +73,7 @@ const final = `${finalDir}/frontier-demo.mp4`;
 run(['-f','concat','-safe','0','-i','data/video/concat.txt','-c','copy','-movflags','+faststart',final]);
 run(['-i',final,'-vn','-c:a','libmp3lame','-q:a','2',`${finalDir}/frontier-voiceover.mp3`]);
 await fs.writeFile(`${finalDir}/frontier-demo.srt`, captions.map((c,i)=>`${i+1}\n${srtTime(c.start)} --> ${srtTime(c.end)}\n${c.text}\n`).join('\n'));
-await fs.writeFile('submission/voiceover-script.md', '# FRONTIER demo narration\n\nVoice: Microsoft Hazel Desktop, generated locally. Synthetic narration, not a human voice clone. Footage: real public app and testnet transactions; waits shortened.\n\n' + capture.scenes.map(s=>`## ${s.title}\n\n${s.narration}`).join('\n\n') + '\n');
+await fs.writeFile('submission/voiceover-script.md', `# FRONTIER demo narration\n\nVoice: ${voice}, generated locally. Synthetic narration, not a human voice clone. Footage: real public app and testnet transactions; waits shortened.\n\n` + capture.scenes.map(s=>`## ${s.title}\n\n${s.narration}`).join('\n\n') + '\n');
 const seconds = duration(final);
 if (seconds > 120) throw new Error(`Demo is ${seconds}s; shorten narration to fit two minutes.`);
 run(['-ss','3','-i',final,'-frames:v','1','-q:v','2',`${finalDir}/poster.jpg`]);
@@ -77,7 +81,7 @@ const bytes = await fs.readFile(final);
 await fs.writeFile('results/video-demo.json', JSON.stringify({
   recordedAt: capture.recordedAt, site: capture.site, contract: capture.world,
   captain: capture.captain, durationSeconds: seconds, resolution: '1920x1080',
-  videoCodec: 'H.264', audioCodec: 'AAC', voice: 'Microsoft Hazel Desktop (synthetic)',
+  videoCodec: 'H.264', audioCodec: 'AAC', voice: `${voice} (synthetic)`,
   sha256: createHash('sha256').update(bytes).digest('hex'), bytes: bytes.length,
   file: final, disclosures: capture.disclosures, keyCleanup: capture.keyCleanup,
   transactions: capture.evidence, afterBuy: capture.afterBuy,
