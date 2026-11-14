@@ -8,8 +8,8 @@ import { builtShipId } from "./transaction-result";
 import { openEscortOffers, type EscortOffer } from "./escort-board";
 import { readRpc } from "./read-rpc";
 
-type Props = { game: Game; mode: Mode; setMode: (mode: Mode) => void; portId: number; setPortId: (id: number) => void; shipId: number | null; setShipId: (id: number) => void; routeId: number };
-export function ActionPanel({ game, mode, setMode, portId, setPortId, shipId, setShipId, routeId }: Props) {
+type Props = { game: Game; mode: Mode; setMode: (mode: Mode) => void; portId: number; setPortId: (id: number) => void; shipId: number | null; setShipId: (id: number) => void; routeId: number; onEarnCred: () => void };
+export function ActionPanel({ game, mode, setMode, portId, setPortId, shipId, setShipId, routeId, onEarnCred }: Props) {
   const [good, setGood] = useState(0);
   const [side, setSide] = useState<"buy" | "sell">("buy");
   const [amount, setAmount] = useState("120");
@@ -108,6 +108,7 @@ export function ActionPanel({ game, mode, setMode, portId, setPortId, shipId, se
     <label>{side === "buy" ? "Spend CRED" : `Sell ${GOODS[good]}`}<input type="number" min="1" step="1" max={side === "buy" ? game.player.cred : goods[good]} value={amount} onChange={e => setAmount(e.target.value)} aria-describedby="quote-hint" /></label>{side === "sell" && <button className="text-button" onClick={() => setAmount(String(goods[good]))}>Use available cargo ({goods[good]})</button>}
     <div className="quote"><span>You receive</span><strong>{quote} <small>{side === "buy" ? GOODS[good] : "CRED"}</small></strong></div><p id="quote-hint" className="muted">Includes port fees. Allow up to 2% price movement. Minimum received: {minimumOutput(quote)}. Trades cost at least 30 CRED in fees.</p>
     {action(side === "buy" ? "Buy cargo" : "Sell cargo", trade, !wholeAmount(amount) || BigInt(quote) === 0n || Number(amount) > (side === "buy" ? game.player.cred : goods[good]))}</>}{hasCargo && <button className="secondary" onClick={() => setMode("fleet")}>{game.ships.length ? "Load a ship" : "Build a ship"}</button>}
+    <button className="text-button" onClick={onEarnCred}>{game.player.cred < 150 ? "Low on CRED? How to earn more" : "How to earn more CRED"}</button>
     <details><summary>Port ownership</summary><p>Fee {port.fee_bps / 100}%. Treasury {port.treasury} CRED.</p>{port.owner_id === game.accountId ? <><label>Trading fee (%)<input type="number" min="0.3" max="10" step="0.1" value={fee} onChange={e => setFee(e.target.value)} /></label>{action("Set port fee", () => game.call("set_fee", { port_id: portId, fee_bps: Math.round(Number(fee) * 100) }, "Port fee updated."), !Number.isFinite(Number(fee)) || Number(fee) < .3 || Number(fee) > 10)}</> : port.sale_price > 0 ? <>{action(`Buy port · ${port.sale_price}`, () => game.call("buy_port", { port_id: portId }, "Port purchased, including its treasury."), game.player.cred < port.sale_price)}<small>Your wallet asks you to approve port purchases. Port fees stay in the port treasury; the current contract has no withdrawal.</small></> : <p>This port is not for sale.</p>}</details>
   </>}</>;
   else if (activeMode === "ambush") content = <><span className="eyebrow danger-text">Route ambush</span><h2>Wait in the narrows.</h2><p>{ambushRoute ? `${portName(ambushRoute.from_port)} to ${portName(ambushRoute.to_port)}` : "Select a route on the map."}</p><p>Your idle ships supply attack power. An ambush catches convoys that set sail on this route during its 20-block window.</p><p className="muted">Stake 10 CRED. Spring the ambush before those convoys reach harbour. A sprung ambush is public contract state. Unsprung ambushes lose the stake.</p>
