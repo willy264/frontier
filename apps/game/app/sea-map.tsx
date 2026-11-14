@@ -242,10 +242,10 @@ export function SeaMap({
                   className={`sea-island ${goodClass(island.good)}${selected ? " sea-island--selected" : ""}`}
                   style={positionStyle(island.x, island.y)}
                   aria-pressed={selected}
-                  aria-label={`${island.name}, ${island.good}, select port`}
+                  aria-label={`${island.short} ${island.name}, ${island.good}, select port`}
                   onClick={() => onIsland(island.id)}
                 >
-                  <span className="sea-island__code" aria-hidden="true">{island.short}</span>
+                  <span className="sea-island__code" aria-hidden="true">{island.short}</span>{" "}
                   <span className="sea-island__copy">
                     <strong>{island.name}</strong>{" "}
                     <span className="sea-island__good">{island.good}</span>

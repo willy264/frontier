@@ -18,7 +18,7 @@ try {
   await page.getByRole('button',{name:'How to play',exact:true}).first().focus(); await page.keyboard.press('Enter'); assert(await page.locator('dialog').isVisible()); await page.keyboard.press('Escape'); assert(!await page.locator('dialog').isVisible());
   const ports=[];
   for(const name of ['Bitcoin Isle','Solana Reef','Base Harbor','Tron Bay','NEAR Capital']) {
-   const button=page.getByRole('button',{name:new RegExp(`^${name}, `)}); await button.focus(); await page.keyboard.press('Enter');
+   const button=page.getByRole('button',{name:new RegExp(` ${name}, `)}); await button.focus(); await page.keyboard.press('Enter');
    const visible=await button.evaluate(el=>{const r=el.getBoundingClientRect(),v=el.closest('.sea-map__viewport').getBoundingClientRect();return r.left>=v.left&&r.right<=v.right;}); ports.push({name,visible});
   }
   const routeControls=page.getByRole('button',{name:/^\d+ blocks from .+ to .+$/});
@@ -29,7 +29,7 @@ try {
    routeKeyboard.push({name:await route.getAttribute('aria-label'),selected});
   }
   assert.equal(routeKeyboard.length,5,'Expected five keyboard-operable routes');
-  await page.getByRole('button',{name:/^Bitcoin Isle, /}).click();
+  await page.getByRole('button',{name:/ Bitcoin Isle, /}).click();
   await page.evaluate(()=>{ document.activeElement?.blur(); scrollTo(0,0); });
   await page.screenshot({path:`results/design/verified-${width}.png`,fullPage:true});
   const stageTop = await page.locator('.world-stage').evaluate(el=>el.getBoundingClientRect().top + scrollY);
