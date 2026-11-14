@@ -6,15 +6,15 @@ FRONTIER is a trading and strategy game running in NEAR contracts. Players buy g
 
 ## Watch the demo
 
-Video recorded before the 13 November visual redesign. A new production recording is being verified before this link is replaced.
+Recorded on 14 November 2026 on the production site (commit `daa9528`).
 
-[Watch the narrated demo](https://frontier-willy264s-projects.vercel.app/demo/index.html) or [download the MP4](https://frontier-willy264s-projects.vercel.app/demo/frontier-demo.mp4). The video includes captions and shows real testnet purchases, ship construction, a sealed departure, a scripted rival's raid, a sale, and a player ambush reveal.
+[Watch the narrated demo](https://frontier-willy264s-projects.vercel.app/demo/index.html) or [download the MP4](https://frontier-willy264s-projects.vercel.app/demo/frontier-demo.mp4). The video includes captions and shows real testnet transactions: a fresh captain registers, buys Blockspace, builds a sloop and hires a defence-3 escort. A scripted rival with 2 attack power reveals an ambush on the captain's route; the convoy departs inside that window, the ambush resolves against it, and all 46 units arrive because the escorted defence of 4 outweighs the raider. The captain then sells and sets and springs an ambush of their own.
 
-The recording uses an automated testnet wallet adapter and synthetic narration. Waiting periods are shortened. It does not verify an ordinary retail wallet login, profitable arbitrage, or escort protection; the current escort-blocking round is recorded separately in the live evidence below. [Transaction evidence](results/video-demo.json), [narration](submission/voiceover-script.md), and [recording instructions](docs/VIDEO.md) are included.
+The recording uses an automated testnet wallet adapter and synthetic narration (Microsoft Zira Desktop). Waiting periods are shortened. It does not verify an ordinary retail wallet login, and the filmed voyage sells at a loss: it shows the game loop, not a profit strategy (see "Known limits"). [Transaction evidence](results/video-demo.json), [round proof](results/production-ui-round.json), [narration](submission/voiceover-script.md), and [recording instructions](docs/VIDEO.md) are included.
 
 ## Try it locally
 
-The nautical redesign is being verified on the `redesign` preview branch. [Desktop screenshot](results/design/verified-1440.png), [mobile screenshot](results/design/verified-390.png), and [QA evidence](docs/REDESIGN_QA.md) document the current preview. The public production domain remains on the previously verified release until the live testnet walkthrough passes.
+The production site runs the nautical redesign. [Desktop screenshot](results/design/verified-1440.png), [mobile screenshot](results/design/verified-390.png), and [QA evidence](docs/REDESIGN_QA.md) document the release.
 
 ```powershell
 pnpm install
@@ -37,7 +37,7 @@ The scripted economy simulator remains available with `pnpm sim`; its results ar
 - Deployment transaction: `7yBzUscXD4TtziMY9ug81LEN1A64YA1fdkXGmUJZXDS5`
 - Initialization transaction: `4RvJMuDzWCcHVDo9MHm5TJ3oS6tAPRC9dfrSz2aNMoNU`
 - Latest WASM SHA-256: `4bffab9d1cdf21c217ab291eef8c09ee42b3afaf1b9b1904e6ae6f4ecee43b7b`
-- Latest live round evidence: `results/round-2026-11-12T08-16-16-506Z.json`
+- Latest live round evidence: `results/production-ui-round.json` (production UI round, 14 November 2026); scripted contract round `results/round-2026-11-12T08-16-16-506Z.json`
 - Live URL: https://frontier-willy264s-projects.vercel.app
 
 The deploy command expects the root account credential in the user-level NEAR credential directory and only targets testnet:

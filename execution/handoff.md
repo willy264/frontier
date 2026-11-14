@@ -1,5 +1,18 @@
 # FRONTIER handoff
 
+## Released, 14 November 2026 07:40 UTC
+
+- Release commit: `main` at daa9528 (fast-forward from bb3fcc7). CI `app` and `contract` jobs passed on it.
+- Production deployment: dpl_5ZLvtQmpuiEzTPXmXEVEoNe8V63j (frontier-8wcs7he8u-willy264s-projects.vercel.app). The owner assigned the canonical domain `frontier-willy264s-projects.vercel.app` to it at about 07:15 UTC. It did not follow the Git deployment automatically because the domain had been pinned to dpl_DcZi2CL6qgX3fDxeG9eUnywvfrhG; a first assignment went to `frontier-willy264-projects.vercel.app` (no "s") by mistake.
+- Verified at 07:18 UTC: canonical domain serves the new build (bundle page-20c2332ecf683f0f); manifest, icons, OG image and demo files return 200/206.
+- Tag: `hackathon-submission` force-moved from 84a49a6 to daa9528 and pushed at 07:22 UTC, after the production round passed.
+- Production live round (results/production-ui-round.json): fresh captain, escort and rival; Blockspace 400 CRED for 46 units; departure at block 277625486 inside the rival's revealed window 277625479 to 277625499; rival power 2 against escorted defence 4; ambush resolved against the convoy and all 46 units arrived; sold for 31 CRED; UI ambush committed and revealed; 22 transactions succeeded; scoped key revoked; axe found no violations on four signed-in panels.
+- New demo video: recorded from that round on the production site, 98.3 s, 1920x1080 H.264/AAC, Microsoft Zira Desktop synthetic voice (Hazel is not installed on this machine). Metadata in results/video-demo.json. The commit that adds it triggers a new production deployment; confirm the canonical domain serves the new `/demo/frontier-demo.mp4` and reassign the domain if it does not follow.
+
+Remaining human actions: test a retail testnet wallet (connect, buy, hire escort, sail); publish the X post with the new MP4; confirm team/contact details and payout account privately before the single submission. Mainnet, X posting and submission still need explicit approval.
+
+Follow-ups: the OG image URL uses the deployment hostname (`VERCEL_URL`), not the canonical domain; remove the tldts pin after 7.5.2 passes 24 hours; mobile QA session CLS sum is 0.0974, close to the 0.1 gate.
+
 ## Release checkpoint, 14 November 2026 02:42 UTC
 
 Work continued from a second machine (no Vercel login, no `world3.testnet` keys). Branch `redesign`; contracts unchanged. Remote tag `hackathon-submission` still 84a49a6; production still on dpl_DcZi2CL6qgX3fDxeG9eUnywvfrhG.

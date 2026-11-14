@@ -9,7 +9,7 @@ try {
   $voice.Rate = 2
   $voice.Volume = 100
   foreach ($scene in $capture.scenes) {
-    $file = Join-Path (Resolve-Path $OutputDirectory) ($scene.id + '.wav')
+    $file = Join-Path (Resolve-Path $OutputDirectory).ProviderPath ($scene.id + '.wav')
     $voice.SetOutputToWaveFile($file)
     $voice.Speak($scene.narration)
     $voice.SetOutputToNull()
