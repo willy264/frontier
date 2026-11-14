@@ -2,6 +2,8 @@
 
 ## Preview QA in progress, 14 November 2026 00:10 UTC
 
+Follow-up 6bd676e pushed to redesign, preview dpl_E6hNkw4sUPYWLfMZAh7WbqFQ7gJt at https://frontier-9241yrpb9-willy264s-projects.vercel.app. Initial preview axe zero violations at 390/1440, all selected ports visible, keyboard dialog passed, RPC-error state passed, icon/manifest/OG 200. Lighthouse accessibility100 both sizes; performance76 mobile/78 desktop, LCP1.6s/1.8s, CLS0 in Lighthouse. Reports committed. Full build and14 unique tests passed. Deferred wallet download until Connect to reduce idle loading; typecheck passed, needs next-preview verification. Production and tag still unchanged. Fresh-account worker continues; do not promote until loop evidence is reviewed.
+
 Branch redesign created and pushed at 374da82. Vercel preview dpl_829b4f37JbQgVD8j3Per9DWhmZ4q serves https://frontier-jkp1mo85m-willy264s-projects.vercel.app. Canonical production remains assigned to old verified deployment. All ten widths with both motion preferences passed scripts/qa-game.mjs: no overflow, page errors or buttons under 24px. results/design/responsive.json and updated screenshots are actual preview evidence.
 
 Local follow-up fixes not yet previewed: metadataBase for absolute OG URLs, quieter guest action panel and shorter desktop map. Root axe/Lighthouse development dependencies installed; scripts/qa-accessibility.mjs checks assets, keyboard dialog, selected-port visibility and RPC failure. These checks and Lighthouse are still running; do not mark passed yet. vitest.config.ts excludes the ignored old clone to avoid duplicate test counts. A first build compiled and generated routes but its wrapper failed while pnpm changed dependencies; rerunning after install.

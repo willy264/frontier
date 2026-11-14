@@ -2,6 +2,8 @@
 
 ## Preview checks, 14 November 2026 00:10 UTC
 
+Completed: read-only axe/keyboard/asset/RPC-failure checks on initial preview, desktop/mobile Lighthouse reports, clean build and14 unique tests. Follow-up preview6bd676e ready. Deferred wallet loading is next performance change; authenticated loop and release/video still outstanding. Performance scores76/78 are recorded honestly, not90+.
+
 11h50 to redesign cutoff; 23h49 to submission. redesign pushed at 374da82; preview dpl_829b4f37JbQgVD8j3Per9DWhmZ4q. Responsive QA passes 20 viewport/motion combinations. Axe/assets/keyboard/RPC-error checks, Lighthouse, updated build and fresh testnet escort round in progress. Production remains old verified version; tag unchanged. Pending local polish and metadata fix require new preview verification before release.
 
 ## Release hold, 13 November 2026 19:12 UTC

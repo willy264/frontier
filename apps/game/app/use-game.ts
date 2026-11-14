@@ -40,6 +40,8 @@ export function useGame() {
   const [refresh, setRefresh] = useState(0);
   const [snapshots, setSnapshots] = useState<EconomySnapshot[]>([]);
   const connector = useRef<NearConnector | null>(null);
+  const [walletRequested, setWalletRequested] = useState(false);
+  const connectIntent = useRef(false);
   const lock = useRef(false);
   const ordersRef = useRef<Order[]>([]);
   const slot = `frontier-orders:${WORLD}:${accountId ?? "guest"}`;
@@ -82,6 +84,7 @@ export function useGame() {
     return () => { active = false; clearTimeout(timer); };
   }, [accountId, refresh]);
   useEffect(() => {
+    if (!walletRequested) return;
     let active = true;
     import("@hot-labs/near-connect").then(async ({ NearConnector }) => {
       if (!active) return;
@@ -90,12 +93,13 @@ export function useGame() {
       next.on("wallet:signIn", ({ accounts }) => { if (active) { setAccountId(accounts[0]?.accountId ?? null); setKeyReady(!!sessionStorage.getItem(keySlot)); } });
       next.on("wallet:signOut", () => { if (active) { setAccountId(null); setKeyReady(false); } });
       try { const connected = await next.getConnectedWallet(); if (active) { setAccountId(connected.accounts[0]?.accountId ?? null); setKeyReady(!!sessionStorage.getItem(keySlot)); } } catch { /* browsing without a wallet */ }
+      if (active && connectIntent.current) { connectIntent.current = false; await connect(); }
     }).catch(() => { if (active) setMessage("Wallet tools could not load. Reload the page to retry."); });
     return () => { active = false; connector.current?.removeAllListeners(); };
-  }, []);
+  }, [walletRequested]);
   async function connect() {
     if (lock.current) return;
-    if (!connector.current) { setMessage("Wallet tools are loading. Try again in a moment."); return; }
+    if (!connector.current) { connectIntent.current = true; setWalletRequested(true); setMessage("Loading wallet tools…"); return; }
     lock.current = true; setPending("connect");
     try {
       const { KeyPair } = await import("near-api-js");
