@@ -1,11 +1,20 @@
 # FRONTIER handoff
 
+## Authorship rewrite, 14 November 2026 13:01 UTC
+
+- 17 commits authored and committed as `emmanuel <badejoemmanuel805@gmail.com>` now read `Uiriamuzu <daviswill264@gmail.com>`. Method: `git filter-repo --mailmap` on a fresh `--mirror` clone, then `git push --force --mirror` over SSH. The 67 earlier commits kept their hashes.
+- Verified before pushing: no Emmanuel identity in author or committer fields; `main`, `redesign` and the tag have the same tree as before (50bfe5e5); 84 commits before and after; author and committer dates unchanged; per-commit trees unchanged. filter-repo also replaced old commit IDs inside three commit messages (for example "record release-candidate evidence for 876b15a"); nothing else in any message changed.
+- Rollback references (pre-rewrite): `main`, `redesign` and `hackathon-submission` were all 0a6f8dfbfed9c672c3e2b151934357f9ecc3c732. Vercel deployments of that commit: dpl_AQr2Rn1mEF6oKbDHWmyz3jxZ6vMG and dpl_AdRzZHJ2QZ8pSmJSioiLjHksMArj (one production, one preview; which is which was not visible without Vercel access). An untouched mirror backup was kept on the machine that ran the rewrite.
+- Old to new hashes for commits referenced in docs: 3b7c04f to 876b15a, daa9528 to 8cb4d3f, 02e8863 to c4e2f19. README, docs/REDESIGN_QA.md, docs/VERIFIED.md, this file, results/preview-round.json, results/production-ui-round.json and results/video-hosting.json were updated.
+- Releases after 07:40 UTC, under their new hashes: 57662a1 (Meteor wallet link), 187aef5 and daa39d4 (Meteor signs game calls with its own key; 50 Tgas per call), aadd5b4 (ambush leads of 30 to 120 blocks; reveal pre-check), 4978194 (3-ambush limit shown; rejected orders dropped), adb7c39 (Advance epoch button; scrollable ambush list), 247a159 (How to earn CRED dialog).
+- Anyone with an older clone, including the owner's machine, must re-clone or run `git fetch && git reset --hard origin/main` before pushing, or the old history comes back. Old clones and GitHub caches may still hold the previous commits by hash.
+
 ## Released, 14 November 2026 07:40 UTC
 
-- Release commit: `main` at daa9528 (fast-forward from bb3fcc7). CI `app` and `contract` jobs passed on it.
+- Release commit: `main` at 8cb4d3f (fast-forward from bb3fcc7). CI `app` and `contract` jobs passed on it.
 - Production deployment: dpl_5ZLvtQmpuiEzTPXmXEVEoNe8V63j (frontier-8wcs7he8u-willy264s-projects.vercel.app). The owner assigned the canonical domain `frontier-willy264s-projects.vercel.app` to it at about 07:15 UTC. It did not follow the Git deployment automatically because the domain had been pinned to dpl_DcZi2CL6qgX3fDxeG9eUnywvfrhG; a first assignment went to `frontier-willy264-projects.vercel.app` (no "s") by mistake.
 - Verified at 07:18 UTC: canonical domain serves the new build (bundle page-20c2332ecf683f0f); manifest, icons, OG image and demo files return 200/206.
-- Tag: `hackathon-submission` force-moved from 84a49a6 to daa9528 and pushed at 07:22 UTC, after the production round passed.
+- Tag: `hackathon-submission` force-moved from 84a49a6 to 8cb4d3f and pushed at 07:22 UTC, after the production round passed.
 - Production live round (results/production-ui-round.json): fresh captain, escort and rival; Blockspace 400 CRED for 46 units; departure at block 277625486 inside the rival's revealed window 277625479 to 277625499; rival power 2 against escorted defence 4; ambush resolved against the convoy and all 46 units arrived; sold for 31 CRED; UI ambush committed and revealed; 22 transactions succeeded; scoped key revoked; axe found no violations on four signed-in panels.
 - New demo video: recorded from that round on the production site, 98.3 s, 1920x1080 H.264/AAC, Microsoft Zira Desktop synthetic voice (Hazel is not installed on this machine). Metadata in results/video-demo.json. The commit that adds it triggers a new production deployment; confirm the canonical domain serves the new `/demo/frontier-demo.mp4` and reassign the domain if it does not follow.
 
@@ -21,7 +30,7 @@ Review findings (contract frozen, so mitigated in the client and disclosed in RE
 
 Changes since 1a9b73c: sell only where a ship is docked; final-harbour warning; ambush window picker (fresh block height); escort offer board; `hire_escort`, `buy_port` and `set_port_sale_price` are wallet-signed, not game-key methods; WCAG 2.5.3 fixes on map controls; tldts pinned to 7.5.1 for pnpm 12's package age policy; recorder supports wallet signing, configurable cargo, and a UI ambush scene.
 
-Preview release candidate 3b7c04f (dpl_212YGd3gDaMJCZ8h88jNUHNinMDy) passes the live fresh-account escort round, axe, responsive, assets, lab Web Vitals and CI. Evidence: docs/REDESIGN_QA.md and results/preview-round.json. QA test accounts are sub-accounts of the faucet account `frontierqa-11140241-8f06.testnet`; keys stay in ~/.near-credentials on that machine.
+Preview release candidate 876b15a (dpl_212YGd3gDaMJCZ8h88jNUHNinMDy) passes the live fresh-account escort round, axe, responsive, assets, lab Web Vitals and CI. Evidence: docs/REDESIGN_QA.md and results/preview-round.json. QA test accounts are sub-accounts of the faucet account `frontierqa-11140241-8f06.testnet`; keys stay in ~/.near-credentials on that machine.
 
 Next: merge to main, verify the canonical domain and a production live round, then move the tag and record the production video.
 

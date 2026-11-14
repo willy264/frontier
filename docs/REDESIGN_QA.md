@@ -2,9 +2,9 @@
 
 Release candidate checks run against Vercel previews. Production stays on the verified pre-redesign deployment until the live round and preview checks pass. Contracts are unchanged.
 
-## Release candidate 3b7c04f, 14 November 2026 02:40 UTC
+## Release candidate 876b15a, 14 November 2026 02:40 UTC
 
-Checked on preview deployment `dpl_212YGd3gDaMJCZ8h88jNUHNinMDy` (commit 3b7c04f) through `frontier-git-redesign-willy264s-projects.vercel.app`. CI `app` and `contract` jobs passed on 3b7c04f. Contracts unchanged.
+Checked on preview deployment `dpl_212YGd3gDaMJCZ8h88jNUHNinMDy` (commit 876b15a) through `frontier-git-redesign-willy264s-projects.vercel.app`. CI `app` and `contract` jobs passed on 876b15a. Contracts unchanged.
 
 | Gate | Result | Evidence |
 |---|---|---|
@@ -46,4 +46,4 @@ The first live loop exposed FastNEAR rate limiting under14 concurrent requests e
 
 ## Release
 
-Released 14 November 2026. `main` daa9528 runs on the canonical domain (deployment dpl_5ZLvtQmpuiEzTPXmXEVEoNe8V63j). A production fresh-account round passed (`results/production-ui-round.json`) and the published demo video was recorded from it. See `execution/handoff.md`.
+Released 14 November 2026. `main` 8cb4d3f runs on the canonical domain (deployment dpl_5ZLvtQmpuiEzTPXmXEVEoNe8V63j). A production fresh-account round passed (`results/production-ui-round.json`) and the published demo video was recorded from it. See `execution/handoff.md`.

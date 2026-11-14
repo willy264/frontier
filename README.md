@@ -6,7 +6,7 @@ FRONTIER is a trading and strategy game running in NEAR contracts. Players buy g
 
 ## Watch the demo
 
-Recorded on 14 November 2026 on the production site (commit `daa9528`).
+Recorded on 14 November 2026 on the production site (commit `8cb4d3f`).
 
 [Watch the narrated demo](https://frontier-willy264s-projects.vercel.app/demo/index.html) or [download the MP4](https://frontier-willy264s-projects.vercel.app/demo/frontier-demo.mp4). The video includes captions and shows real testnet transactions: a fresh captain registers, buys Blockspace, builds a sloop and hires a defence-3 escort. A scripted rival with 2 attack power reveals an ambush on the captain's route; the convoy departs inside that window, the ambush resolves against it, and all 46 units arrive because the escorted defence of 4 outweighs the raider. The captain then sells and sets and springs an ambush of their own.
 
