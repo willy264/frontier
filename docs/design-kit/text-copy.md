@@ -98,8 +98,8 @@ Goods always use these names and colour assignments:
 | Wallet limit | `Explore the map now. To place orders, connect a funded NEAR testnet wallet. Test tokens have no monetary value.` |
 | Connect | `Connect wallet` |
 | Connecting | `Opening wallet...` |
-| Create wallet | `Create a testnet wallet` |
-| Scope | `Your wallet approves game controls for this contract only, with a limited network-fee allowance.` |
+| Get wallet | `Get Meteor Wallet` (links to https://meteorwallet.app/; on testnet, NEAR Connect only lists wallets whose manifest declares testnet support, which excludes MyNearWallet and HOT) |
+| Scope | `Set your wallet to Testnet before you connect. On testnet the wallet list only shows wallets that support it, such as Meteor. Your wallet approves game controls for this contract only, with a limited network-fee allowance.` |
 | Enable heading | `Enable game controls` |
 | Enable detail | `Approve a game-only key in your wallet. It can call FRONTIER with a limited allowance for testnet network fees.` |
 | Enable action | `Enable controls` |
