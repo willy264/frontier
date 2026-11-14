@@ -189,7 +189,7 @@ export function SeaMap({
                   role="button"
                   tabIndex={0}
                   aria-pressed={selected}
-                  aria-label={`From ${from.name} to ${to.name}, ${route.blocks} travel blocks`}
+                  aria-label={`${route.blocks} blocks from ${from.name} to ${to.name}`}
                   onClick={() => onRoute(route.id)}
                   onKeyDown={(event) => handleRouteKey(event, route.id)}
                 >
@@ -242,12 +242,12 @@ export function SeaMap({
                   className={`sea-island ${goodClass(island.good)}${selected ? " sea-island--selected" : ""}`}
                   style={positionStyle(island.x, island.y)}
                   aria-pressed={selected}
-                  aria-label={`Select ${island.name}, trading ${island.good}`}
+                  aria-label={`${island.name}, ${island.good}, select port`}
                   onClick={() => onIsland(island.id)}
                 >
                   <span className="sea-island__code" aria-hidden="true">{island.short}</span>
                   <span className="sea-island__copy">
-                    <strong>{island.name}</strong>
+                    <strong>{island.name}</strong>{" "}
                     <span className="sea-island__good">{island.good}</span>
                   </span>
                 </button>
@@ -273,7 +273,7 @@ export function SeaMap({
                     <path d="M12 3v11M12 5h5l-1 6h-4M12 7H8l1 4h3M5 14h14l-2 5H8l-3-5Z" />
                   </svg>
                   <span className="sea-ship__callout">
-                    <strong>{ship.label}</strong>
+                    <strong>{ship.label}</strong>{" "}
                     <span>{readableStatus(ship.status)} / {progress}%</span>
                   </span>
                 </button>
