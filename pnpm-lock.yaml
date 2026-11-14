@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  tldts: 7.5.1
+  tldts-core: 7.5.1
+  tldts-icann: 7.5.1
+
 importers:
 
   .:
@@ -1553,11 +1558,11 @@ packages:
     resolution: {integrity: sha512-u8KszXvGfU68hVcZpRHKG28T0krMuv2G5nDhiHaMLen/gIuFEgIJhaJuO69qjnXg5paSrbPMFfx3brNuN8eVSg==}
     engines: {node: '>=14.0.0'}
 
-  tldts-core@7.5.2:
-    resolution: {integrity: sha512-8W1topazDwhMKbm2I83IPa57Ow5VUxFgLbXv42+vSILnv8FY5OHvdEY/tS6WoWeMbxkHZQhra5cmeFHriKptSQ==}
+  tldts-core@7.5.1:
+    resolution: {integrity: sha512-GGSowIH9Pp52ym/x0OxBBNqS2DuqlLL91YNnlnj+k+ZWjJQ+ilNxpwP7/RT+iX1gzuafhj1l7j46CNVqm+xAeQ==}
 
-  tldts-icann@7.5.2:
-    resolution: {integrity: sha512-TdX27/Tz+J8PukrPx7mQ7ox77KZuby4ybmJUB5atQURkQpN3A0StAjWAR+l16QNu1qj8B7Q26aDpLtoykz4kLg==}
+  tldts-icann@7.5.1:
+    resolution: {integrity: sha512-Tnn97yPteLMyUPSfLvJmzH6EQZT1IEOSOb43gSwv29py17aZJla/kzZJyBqqdkP3V8/7xdfbxXzr4wlhssG0aA==}
 
   to-buffer@1.2.2:
     resolution: {integrity: sha512-db0E3UJjcFhpDhAF4tLo03oli3pwl3dbnzXOUIlRKrp+ldk/VUxzpWYZENsw2SZiuBjHAk7DfB0VU7NKdpb6sw==}
@@ -2675,7 +2680,7 @@ snapshots:
       robots-parser: 3.0.1
       speedline-core: 1.4.3
       third-party-web: 0.30.0
-      tldts-icann: 7.5.2
+      tldts-icann: 7.5.1
       yargs: 18.2.0
       yargs-parser: 22.0.0
     transitivePeerDependencies:
@@ -3056,11 +3061,11 @@ snapshots:
 
   tinyspy@4.0.6: {}
 
-  tldts-core@7.5.2: {}
+  tldts-core@7.5.1: {}
 
-  tldts-icann@7.5.2:
+  tldts-icann@7.5.1:
     dependencies:
-      tldts-core: 7.5.2
+      tldts-core: 7.5.1
 
   to-buffer@1.2.2:
     dependencies:

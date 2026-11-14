@@ -26,5 +26,12 @@
   },
   "dependencies": {
     "@hot-labs/near-connect": "0.12.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "tldts": "7.5.1",
+      "tldts-core": "7.5.1",
+      "tldts-icann": "7.5.1"
+    }
   }
 }
