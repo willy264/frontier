@@ -1,5 +1,5 @@
 {
-  "site": "https://frontier-26bz9yhzk-willy264s-projects.vercel.app",
+  "site": "https://frontier-7j4r5bwaj-willy264s-projects.vercel.app",
   "evidence": [
     {
       "width": 390,
@@ -7,12 +7,12 @@
       "assets": [
         {
           "kind": "icon",
-          "url": "https://frontier-26bz9yhzk-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
+          "url": "https://frontier-7j4r5bwaj-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
           "status": 200
         },
         {
           "kind": "manifest",
-          "url": "https://frontier-26bz9yhzk-willy264s-projects.vercel.app/manifest.webmanifest",
+          "url": "https://frontier-7j4r5bwaj-willy264s-projects.vercel.app/manifest.webmanifest",
           "status": 200
         },
         {
@@ -21,7 +21,7 @@
           "status": 200
         }
       ],
-      "cls": 0.000043106249999999994,
+      "cls": 0,
       "ports": [
         {
           "name": "Bitcoin Isle",
@@ -45,6 +45,7 @@
         }
       ],
       "errorState": true,
+      "errorLayoutShift": 0,
       "keyboardDialog": true
     },
     {
@@ -53,12 +54,12 @@
       "assets": [
         {
           "kind": "icon",
-          "url": "https://frontier-26bz9yhzk-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
+          "url": "https://frontier-7j4r5bwaj-willy264s-projects.vercel.app/favicon.ico?1171421ccf6a33dd",
           "status": 200
         },
         {
           "kind": "manifest",
-          "url": "https://frontier-26bz9yhzk-willy264s-projects.vercel.app/manifest.webmanifest",
+          "url": "https://frontier-7j4r5bwaj-willy264s-projects.vercel.app/manifest.webmanifest",
           "status": 200
         },
         {
@@ -67,7 +68,7 @@
           "status": 200
         }
       ],
-      "cls": 0.004418323417004244,
+      "cls": 0.004473129114221644,
       "ports": [
         {
           "name": "Bitcoin Isle",
@@ -91,6 +92,7 @@
         }
       ],
       "errorState": true,
+      "errorLayoutShift": 0,
       "keyboardDialog": true
     }
   ]

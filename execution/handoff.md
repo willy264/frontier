@@ -1,5 +1,10 @@
 # FRONTIER handoff
 
+## Polling diagnosis, 14 November 2026 00:34 UTC
+
+Fresh-account registration succeeded, but14 concurrent reads every3 seconds exhausted FastNEAR limits. Node saw429; browser saw CORS MissingAllowOriginHeader/Failed to fetch. This is not a contract-method failure. Local fix caches immutable routes, refreshes ports/economy every30seconds or after an action, and polls captain/ships/height every6seconds with12/24/30second failure backoff. Initial port and route groups read sequentially to reduce bursts.22 tests pass including cache expiry/invalidation, failed-read eviction, concurrent deduplication and backoff. Typecheck/build verification in progress. Next push fixed polling to redesign and rerun live round with worker Laplace. No release/tag/video yet.11h26 to redesign cutoff;23h25 to submission.
+
+
 ## QA follow-up, 14 November 2026 00:32 UTC
 
 Build/typecheck pass for stable RPC status header. A forced RPC outage previously inserted a banner and produced CLS0.112 in Lighthouse; the banner is removed, with status/retry reserved in the map header. QA now asserts no map displacement on RPC failure. Latest deployed d8159f9 passes20 responsive combinations and both CI jobs;21 token contrast pairs pass. Lighthouse varies with local load and did not reach90. Fresh-account loop is blocked by intermittent public reads after registration; diagnostic work ongoing. Do not release yet.11h28 to redesign cutoff;23h27 to submission. Contracts unchanged.

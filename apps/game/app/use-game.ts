@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { NearConnector } from "@hot-labs/near-connect";
 import { readRpc, view } from "./read-rpc";
+import { createReadCache, pollDelay } from "./read-cache";
 export { view } from "./read-rpc";
 import { arrivalMessage, WORLD, RPC, type Port, type Route, type Ship, type Player, type Order, type GameEvent, type EconomySnapshot } from "./game-state";
 
@@ -35,12 +36,16 @@ export function useGame() {
   const connectIntent = useRef(false);
   const lock = useRef(false);
   const ordersRef = useRef<Order[]>([]);
+  const reads = useRef(createReadCache());
   const slot = `frontier-orders:${WORLD}:${accountId ?? "guest"}`;
   const notify = useCallback((text: string, tone: GameEvent["tone"] = "normal", tx?: string) => {
     setMessage(text);
     setEvents(items => [{ id: crypto.randomUUID(), text, tone, tx, time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }, ...items].slice(0, 20));
   }, []);
-  const retry = useCallback(() => setRefresh(n => n + 1), []);
+  const retry = useCallback(() => {
+    reads.current.invalidate("ports"); reads.current.invalidate("economy");
+    setRefresh(n => n + 1);
+  }, []);
   const saveOrders = useCallback((next: Order[]) => {
     // Persist BEFORE signing. If storage is full or blocked, do not sail.
     localStorage.setItem(slot, JSON.stringify(next));
@@ -52,12 +57,23 @@ export function useGame() {
     let active = true;
     setReadState("loading");
     let timer: ReturnType<typeof setTimeout>;
+    let failures = 0;
+    async function portsRead() {
+      const result: Array<Port | null> = [];
+      for (const id of [1, 2, 3, 4, 5]) result.push(await view<Port | null>("get_port", { port_id: id }));
+      return result;
+    }
+    async function routesRead() {
+      const result: Array<Route | null> = [];
+      for (const id of [1, 2, 3, 4, 5]) result.push(await view<Route | null>("get_route", { route_id: id }));
+      return result;
+    }
     const poll = async () => {
       try {
         const [portList, routeList, nextEconomy, block, nextPlayer, nextShips] = await Promise.all([
-          Promise.all([1, 2, 3, 4, 5].map(id => view<Port | null>("get_port", { port_id: id }))),
-          Promise.all([1, 2, 3, 4, 5].map(id => view<Route | null>("get_route", { route_id: id }))),
-          view<EconomySnapshot>("economy_dashboard"), readRpc<{ header: { height: number } }>("block", { finality: "final" }),
+          reads.current.get("ports", 30000, portsRead),
+          reads.current.get("routes", Infinity, routesRead),
+          reads.current.get("economy", 30000, () => view<EconomySnapshot>("economy_dashboard")), readRpc<{ header: { height: number } }>("block", { finality: "final" }),
           accountId ? view<Player | null>("get_player", { account_id: accountId }) : Promise.resolve(null),
           accountId ? view<Array<[number, Ship]>>("ships_for_owner", { account_id: accountId }) : Promise.resolve([]),
         ]);
@@ -66,9 +82,10 @@ export function useGame() {
         setRoutes(routeList.filter((route): route is Route => route !== null));
         setEconomy(nextEconomy); setHeight(block.header.height); setPlayer(nextPlayer); setShips(nextShips);
         setReadState("ready");
+        failures = 0;
         setSnapshots(items => [...items.filter(item => item.epoch !== nextEconomy.epoch), nextEconomy].slice(-20));
-      } catch { if (active) setReadState("error"); }
-      if (active) timer = setTimeout(poll, 3000);
+      } catch { failures++; if (active) setReadState("error"); }
+      if (active) timer = setTimeout(poll, pollDelay(failures));
     };
     void poll();
     return () => { active = false; clearTimeout(timer); };
