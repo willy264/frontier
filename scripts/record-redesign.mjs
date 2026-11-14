@@ -41,6 +41,8 @@ const goodName = goods[goodIndex];
 const spendCred = Number(process.env.FRONTIER_ROUND_SPEND ?? 400);
 // "own-key" emulates wallets such as Meteor that add their own key at sign-in and ignore the app's key.
 const walletEmulation = process.env.FRONTIER_WALLET_EMULATION ?? "requested-key";
+let walletKeyPair = null;
+let walletSilentCalls = 0;
 const gameKeyMethods = ["register_player", "buy", "sell", "build_ship", "depart", "arrive", "commit_ambush", "reveal_ambush", "offer_escort", "set_fee"];
 assert(["requested-key", "own-key"].includes(walletEmulation), "FRONTIER_WALLET_EMULATION must be requested-key or own-key");
 assert(goodIndex >= 0 && Number.isSafeInteger(spendCred) && spendCred > 0 && spendCred <= 700, "FRONTIER_ROUND_GOOD or FRONTIER_ROUND_SPEND is invalid");
@@ -233,7 +235,8 @@ try {
     assert.equal(key.contractId, world);
     assert.equal(key.allowMethods.anyMethod, false);
     if (walletEmulation === "own-key") {
-      const walletKey = KeyPair.fromRandom("ed25519").getPublicKey().toString();
+      walletKeyPair = KeyPair.fromRandom("ed25519");
+      const walletKey = walletKeyPair.getPublicKey().toString();
       const added = await owner.addFunctionCallAccessKey({ publicKey: walletKey, contractId: world, methodNames: [], allowance: 250_000_000_000_000_000_000_000n });
       sessionKeys.push(walletKey);
       await saveReceipt(added, "recording wallet: adds its own key and ignores the app key (Meteor behaviour)", "add_key");
@@ -265,6 +268,14 @@ try {
       sessionKeys.push(action.params.publicKey);
       await saveReceipt(added, "recording wallet: approved the app's game-key AddKey (fallback)", "add_key");
       return json(added);
+    }
+    if (walletEmulation === "own-key" && action.type === "FunctionCall" && request.receiverId === world && gameKeyMethods.includes(action.params.methodName) && String(action.params.deposit) === "0") {
+      // Meteor signs covered game calls locally with the key it added at sign-in: no prompt.
+      const walletAccount = new Account(captainId, provider, new KeyPairSigner(walletKeyPair));
+      const result = await walletAccount.callFunctionRaw({ contractId: world, methodName: action.params.methodName, args: action.params.args, gas: BigInt(action.params.gas), deposit: 0n });
+      walletSilentCalls++;
+      await saveReceipt(result, `recording wallet: signed ${action.params.methodName} silently with its own key (Meteor behaviour)`, action.params.methodName);
+      return json(result);
     }
     assert.equal(request.receiverId, world);
     assert.equal(action.type, "FunctionCall");
@@ -464,6 +475,7 @@ try {
   const captainAfterRaid = await waitView("get_player", { account_id: captainId }, player => Number(player?.active_commits) === Number(captainBeforeRaid.active_commits) + 1);
   await page.screenshot({ path: path.join(out, "captain-ambush.png") });
 
+  const walletKeyState = walletKeyPair ? await provider.viewAccessKey({ accountId: captainId, publicKey: walletKeyPair.getPublicKey().toString() }).catch(() => null) : null;
   begin("evidence", "08 / RECEIPTS AND INDEPENDENT PROOF", "The capture record links every transaction and records the escort's defence, rival's complete fresh fleet, ambush bounds, exact departure block, and equal loaded and arrived cargo. This is live testnet evidence, not a simulated outcome.", started);
   await page.locator(".ship-log").scrollIntoViewIfNeeded();
   await delay(2_000);
@@ -477,6 +489,7 @@ try {
     site: siteUrl.href,
     deploymentCommit,
     walletEmulation,
+    walletKey: walletKeyPair ? { publicKey: walletKeyPair.getPublicKey().toString(), initialAllowanceNear: 0.25, remainingAllowanceNear: walletKeyState ? Number(BigInt(walletKeyState.permission?.FunctionCall?.allowance ?? 0n)) / 1e24 : null, silentCalls: walletSilentCalls } : null,
     world,
     accounts: {
       captain: { accountId: captainId, freshBeforeRound: initialCaptain === null },

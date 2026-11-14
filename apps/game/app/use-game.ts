@@ -9,6 +9,12 @@ import { arrivalMessage, WORLD, RPC, SESSION_METHODS, WALLET_METHODS, type Port,
 
 const keySlot = `frontier-game-key:${WORLD}`;
 const GAME_KEY_ALLOWANCE = "1000000000000000000000000";
+// Game calls burn 2.7 to 7.2 Tgas. Wallet-held keys pay attached gas from a small allowance
+// (Meteor defaults to 0.25 NEAR: 8 calls at 300 Tgas, 50 calls at 50 Tgas).
+const CALL_GAS = 50n * 10n ** 12n;
+type TxResult = Awaited<ReturnType<import("near-api-js").Account["callFunctionRaw"]>>;
+// near-api-js 7 reports a missing signer key as "Access key ed25519:… does not exist at block height …".
+const isKeyMissing = (error: unknown) => (error instanceof Error && /AccessKeyDoesNotExist/.test(error.name)) || /access ?key.*does not exist|InvalidAccessKey|InvalidSignature|missing from this browser/i.test(error instanceof Error ? error.message : String(error));
 let client: Promise<import("near-api-js").JsonRpcProvider> | undefined;
 const provider = () => client ??= import("near-api-js").then(({ JsonRpcProvider }) => new JsonRpcProvider({ url: RPC }));
 export async function digest(text: string) { return Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)))); }
@@ -35,6 +41,7 @@ export function useGame() {
   const [walletRequested, setWalletRequested] = useState(false);
   const connectIntent = useRef(false);
   const lock = useRef(false);
+  const signer = useRef<"session" | "wallet" | null>(null);
   const ordersRef = useRef<Order[]>([]);
   const reads = useRef(createReadCache());
   const slot = `frontier-orders:${WORLD}:${accountId ?? "guest"}`;
@@ -97,29 +104,34 @@ export function useGame() {
       if (!active) return;
       const next = new NearConnector({ network: "testnet", providers: { testnet: [RPC] }, footerBranding: null });
       connector.current = next;
-      next.on("wallet:signIn", ({ accounts }) => { if (active) { setAccountId(accounts[0]?.accountId ?? null); setKeyReady(!!sessionStorage.getItem(keySlot)); } });
+      next.on("wallet:signIn", ({ accounts }) => { if (active) { signer.current = null; setAccountId(accounts[0]?.accountId ?? null); setKeyReady(!!accounts[0]); } });
       next.on("wallet:signOut", () => { if (active) { setAccountId(null); setKeyReady(false); } });
-      try { const connected = await next.getConnectedWallet(); if (active) { setAccountId(connected.accounts[0]?.accountId ?? null); setKeyReady(!!sessionStorage.getItem(keySlot)); } } catch { /* browsing without a wallet */ }
+      try { const connected = await next.getConnectedWallet(); if (active) { signer.current = null; setAccountId(connected.accounts[0]?.accountId ?? null); setKeyReady(!!connected.accounts[0]); } } catch { /* browsing without a wallet */ }
       if (active && connectIntent.current) { connectIntent.current = false; await connect(); }
     }).catch(() => { if (active) setMessage("Wallet tools could not load. Reload the page to retry."); });
     return () => { active = false; connector.current?.removeAllListeners(); };
   }, [walletRequested]);
-  // Some wallets (Meteor) add their own key at sign-in and ignore ours. Check the chain, and if
-  // our key is missing, ask the wallet to sign one AddKey limited to the game contract.
-  async function ensureGameKey(account: string) {
+  // Some wallets (Meteor) add and keep their own function-call key at sign-in, ignore ours, and sign
+  // covered game calls with it without a prompt. Sign locally only when the chain holds our key.
+  async function chooseSigner(account: string): Promise<"session" | "wallet"> {
+    const saved = sessionStorage.getItem(keySlot);
+    if (!saved) return "wallet";
     const { KeyPair } = await import("near-api-js");
-    let saved = sessionStorage.getItem(keySlot);
-    if (!saved) { saved = KeyPair.fromRandom("ed25519").toString(); sessionStorage.setItem(keySlot, saved); }
     const publicKey = KeyPair.fromString(saved as import("near-api-js").KeyPairString).getPublicKey().toString();
-    if (await hasGameKey(account, publicKey)) return true;
-    setMessage("Approve the game key in your wallet. It can only call FRONTIER, with a limited fee allowance.");
+    return await hasGameKey(account, publicKey).catch(() => false) ? "session" : "wallet";
+  }
+  async function sendViaWallet(method: string, args: Record<string, unknown>) {
     const wallet = await connector.current!.wallet();
-    await wallet.signAndSendTransaction({ receiverId: account, actions: [{ type: "AddKey", params: { publicKey, accessKey: { permission: { receiverId: WORLD, allowance: GAME_KEY_ALLOWANCE, methodNames: SESSION_METHODS } } } }] });
-    for (let attempt = 0; attempt < 10; attempt++) {
-      if (await hasGameKey(account, publicKey)) return true;
-      await new Promise(resolve => setTimeout(resolve, 1500));
-    }
-    return false;
+    const outcome = await wallet.signAndSendTransaction({ receiverId: WORLD, actions: [{ type: "FunctionCall", params: { methodName: method, args, gas: CALL_GAS.toString(), deposit: "0" } }] });
+    // Same RPC transaction JSON; near-connect and near-api-js type it from different packages.
+    return outcome as unknown as TxResult;
+  }
+  async function sendWithSessionKey(account: string, method: string, args: Record<string, unknown>) {
+    const saved = sessionStorage.getItem(keySlot);
+    if (!saved) throw new Error("Game key missing from this browser");
+    const { Account, KeyPairSigner } = await import("near-api-js");
+    const signerAccount = new Account(account, await provider(), KeyPairSigner.fromSecretKey(saved as import("near-api-js").KeyPairString));
+    return signerAccount.callFunctionRaw({ contractId: WORLD, methodName: method, args, gas: CALL_GAS, deposit: 0n });
   }
   async function connect() {
     if (lock.current) return;
@@ -134,10 +146,9 @@ export function useGame() {
       const connected = await connector.current.getConnectedWallet();
       const account = connected.accounts[0]?.accountId ?? null;
       setAccountId(account);
-      const ready = account ? await ensureGameKey(account) : false;
-      setKeyReady(ready);
-      if (ready) notify("Wallet connected. Your captain is ready to join.");
-      else setMessage("Your wallet is connected, but the game key is not on your account yet. Choose Enable controls.");
+      signer.current = account ? await chooseSigner(account) : null;
+      setKeyReady(!!account);
+      if (account) notify("Wallet connected. Your captain is ready to join.");
     } catch { setKeyReady(false); setMessage("Wallet connection was not completed. Try connecting again."); }
     finally { lock.current = false; setPending(null); }
   }
@@ -146,34 +157,27 @@ export function useGame() {
     if (lock.current) return;
     lock.current = true; setPending("connect");
     try {
-      const ready = await ensureGameKey(accountId);
-      setKeyReady(ready);
-      if (ready) notify("Game controls enabled. Your captain is ready to join.");
-      else setMessage("The game key is not on your account yet. Try Enable controls again.");
-    } catch { setMessage("Game controls were not enabled. Approve the key in your wallet and try again."); }
+      signer.current = await chooseSigner(accountId);
+      setKeyReady(true);
+      notify("Game controls enabled. Your captain is ready to join.");
+    } catch { setMessage("Game controls were not enabled. Reconnect your wallet and try again."); }
     finally { lock.current = false; setPending(null); }
   }
   async function disconnect() { await connector.current?.disconnect(); setAccountId(null); setKeyReady(false); sessionStorage.removeItem(keySlot); }
   async function call(method: string, args: Record<string, unknown>, success: string, arrival?: { destination: number; cargo: number[]; escorted: boolean }) {
     if (lock.current) return null;
     if (!accountId) { setMessage("Connect your testnet wallet to play."); return null; }
-    const viaWallet = WALLET_METHODS.includes(method);
-    const saved = sessionStorage.getItem(keySlot);
-    if (!viaWallet && !saved) { setKeyReady(false); setMessage("Enable game controls before playing."); return null; }
-    if (viaWallet && !connector.current) { setMessage("Wallet tools are still loading. Try again in a moment."); return null; }
-    lock.current = true; setPending(method); setMessage(viaWallet ? "Approve this order in your wallet." : "Sending your order. Waiting for testnet confirmation…");
+    if (!connector.current) { setMessage("Wallet tools are still loading. Try again in a moment."); return null; }
+    const walletOnly = WALLET_METHODS.includes(method);
+    lock.current = true; setPending(method); setMessage(walletOnly ? "Approve this order in your wallet." : "Sending your order. Waiting for testnet confirmation…");
     try {
-      let result: Awaited<ReturnType<import("near-api-js").Account["callFunctionRaw"]>>;
-      if (viaWallet) {
-        const wallet = await connector.current!.wallet();
-        const outcome = await wallet.signAndSendTransaction({ receiverId: WORLD, actions: [{ type: "FunctionCall", params: { methodName: method, args, gas: "300000000000000", deposit: "0" } }] });
-        // Same RPC transaction JSON; near-connect and near-api-js type it from different packages.
-        result = outcome as unknown as typeof result;
-      } else {
-        const { Account, KeyPairSigner } = await import("near-api-js");
-        const account = new Account(accountId, await provider(), KeyPairSigner.fromSecretKey(saved as import("near-api-js").KeyPairString));
-        result = await account.callFunctionRaw({ contractId: WORLD, methodName: method, args, gas: 300n * 10n ** 12n, deposit: 0n });
-      }
+      if (!walletOnly && signer.current === null) signer.current = await chooseSigner(accountId);
+      const result: TxResult = walletOnly || signer.current === "wallet" ? await sendViaWallet(method, args) : await sendWithSessionKey(accountId, method, args).catch(error => {
+        if (!isKeyMissing(error)) throw error;
+        // Our key is not on the account (the wallet kept its own). Let the wallet sign from now on.
+        signer.current = "wallet";
+        return sendViaWallet(method, args);
+      });
       if (typeof result.status === "object" && "Failure" in result.status) throw new Error(JSON.stringify(result.status.Failure));
       const tx = result.transaction.hash;
       let confirmedMessage = success;
@@ -196,9 +200,7 @@ export function useGame() {
     } catch (error) {
       const detail = error instanceof Error ? error.message : String(error);
       const errors: Record<string, string> = { ERR_SLIPPAGE: "The market price moved. Review the new quote and try again.", ERR_CRED_FUNDS: "You need more CRED for this order.", ERR_CARGO_FUNDS: "Your available cargo changed. Reload the port and adjust the load.", ERR_TOO_EARLY: "Your convoy is still sailing. Wait for the countdown.", ERR_REVEAL_LATE: "The ambush window has closed.", ERR_PLAYER_EXISTS: "This captain is already registered. Refresh your fleet.", ERR_ESCORT_LOCKED: "This ship is escorting a convoy. Wait for its arrival.", ERR_WINDOW: "That ambush window had already started. Choose a later window and try again.", ERR_COMMIT_SPAM: "You already have three active ambushes. Spring one or wait for it to expire." };
-      // near-api-js 7 reports a missing signer key as "Access key ed25519:… does not exist at block height …".
-      const keyMissing = (error instanceof Error && /AccessKeyDoesNotExist/.test(error.name)) || /access ?key.*does not exist|InvalidAccessKey|InvalidSignature/i.test(detail);
-      if (keyMissing) { setKeyReady(false); setMessage("Your game key is not on this account. Choose Enable controls to approve it."); return null; }
+      if (isKeyMissing(error)) { signer.current = "wallet"; setMessage("Your wallet could not sign this order. Try again; your wallet may ask you to approve it."); return null; }
       setMessage(Object.entries(errors).find(([code]) => detail.includes(code))?.[1] ?? "The order was not confirmed. Refresh before retrying; check your wallet activity if it persists.");
       return null;
     } finally { lock.current = false; setPending(null); }
