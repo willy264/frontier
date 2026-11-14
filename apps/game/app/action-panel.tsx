@@ -6,6 +6,7 @@ import { AMBUSH_LEAD_OPTIONS, GOODS, ISLANDS, ambushWindow, dockedAt, isFinalHar
 import { marketQuote } from "./quotes";
 import { builtShipId } from "./transaction-result";
 import { openEscortOffers, type EscortOffer } from "./escort-board";
+import { readRpc } from "./read-rpc";
 
 type Props = { game: Game; mode: Mode; setMode: (mode: Mode) => void; portId: number; setPortId: (id: number) => void; shipId: number | null; setShipId: (id: number) => void; routeId: number };
 export function ActionPanel({ game, mode, setMode, portId, setPortId, shipId, setShipId, routeId }: Props) {
@@ -61,12 +62,14 @@ export function ActionPanel({ game, mode, setMode, portId, setPortId, shipId, se
   async function setAmbush() {
     if (!ambushRoute || !game.accountId) return;
     try {
-      const salt = seal(), window = game.height + lead;
-      const order: Order = { kind: "ambush", id: `ambush-${Date.now()}`, routeId, window, committedAt: game.height, destination: ambushRoute.to_port, salt, createdAt: new Date().toISOString(), confirmed: false };
+      // The polled height can be several seconds old; window_start must still be in the future when the call executes.
+      const now = (await readRpc<{ header: { height: number } }>("block", { finality: "final" })).header.height;
+      const salt = seal(), window = now + lead;
+      const order: Order = { kind: "ambush", id: `ambush-${Date.now()}`, routeId, window, committedAt: now, destination: ambushRoute.to_port, salt, createdAt: new Date().toISOString(), confirmed: false };
       game.remember(order);
       const result = await game.call("commit_ambush", { window_start: window, commit: await digest(`${routeId}:${window}:${salt}:${game.accountId}`), stake: "10" }, `Ambush set on the ${portName(ambushRoute.to_port)} route. Spring it before the window closes.`);
       if (result) game.remember({ ...order, confirmed: true });
-    } catch { game.notify("Your hidden orders could not be saved. Allow browser storage before setting an ambush.", "danger"); }
+    } catch { game.notify("Your ambush could not be prepared. Check your connection and browser storage, then try again.", "danger"); }
   }
   async function spring(order: Order) {
     const result = await game.call("reveal_ambush", { commit_id: await digest(`${order.routeId}:${order.window}:${order.salt}:${game.accountId}`), route_id: order.routeId, salt: order.salt }, `Ambush sprung on the ${portName(order.destination)} route. Waiting for a convoy.`);

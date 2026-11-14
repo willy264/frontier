@@ -161,7 +161,7 @@ export function useGame() {
       notify(confirmedMessage, tone, tx); retry(); return result;
     } catch (error) {
       const detail = error instanceof Error ? error.message : String(error);
-      const errors: Record<string, string> = { ERR_SLIPPAGE: "The market price moved. Review the new quote and try again.", ERR_CRED_FUNDS: "You need more CRED for this order.", ERR_CARGO_FUNDS: "Your available cargo changed. Reload the port and adjust the load.", ERR_TOO_EARLY: "Your convoy is still sailing. Wait for the countdown.", ERR_REVEAL_LATE: "The ambush window has closed.", ERR_PLAYER_EXISTS: "This captain is already registered. Refresh your fleet.", ERR_ESCORT_LOCKED: "This ship is escorting a convoy. Wait for its arrival." };
+      const errors: Record<string, string> = { ERR_SLIPPAGE: "The market price moved. Review the new quote and try again.", ERR_CRED_FUNDS: "You need more CRED for this order.", ERR_CARGO_FUNDS: "Your available cargo changed. Reload the port and adjust the load.", ERR_TOO_EARLY: "Your convoy is still sailing. Wait for the countdown.", ERR_REVEAL_LATE: "The ambush window has closed.", ERR_PLAYER_EXISTS: "This captain is already registered. Refresh your fleet.", ERR_ESCORT_LOCKED: "This ship is escorting a convoy. Wait for its arrival.", ERR_WINDOW: "That ambush window had already started. Choose a later window and try again.", ERR_COMMIT_SPAM: "You already have three active ambushes. Spring one or wait for it to expire." };
       if (/AccessKey|InvalidSignature|does not exist.*key/i.test(detail)) setKeyReady(false);
       setMessage(Object.entries(errors).find(([code]) => detail.includes(code))?.[1] ?? "The order was not confirmed. Refresh before retrying; check your wallet activity if it persists.");
       return null;
