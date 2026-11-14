@@ -1,0 +1,258 @@
+{
+  "site": "https://frontier-willy264s-projects.vercel.app/",
+  "world": "world3.world3.testnet",
+  "captainId": "capmwgg5vl66c04.frontierqa-11140241-8f06.testnet",
+  "escortId": "escmwgfqdj695df.frontierqa-11140241-8f06.testnet",
+  "rivalId": "rivmwg7j36s8c2e.frontierqa-11140241-8f06.testnet",
+  "scenes": [
+    {
+      "id": "intro",
+      "title": "FRONTIER / REDESIGNED LIVE ROUND",
+      "narration": "A fresh captain trades, hires an escort, crosses a live ambush window with every unit of cargo intact, and sells at the destination. Every order shown here is a real NEAR testnet transaction.",
+      "start": 4.916,
+      "end": 5.013
+    },
+    {
+      "id": "register",
+      "title": "01 / CONNECT AND REGISTER",
+      "narration": "For this recording, an automated wallet approves only the game contract methods. The full-access testnet credential never enters the page. This fresh captain then registers through the redesigned interface.",
+      "start": 5.013,
+      "end": 26.799
+    },
+    {
+      "id": "trade-build",
+      "title": "02 / BUY CARGO AND BUILD A SLOOP",
+      "narration": "The captain spends 600 CRED on Blockspace and builds a defence-one sloop. The market quote and resulting inventory both come from the deployed contract.",
+      "start": 26.799,
+      "end": 45.7
+    },
+    {
+      "id": "escort",
+      "title": "03 / HIRE A DEFENCE-THREE ESCORT",
+      "narration": "A second fresh captain has built a galleon with exactly three defence. The convoy looks up that live offer and hires it through the interface before departure.",
+      "start": 45.7,
+      "end": 51.833
+    },
+    {
+      "id": "ambush-depart",
+      "title": "04 / REVEALED AMBUSH AND SEALED DEPARTURE",
+      "narration": "A scripted rival has exactly two idle defence, above the sloop alone but below the escorted convoy's total defence of four. Its committed and revealed ambush window is established first; then the captain loads every unit and departs inside that exact window.",
+      "start": 51.833,
+      "end": 81.992
+    },
+    {
+      "id": "arrive",
+      "title": "05 / ARRIVE WITH FULL CARGO",
+      "narration": "The contract resolves the voyage after the route distance. The proof compares the loaded ship cargo with the captain's credited inventory, alongside the exact rival power and window, rather than inferring protection from an event flag.",
+      "start": 81.992,
+      "end": 98.322
+    },
+    {
+      "id": "sell",
+      "title": "06 / SELL AT THE DESTINATION",
+      "narration": "At Solana Reef, the captain sells every surviving unit through the live market. The final state confirms the Blockspace inventory was sold after arriving intact. The sale price is whatever the live market pays; this voyage is not a profit claim.",
+      "start": 98.322
+    }
+  ],
+  "evidence": [
+    {
+      "source": "setup: create capmwgg5vl66c04.frontierqa-11140241-8f06.testnet",
+      "method": "create_account",
+      "tx": "BkKF3xvvnW6PuG6rvXzV7zsthM4FcLSQ9o7ogm6M2qq7",
+      "explorer": "https://testnet.nearblocks.io/txns/BkKF3xvvnW6PuG6rvXzV7zsthM4FcLSQ9o7ogm6M2qq7",
+      "signer": "frontierqa-11140241-8f06.testnet",
+      "receiver": "capmwgg5vl66c04.frontierqa-11140241-8f06.testnet",
+      "executionBlock": 277663641,
+      "status": "success",
+      "events": []
+    },
+    {
+      "source": "recording wallet: scoped game-key approval",
+      "method": "add_key",
+      "tx": "9SJ28Hxd67BhA5n5PuBtC76ik6CUeS3cJBCTyYHhPvmj",
+      "explorer": "https://testnet.nearblocks.io/txns/9SJ28Hxd67BhA5n5PuBtC76ik6CUeS3cJBCTyYHhPvmj",
+      "signer": "capmwgg5vl66c04.frontierqa-11140241-8f06.testnet",
+      "receiver": "capmwgg5vl66c04.frontierqa-11140241-8f06.testnet",
+      "executionBlock": 277663662,
+      "status": "success",
+      "events": []
+    },
+    {
+      "source": "UI: register fresh captain",
+      "method": "register_player",
+      "tx": "HdptH4X5ntCk65YaFrudCmnmvtbDZYybdY1Xga9nNahq",
+      "explorer": "https://testnet.nearblocks.io/txns/HdptH4X5ntCk65YaFrudCmnmvtbDZYybdY1Xga9nNahq",
+      "signer": "capmwgg5vl66c04.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277663671,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "player_registered",
+          "data": [
+            {
+              "value": "capmwgg5vl66c04.frontierqa-11140241-8f06.testnet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "UI: buy Blockspace cargo",
+      "method": "buy",
+      "tx": "8xw2wmuzUYZDntZuRxZJNtopa1XgyF5tsMSdM32YtevU",
+      "explorer": "https://testnet.nearblocks.io/txns/8xw2wmuzUYZDntZuRxZJNtopa1XgyF5tsMSdM32YtevU",
+      "signer": "capmwgg5vl66c04.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277663697,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "trade",
+          "data": [
+            {
+              "value": "buy:1:2:24"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "UI: build captain sloop",
+      "method": "build_ship",
+      "tx": "CrmuRUfmHwbYhLrwUxYkUAGcA6banEPQSxvQXTZgRhDp",
+      "explorer": "https://testnet.nearblocks.io/txns/CrmuRUfmHwbYhLrwUxYkUAGcA6banEPQSxvQXTZgRhDp",
+      "signer": "capmwgg5vl66c04.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277663705,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ship_built",
+          "data": [
+            {
+              "value": "45"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "UI: hire defence-3 galleon",
+      "method": "hire_escort",
+      "tx": "xG3VMYhimhy1CYT7jpK9p7HnUJ9xCTAPSzc3zsoEyRP",
+      "explorer": "https://testnet.nearblocks.io/txns/xG3VMYhimhy1CYT7jpK9p7HnUJ9xCTAPSzc3zsoEyRP",
+      "signer": "capmwgg5vl66c04.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277663728,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "escort_hired",
+          "data": [
+            {
+              "value": "19:45"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "scripted rival: commit ambush",
+      "method": "commit_ambush",
+      "tx": "4xpaujUWKQEdXqARkZopiCdwzwXuyivCgaCi3vQ4uNnh",
+      "explorer": "https://testnet.nearblocks.io/txns/4xpaujUWKQEdXqARkZopiCdwzwXuyivCgaCi3vQ4uNnh",
+      "signer": "rivmwg7j36s8c2e.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277663738,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ambush_committed",
+          "data": [
+            {
+              "value": "[90, 165, 152, 247, 224, 15, 108, 69, 182, 80, 175, 38, 194, 143, 165, 76, 14, 223, 246, 147, 131, 9, 149, 52, 60, 244, 180, 219, 232, 204, 21, 250]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "scripted rival: reveal ambush",
+      "method": "reveal_ambush",
+      "tx": "4FpLLCy72ukqQXdmV3ijtZo5iWS3NwDBa254kxrPVzzA",
+      "explorer": "https://testnet.nearblocks.io/txns/4FpLLCy72ukqQXdmV3ijtZo5iWS3NwDBa254kxrPVzzA",
+      "signer": "rivmwg7j36s8c2e.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277663742,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "ambush_revealed",
+          "data": [
+            {
+              "value": "[90, 165, 152, 247, 224, 15, 108, 69, 182, 80, 175, 38, 194, 143, 165, 76, 14, 223, 246, 147, 131, 9, 149, 52, 60, 244, 180, 219, 232, 204, 21, 250]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "UI: depart escorted convoy with sealed destination",
+      "method": "depart",
+      "tx": "AhA6kNKfxGRfsD6d9weUxPGWqt6ARkbNSsyZuQZqpfGj",
+      "explorer": "https://testnet.nearblocks.io/txns/AhA6kNKfxGRfsD6d9weUxPGWqt6ARkbNSsyZuQZqpfGj",
+      "signer": "capmwgg5vl66c04.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277663777,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "departed",
+          "data": [
+            {
+              "value": "45"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "UI: reveal destination and arrive",
+      "method": "arrive",
+      "tx": "RWKEJKpGGA6Uk5mKT8cNQPQaCjo6PbE2GmEPLtz8C7V",
+      "explorer": "https://testnet.nearblocks.io/txns/RWKEJKpGGA6Uk5mKT8cNQPQaCjo6PbE2GmEPLtz8C7V",
+      "signer": "capmwgg5vl66c04.frontierqa-11140241-8f06.testnet",
+      "receiver": "world3.world3.testnet",
+      "executionBlock": 277663796,
+      "status": "success",
+      "events": [
+        {
+          "standard": "frontier",
+          "version": "1.0.0",
+          "event": "arrived",
+          "data": [
+            {
+              "value": "45:raided=false:loss=0"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "error": "Timed out waiting for enabled UI action"
+}

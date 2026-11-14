@@ -1,5 +1,11 @@
 # FRONTIER handoff
 
+## After the rewrite, 14 November 2026 13:40 UTC
+
+- Releases on the rewritten history: e5cca87 (bold CRED balance with a How to earn CRED button; escort offers point to Show open offers; the Captain's log notes when another captain hires or releases your escort, including while the page was closed), c6c6afa (re-check a just-added game key for up to about 4.5 s before handing calls to the wallet). 60bda06, 63bed3e and e959931 change only the recorder. CI passed on all of them.
+- Production fresh-account loop on c6c6afa (results/production-rewrite-round-partial.json): fresh captain capmwgg5vl66c04.frontierqa-11140241-8f06.testnet registered, bought 24 Blockspace, built a sloop, hired a defence-3 escort through the wallet, departed inside a scripted rival's revealed ambush window and arrived with all cargo. The sale was correctly disabled: 24 Blockspace at Solana Reef grosses 28 CRED, below the contract's 30 CRED minimum fee, after repeated test rounds moved prices. The UI ambush step was not reached in this run; it passed on preview 876b15a and in a manual production test.
+- Recording from this machine needed FRONTIER_BROWSER_RPC=https://near-testnet.drpc.org and FRONTIER_RPC_URL=https://near-testnet.drpc.org: FastNEAR rate-limited the IP (429) and rpc.testnet.near.org is deprecated (429). The QA faucet account frontierqa-11140241-8f06.testnet is nearly empty (about 0.08 NEAR).
+
 ## Authorship rewrite, 14 November 2026 13:01 UTC
 
 - 17 commits authored and committed as `emmanuel <badejoemmanuel805@gmail.com>` now read `Uiriamuzu <daviswill264@gmail.com>`. Method: `git filter-repo --mailmap` on a fresh `--mirror` clone, then `git push --force --mirror` over SSH. The 67 earlier commits kept their hashes.
