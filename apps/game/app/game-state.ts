@@ -13,9 +13,22 @@ export type Route = { route_id: number; from_port: number; to_port: number; dist
 export type Ship = { token_id: string; owner_id: string; cargo: number[]; defence: number; origin_port: number | null; current_port: number | null; departed_at: number; arrives_at: number; escort_ship_id: number | null; escorting_convoy_id: number | null };
 export type Player = { cred: number; goods: number[]; active_commits: number; last_epoch_seen: number };
 export type EconomySnapshot = { cred_supply: string; npc_faucet: string; sinks: string; spoilage: string; epoch: number };
-export type Order = { kind: "ambush" | "departure"; id: string; routeId: number; origin?: number; window?: number; shipId?: number; destination: number; salt: string; createdAt: string; revealed?: boolean; confirmed?: boolean };
+export type Order = { kind: "ambush" | "departure"; id: string; routeId: number; origin?: number; window?: number; committedAt?: number; shipId?: number; destination: number; salt: string; createdAt: string; revealed?: boolean; confirmed?: boolean };
 export type GameEvent = { id: string; text: string; tone: "normal" | "danger" | "escort"; tx?: string; time: string };
+// The game-only key may sign these without a wallet prompt.
+export const SESSION_METHODS = ["register_player", "buy", "sell", "build_ship", "depart", "arrive", "commit_ambush", "reveal_ambush", "offer_escort", "set_fee"];
+// These move CRED or ports to another account, so the wallet signs each one.
+export const WALLET_METHODS = ["hire_escort", "buy_port", "set_port_sale_price"];
+export const AMBUSH_SPAN = 20;
+export const AMBUSH_LEAD_OPTIONS = [10, 30, 60, 120];
 export const portName = (id: number) => ISLANDS.find(p => p.id === id)?.name ?? "an unknown port";
+// Client rule: the contract does not check where goods are, so this client only sells where a ship is docked.
+export const dockedAt = (ships: Array<[number, Ship]>, portId: number) => ships.some(([, s]) => s.current_port === portId && s.origin_port === null);
+export const isFinalHarbour = (routes: Route[], portId: number) => routes.length > 0 && !routes.some(r => r.from_port === portId);
+export function ambushWindow(order: Pick<Order, "window" | "committedAt">, height: number) {
+  const start = order.window ?? 0, end = start + AMBUSH_SPAN;
+  return { start, end, opensIn: Math.max(0, start - height), remaining: Math.max(0, end - height), span: end - (order.committedAt ?? start - 30) };
+}
 export const wholeAmount = (value: string) => /^\d+$/.test(value) && Number.isSafeInteger(Number(value)) && Number(value) > 0;
 export function minimumOutput(quote: string) { const n = BigInt(quote); return (n > 0n ? (n * 98n + 99n) / 100n : 0n).toString(); }
 export function voyageProgress(ship: Ship, route: Route | undefined, height: number) {

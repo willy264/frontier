@@ -5,9 +5,8 @@ import type { NearConnector } from "@hot-labs/near-connect";
 import { readRpc, view } from "./read-rpc";
 import { createReadCache, pollDelay } from "./read-cache";
 export { view } from "./read-rpc";
-import { arrivalMessage, WORLD, RPC, type Port, type Route, type Ship, type Player, type Order, type GameEvent, type EconomySnapshot } from "./game-state";
+import { arrivalMessage, WORLD, RPC, SESSION_METHODS, WALLET_METHODS, type Port, type Route, type Ship, type Player, type Order, type GameEvent, type EconomySnapshot } from "./game-state";
 
-const METHODS = ["register_player", "buy", "sell", "build_ship", "depart", "arrive", "commit_ambush", "reveal_ambush", "offer_escort", "hire_escort", "set_fee", "set_port_sale_price", "buy_port"];
 const keySlot = `frontier-game-key:${WORLD}`;
 let client: Promise<import("near-api-js").JsonRpcProvider> | undefined;
 const provider = () => client ??= import("near-api-js").then(({ JsonRpcProvider }) => new JsonRpcProvider({ url: RPC }));
@@ -113,7 +112,7 @@ export function useGame() {
       const key = KeyPair.fromRandom("ed25519");
       // Store before redirects, without assuming that the wallet approved it.
       sessionStorage.setItem(keySlot, key.toString());
-      await connector.current.connect({ addFunctionCallKey: { contractId: WORLD, publicKey: key.getPublicKey().toString(), allowMethods: { anyMethod: false, methodNames: METHODS }, gasAllowance: { kind: "limited", amount: "1000000000000000000000000" } } });
+      await connector.current.connect({ addFunctionCallKey: { contractId: WORLD, publicKey: key.getPublicKey().toString(), allowMethods: { anyMethod: false, methodNames: SESSION_METHODS }, gasAllowance: { kind: "limited", amount: "1000000000000000000000000" } } });
       const connected = await connector.current.getConnectedWallet();
       setAccountId(connected.accounts[0]?.accountId ?? null); setKeyReady(true);
       notify("Wallet connected. Your captain is ready to join.");
@@ -124,13 +123,23 @@ export function useGame() {
   async function call(method: string, args: Record<string, unknown>, success: string, arrival?: { destination: number; cargo: number[]; escorted: boolean }) {
     if (lock.current) return null;
     if (!accountId) { setMessage("Connect your testnet wallet to play."); return null; }
+    const viaWallet = WALLET_METHODS.includes(method);
     const saved = sessionStorage.getItem(keySlot);
-    if (!saved) { setKeyReady(false); setMessage("Enable game controls before playing."); return null; }
-    lock.current = true; setPending(method); setMessage("Sending your order. Waiting for testnet confirmation…");
+    if (!viaWallet && !saved) { setKeyReady(false); setMessage("Enable game controls before playing."); return null; }
+    if (viaWallet && !connector.current) { setMessage("Wallet tools are still loading. Try again in a moment."); return null; }
+    lock.current = true; setPending(method); setMessage(viaWallet ? "Approve this order in your wallet." : "Sending your order. Waiting for testnet confirmation…");
     try {
-      const { Account, KeyPairSigner } = await import("near-api-js");
-      const account = new Account(accountId, await provider(), KeyPairSigner.fromSecretKey(saved as import("near-api-js").KeyPairString));
-      const result = await account.callFunctionRaw({ contractId: WORLD, methodName: method, args, gas: 300n * 10n ** 12n, deposit: 0n });
+      let result: Awaited<ReturnType<import("near-api-js").Account["callFunctionRaw"]>>;
+      if (viaWallet) {
+        const wallet = await connector.current!.wallet();
+        const outcome = await wallet.signAndSendTransaction({ receiverId: WORLD, actions: [{ type: "FunctionCall", params: { methodName: method, args, gas: "300000000000000", deposit: "0" } }] });
+        // Same RPC transaction JSON; near-connect and near-api-js type it from different packages.
+        result = outcome as unknown as typeof result;
+      } else {
+        const { Account, KeyPairSigner } = await import("near-api-js");
+        const account = new Account(accountId, await provider(), KeyPairSigner.fromSecretKey(saved as import("near-api-js").KeyPairString));
+        result = await account.callFunctionRaw({ contractId: WORLD, methodName: method, args, gas: 300n * 10n ** 12n, deposit: 0n });
+      }
       if (typeof result.status === "object" && "Failure" in result.status) throw new Error(JSON.stringify(result.status.Failure));
       const tx = result.transaction.hash;
       let confirmedMessage = success;

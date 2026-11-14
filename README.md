@@ -73,6 +73,18 @@ pnpm demo:round
 - `docs`: verified sources, architecture, and threat model.
 - `execution`: task ledger and exact handoff state.
 
+## Known limits of the deployed contract
+
+The world contract is frozen for the hackathon. A review on 14 November 2026 confirmed these behaviours in `contracts/world/src/lib.rs` and live testnet state. Fixing them needs a contract change and a fresh world deployment.
+
+- **Trades are not location-checked.** `buy` and `sell` use a player's global goods and take any `port_id`. This client only sells where one of your ships is docked, but a direct contract call can trade at any port without sailing.
+- **NPC demand moves CRED; it does not mint it.** NPC buyers pay fixed prices (20, 30 and 40 CRED) out of a port's CRED reserve, capped at 160 CRED per epoch, and pay captains in registration order. Many epochs without player buying can drain a port's reserve and stop its market. Epochs advance only when someone calls `tick_epoch`; the live world is at epoch 1.
+- **Arrival has no deadline.** An ambush catches departures in a 20-block window. `tick_epoch` expires and refunds revealed ambushes, so a convoy can wait out a revealed ambush before calling `arrive`.
+- **Routes are one-way.** NEAR Capital has no outbound route, so ships that arrive there stay. From Solana Reef, Base Harbor and Tron Bay only one route leaves, so those destinations are hidden in name only.
+- **Port treasuries cannot be withdrawn.** Fees accumulate in the port and move with it on transfer, but no method pays them out.
+- **Every trade pays at least 30 CRED in fees.** That is 25% of a 120-CRED purchase.
+- **Test coverage is narrower than the brief.** The property test exercises a small arithmetic model, not the contract, and the port-transfer unit test moves an empty treasury.
+
 ## Limits and safety
 
 CRED is game currency and is not redeemable. The world contract is a focused MVP: NEAR Intents settlement and a production-grade season rollover are future work. NEAR Intents has no testnet path in this repository. No mainnet transaction is performed.

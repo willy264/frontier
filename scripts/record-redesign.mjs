@@ -232,6 +232,18 @@ try {
     await saveReceipt(approved, "recording wallet: scoped game-key approval", "add_key");
     return [{ accountId: captainId }];
   });
+  // Escort hires and port trades are wallet-signed in the app; the recording wallet signs them in Node.
+  await context.exposeBinding("__frontierRecordingSign", async (_, request) => {
+    assert.equal(request.receiverId, world);
+    assert.equal(request.actions.length, 1);
+    const [action] = request.actions;
+    assert.equal(action.type, "FunctionCall");
+    assert(["hire_escort", "buy_port", "set_port_sale_price"].includes(action.params.methodName), `Unexpected wallet method: ${action.params.methodName}`);
+    assert.equal(String(action.params.deposit), "0");
+    const result = await owner.callFunctionRaw({ contractId: world, methodName: action.params.methodName, args: action.params.args, gas: BigInt(action.params.gas), deposit: 0n });
+    await saveReceipt(result, `recording wallet: approved ${action.params.methodName}`, action.params.methodName);
+    return JSON.parse(JSON.stringify(result, (_key, value) => typeof value === "bigint" ? value.toString() : value));
+  });
   await context.addInitScript(({ origin, captain }) => {
     if (location.origin !== origin) return;
     localStorage.setItem("frontier-intro-seen", "yes");
@@ -251,6 +263,7 @@ try {
         getAccounts: async () => signedIn ? [{ accountId: captain }] : [],
         signIn: async request => { const accounts = await window.__frontierRecordingLogin(request); signedIn = true; return accounts; },
         signOut: async () => { signedIn = false; },
+        signAndSendTransaction: async request => window.__frontierRecordingSign(request),
       } }));
     });
   }, { origin: site, captain: captainId });
@@ -410,7 +423,16 @@ try {
   const finalPlayer = await waitView("get_player", { account_id: captainId }, player => Number(player?.goods?.[0]) === 0);
   assert(Number(finalPlayer.cred) > Number(afterArrival.cred));
 
-  begin("evidence", "07 / RECEIPTS AND INDEPENDENT PROOF", "The capture record links every transaction and records the escort's defence, rival's complete fresh fleet, ambush bounds, exact departure block, and equal loaded and arrived cargo. This is live testnet evidence, not a simulated outcome.", started);
+  begin("raid", "07 / SET AND SPRING AN AMBUSH", "Now the captain turns raider. The idle sloop sets an ambush on the Bitcoin Isle to Solana Reef route with a window opening in 10 blocks, then springs it through the interface.", started);
+  const captainBeforeRaid = await view("get_player", { account_id: captainId });
+  await page.getByRole("button", { name: "Ambush", exact: true }).click();
+  await page.getByLabel("Window opens in", { exact: true }).selectOption("10");
+  const raidCommitReceipt = await uiTransaction("Set ambush", "commit_ambush", "UI: captain commits ambush with chosen window", "Ambush set");
+  const raidRevealReceipt = await uiTransaction("Spring ambush", "reveal_ambush", "UI: captain springs ambush", "Ambush sprung");
+  const captainAfterRaid = await waitView("get_player", { account_id: captainId }, player => Number(player?.active_commits) === Number(captainBeforeRaid.active_commits) + 1);
+  await page.screenshot({ path: path.join(out, "captain-ambush.png") });
+
+  begin("evidence", "08 / RECEIPTS AND INDEPENDENT PROOF", "The capture record links every transaction and records the escort's defence, rival's complete fresh fleet, ambush bounds, exact departure block, and equal loaded and arrived cargo. This is live testnet evidence, not a simulated outcome.", started);
   await page.locator(".ship-log").scrollIntoViewIfNeeded();
   await delay(2_000);
   scenes.at(-1).end = (Date.now() - started) / 1000;
@@ -438,9 +460,10 @@ try {
       rivalPower: { exactIdlePower: rivalPower, requiredBounds: { greaterThan: 1, lessThanOrEqual: 4 }, withinRequiredBounds: rivalPower > 1 && rivalPower <= 4, basis: "The rival account's complete ships_for_owner result contained exactly two idle defence-1 sloops and no other ships.", ships: rivalShips.map(([id, ship]) => ({ shipId: Number(id), defence: Number(ship.defence), routeId: ship.route_id, originPort: ship.origin_port, escortingConvoyId: ship.escorting_convoy_id })) },
       ambushWindow: { routeId: 1, fromPort: Number(route.from_port), toPort: Number(route.to_port), windowStart, windowEnd, departureBlock, enclosesDeparture: windowStart <= departureBlock && departureBlock <= windowEnd, rivalActiveCommits: { before: Number(rivalBeforeAmbush.active_commits), afterReveal: Number(rivalAfterReveal.active_commits), afterArrival: Number(rivalAfterArrival.active_commits), targetedAmbushResolved: Number(rivalBeforeAmbush.active_commits) === 0 && Number(rivalAfterReveal.active_commits) === 1 && Number(rivalAfterArrival.active_commits) === 0 }, commitReceipt: commitCall.receipt.explorer, revealReceipt: revealCall.receipt.explorer, departReceipt: departReceipt.explorer },
       cargoPreservation: { loadedCargo, captainGoodsBeforeArrival: beforeArrivalPlayer.goods.map(Number), captainGoodsAfterArrival: afterArrival.goods.map(Number), fullCargoPreserved: afterArrival.goods.every((value, index) => Number(value) === Number(beforeArrivalPlayer.goods[index]) + loadedCargo[index]), arrivalReceipt: arriveReceipt.explorer },
+      captainAmbush: { activeCommits: { before: Number(captainBeforeRaid.active_commits), after: Number(captainAfterRaid.active_commits) }, stakeCred: Number(captainBeforeRaid.cred) - Number(captainAfterRaid.cred), commitReceipt: raidCommitReceipt.explorer, revealReceipt: raidRevealReceipt.explorer },
       sale: { soldHashpower: sellAmount, finalGoods: finalPlayer.goods.map(Number), finalCred: Number(finalPlayer.cred), saleReceipt: sellReceipt.explorer },
     },
-    uiTransactions: [registerReceipt, buyReceipt, buildReceipt, hireReceipt, departReceipt, arriveReceipt, sellReceipt].map(entry => ({ method: entry.method, tx: entry.tx, explorer: entry.explorer, executionBlock: entry.executionBlock })),
+    uiTransactions: [registerReceipt, buyReceipt, buildReceipt, hireReceipt, departReceipt, arriveReceipt, sellReceipt, raidCommitReceipt, raidRevealReceipt].map(entry => ({ method: entry.method, tx: entry.tx, explorer: entry.explorer, executionBlock: entry.executionBlock })),
   };
 } catch (error) {
   if (page) {
