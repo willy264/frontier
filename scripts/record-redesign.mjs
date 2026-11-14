@@ -43,6 +43,8 @@ const spendCred = Number(process.env.FRONTIER_ROUND_SPEND ?? 400);
 const walletEmulation = process.env.FRONTIER_WALLET_EMULATION ?? "requested-key";
 // Optional: when this machine's IP is throttled, retry the page's FastNEAR reads that get 429 or fail on another RPC.
 const browserRpc = process.env.FRONTIER_BROWSER_RPC ?? null;
+// The captain only pays gas; 0.25 NEAR is plenty when the funding account is low.
+const captainNear = BigInt(Math.round(Number(process.env.FRONTIER_CAPTAIN_NEAR ?? 0.6) * 1e6)) * 10n ** 18n;
 let walletKeyPair = null;
 let walletSilentCalls = 0;
 const gameKeyMethods = ["register_player", "buy", "sell", "build_ship", "depart", "arrive", "commit_ambush", "reveal_ambush", "offer_escort", "set_fee"];
@@ -182,7 +184,7 @@ const responseTasks = new Set();
 
 try {
   const root = await account(rootId);
-  owner = process.env.FRONTIER_VIDEO_ACCOUNT ? await account(captainId) : await createFreshAccount(root, captainId, 600_000_000_000_000_000_000_000n);
+  owner = process.env.FRONTIER_VIDEO_ACCOUNT ? await account(captainId) : await createFreshAccount(root, captainId, captainNear);
   const escort = process.env.FRONTIER_ESCORT_ACCOUNT ? await account(escortId) : await createFreshAccount(root, escortId, 250_000_000_000_000_000_000_000n);
   const rival = process.env.FRONTIER_RIVAL_ACCOUNT ? await account(rivalId) : await createFreshAccount(root, rivalId, 250_000_000_000_000_000_000_000n);
 
@@ -318,7 +320,7 @@ try {
   page = await context.newPage();
   video = captureVideo ? page.video() : null;
   page.on("response", response => {
-    if (!response.url().includes("rpc.testnet") && !response.url().includes("fastnear.com")) return;
+    if (!response.url().includes("rpc.testnet") && !response.url().includes("fastnear.com") && !(browserRpc && response.url().startsWith(browserRpc))) return;
     const task = response.json().then(body => body?.result?.transaction ? saveReceipt(body.result, "browser UI") : null).catch(() => null);
     responseTasks.add(task);
     task.finally(() => responseTasks.delete(task));
