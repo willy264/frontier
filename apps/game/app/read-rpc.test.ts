@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from "vitest";
-import { readRpc, view } from "./read-rpc";
+import { hasGameKey, readRpc, view } from "./read-rpc";
 
 afterEach(() => vi.unstubAllGlobals());
 it("preserves UTF-8 arguments and nullable contract responses", async () => {
@@ -16,4 +16,17 @@ it.each([Response.json({}, { status: 503 }), Response.json({ error: { code: -320
 it("rejects empty contract output instead of showing stale data", async () => {
   vi.stubGlobal("fetch", vi.fn(async () => Response.json({ result: { result: [] } })));
   await expect(view("get_port")).rejects.toThrow("Empty view response");
+});
+it.each([
+  [{ result: { error: "access key ed25519:111 does not exist while viewing", logs: [] } }, false],
+  [{ result: { nonce: 1, permission: { FunctionCall: { allowance: "1", method_names: [], receiver_id: "world3.world3.testnet" } } } }, true],
+  [{ result: { nonce: 1, permission: { FunctionCall: { allowance: "1", method_names: [], receiver_id: "other.testnet" } } } }, false],
+  [{ result: { nonce: 1, permission: "FullAccess" } }, false],
+])("checks the game key exactly as the RPC reports it", async (body, expected) => {
+  vi.stubGlobal("fetch", vi.fn(async () => Response.json(body)));
+  expect(await hasGameKey("captain.testnet", "ed25519:111")).toBe(expected);
+});
+it("does not mistake a failed read for a missing key", async () => {
+  vi.stubGlobal("fetch", vi.fn(async () => Response.json({}, { status: 503 })));
+  await expect(hasGameKey("captain.testnet", "ed25519:111")).rejects.toThrow(/Testnet/);
 });

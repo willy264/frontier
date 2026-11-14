@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { NearConnector } from "@hot-labs/near-connect";
-import { readRpc, view } from "./read-rpc";
+import { hasGameKey, readRpc, view } from "./read-rpc";
 import { createReadCache, pollDelay } from "./read-cache";
 export { view } from "./read-rpc";
 import { arrivalMessage, WORLD, RPC, SESSION_METHODS, WALLET_METHODS, type Port, type Route, type Ship, type Player, type Order, type GameEvent, type EconomySnapshot } from "./game-state";
 
 const keySlot = `frontier-game-key:${WORLD}`;
+const GAME_KEY_ALLOWANCE = "1000000000000000000000000";
 let client: Promise<import("near-api-js").JsonRpcProvider> | undefined;
 const provider = () => client ??= import("near-api-js").then(({ JsonRpcProvider }) => new JsonRpcProvider({ url: RPC }));
 export async function digest(text: string) { return Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)))); }
@@ -103,6 +104,23 @@ export function useGame() {
     }).catch(() => { if (active) setMessage("Wallet tools could not load. Reload the page to retry."); });
     return () => { active = false; connector.current?.removeAllListeners(); };
   }, [walletRequested]);
+  // Some wallets (Meteor) add their own key at sign-in and ignore ours. Check the chain, and if
+  // our key is missing, ask the wallet to sign one AddKey limited to the game contract.
+  async function ensureGameKey(account: string) {
+    const { KeyPair } = await import("near-api-js");
+    let saved = sessionStorage.getItem(keySlot);
+    if (!saved) { saved = KeyPair.fromRandom("ed25519").toString(); sessionStorage.setItem(keySlot, saved); }
+    const publicKey = KeyPair.fromString(saved as import("near-api-js").KeyPairString).getPublicKey().toString();
+    if (await hasGameKey(account, publicKey)) return true;
+    setMessage("Approve the game key in your wallet. It can only call FRONTIER, with a limited fee allowance.");
+    const wallet = await connector.current!.wallet();
+    await wallet.signAndSendTransaction({ receiverId: account, actions: [{ type: "AddKey", params: { publicKey, accessKey: { permission: { receiverId: WORLD, allowance: GAME_KEY_ALLOWANCE, methodNames: SESSION_METHODS } } } }] });
+    for (let attempt = 0; attempt < 10; attempt++) {
+      if (await hasGameKey(account, publicKey)) return true;
+      await new Promise(resolve => setTimeout(resolve, 1500));
+    }
+    return false;
+  }
   async function connect() {
     if (lock.current) return;
     if (!connector.current) { connectIntent.current = true; setWalletRequested(true); setMessage("Loading wallet tools…"); return; }
@@ -112,11 +130,27 @@ export function useGame() {
       const key = KeyPair.fromRandom("ed25519");
       // Store before redirects, without assuming that the wallet approved it.
       sessionStorage.setItem(keySlot, key.toString());
-      await connector.current.connect({ addFunctionCallKey: { contractId: WORLD, publicKey: key.getPublicKey().toString(), allowMethods: { anyMethod: false, methodNames: SESSION_METHODS }, gasAllowance: { kind: "limited", amount: "1000000000000000000000000" } } });
+      await connector.current.connect({ addFunctionCallKey: { contractId: WORLD, publicKey: key.getPublicKey().toString(), allowMethods: { anyMethod: false, methodNames: SESSION_METHODS }, gasAllowance: { kind: "limited", amount: GAME_KEY_ALLOWANCE } } });
       const connected = await connector.current.getConnectedWallet();
-      setAccountId(connected.accounts[0]?.accountId ?? null); setKeyReady(true);
-      notify("Wallet connected. Your captain is ready to join.");
+      const account = connected.accounts[0]?.accountId ?? null;
+      setAccountId(account);
+      const ready = account ? await ensureGameKey(account) : false;
+      setKeyReady(ready);
+      if (ready) notify("Wallet connected. Your captain is ready to join.");
+      else setMessage("Your wallet is connected, but the game key is not on your account yet. Choose Enable controls.");
     } catch { setKeyReady(false); setMessage("Wallet connection was not completed. Try connecting again."); }
+    finally { lock.current = false; setPending(null); }
+  }
+  async function enableControls() {
+    if (!accountId || !connector.current) return connect();
+    if (lock.current) return;
+    lock.current = true; setPending("connect");
+    try {
+      const ready = await ensureGameKey(accountId);
+      setKeyReady(ready);
+      if (ready) notify("Game controls enabled. Your captain is ready to join.");
+      else setMessage("The game key is not on your account yet. Try Enable controls again.");
+    } catch { setMessage("Game controls were not enabled. Approve the key in your wallet and try again."); }
     finally { lock.current = false; setPending(null); }
   }
   async function disconnect() { await connector.current?.disconnect(); setAccountId(null); setKeyReady(false); sessionStorage.removeItem(keySlot); }
@@ -162,7 +196,9 @@ export function useGame() {
     } catch (error) {
       const detail = error instanceof Error ? error.message : String(error);
       const errors: Record<string, string> = { ERR_SLIPPAGE: "The market price moved. Review the new quote and try again.", ERR_CRED_FUNDS: "You need more CRED for this order.", ERR_CARGO_FUNDS: "Your available cargo changed. Reload the port and adjust the load.", ERR_TOO_EARLY: "Your convoy is still sailing. Wait for the countdown.", ERR_REVEAL_LATE: "The ambush window has closed.", ERR_PLAYER_EXISTS: "This captain is already registered. Refresh your fleet.", ERR_ESCORT_LOCKED: "This ship is escorting a convoy. Wait for its arrival.", ERR_WINDOW: "That ambush window had already started. Choose a later window and try again.", ERR_COMMIT_SPAM: "You already have three active ambushes. Spring one or wait for it to expire." };
-      if (/AccessKey|InvalidSignature|does not exist.*key/i.test(detail)) setKeyReady(false);
+      // near-api-js 7 reports a missing signer key as "Access key ed25519:… does not exist at block height …".
+      const keyMissing = (error instanceof Error && /AccessKeyDoesNotExist/.test(error.name)) || /access ?key.*does not exist|InvalidAccessKey|InvalidSignature/i.test(detail);
+      if (keyMissing) { setKeyReady(false); setMessage("Your game key is not on this account. Choose Enable controls to approve it."); return null; }
       setMessage(Object.entries(errors).find(([code]) => detail.includes(code))?.[1] ?? "The order was not confirmed. Refresh before retrying; check your wallet activity if it persists.");
       return null;
     } finally { lock.current = false; setPending(null); }
@@ -181,5 +217,5 @@ export function useGame() {
       saveOrders([...ordersRef.current.filter(o => !data.orders!.some(n => n.id === o.id)), ...data.orders]); notify("Hidden orders restored for this captain.");
     } catch { setMessage("This backup does not match your captain and world, or could not be read."); }
   }
-  return { accountId, ports, routes, ships, player, economy, height, readState, pending, message, events, orders, keyReady, snapshots, connect, disconnect, call, retry, notify, remember, removeOrder, backup, restore };
+  return { accountId, ports, routes, ships, player, economy, height, readState, pending, message, events, orders, keyReady, snapshots, connect, enableControls, disconnect, call, retry, notify, remember, removeOrder, backup, restore };
 }

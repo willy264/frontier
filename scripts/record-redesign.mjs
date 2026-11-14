@@ -39,6 +39,10 @@ const goods = ["Hashpower", "Liquidity", "Blockspace"];
 const goodIndex = goods.indexOf(process.env.FRONTIER_ROUND_GOOD ?? "Liquidity");
 const goodName = goods[goodIndex];
 const spendCred = Number(process.env.FRONTIER_ROUND_SPEND ?? 400);
+// "own-key" emulates wallets such as Meteor that add their own key at sign-in and ignore the app's key.
+const walletEmulation = process.env.FRONTIER_WALLET_EMULATION ?? "requested-key";
+const gameKeyMethods = ["register_player", "buy", "sell", "build_ship", "depart", "arrive", "commit_ambush", "reveal_ambush", "offer_escort", "set_fee"];
+assert(["requested-key", "own-key"].includes(walletEmulation), "FRONTIER_WALLET_EMULATION must be requested-key or own-key");
 assert(goodIndex >= 0 && Number.isSafeInteger(spendCred) && spendCred > 0 && spendCred <= 700, "FRONTIER_ROUND_GOOD or FRONTIER_ROUND_SPEND is invalid");
 
 for (const accountId of [rootId, world, captainId, escortId, rivalId]) assert(accountId.endsWith(".testnet"), `Refusing non-testnet account: ${accountId}`);
@@ -228,6 +232,13 @@ try {
     assert(key, "The app did not request a scoped function-call key");
     assert.equal(key.contractId, world);
     assert.equal(key.allowMethods.anyMethod, false);
+    if (walletEmulation === "own-key") {
+      const walletKey = KeyPair.fromRandom("ed25519").getPublicKey().toString();
+      const added = await owner.addFunctionCallAccessKey({ publicKey: walletKey, contractId: world, methodNames: [], allowance: 250_000_000_000_000_000_000_000n });
+      sessionKeys.push(walletKey);
+      await saveReceipt(added, "recording wallet: adds its own key and ignores the app key (Meteor behaviour)", "add_key");
+      return [{ accountId: captainId }];
+    }
     const approved = await owner.addFunctionCallAccessKey({
       publicKey: key.publicKey,
       contractId: world,
@@ -240,15 +251,28 @@ try {
   });
   // Escort hires and port trades are wallet-signed in the app; the recording wallet signs them in Node.
   await context.exposeBinding("__frontierRecordingSign", async (_, request) => {
-    assert.equal(request.receiverId, world);
     assert.equal(request.actions.length, 1);
     const [action] = request.actions;
+    const json = result => JSON.parse(JSON.stringify(result, (_key, value) => typeof value === "bigint" ? value.toString() : value));
+    if (action.type === "AddKey") {
+      // The app's fallback when the wallet ignored its key: one AddKey scoped to the game contract.
+      const permission = action.params.accessKey.permission;
+      assert.equal(request.receiverId, captainId);
+      assert(permission !== "FullAccess" && permission.receiverId === world, "AddKey must be scoped to the world contract");
+      assert(permission.methodNames.length > 0 && permission.methodNames.every(m => gameKeyMethods.includes(m)), "AddKey methods exceed the game key");
+      assert(BigInt(permission.allowance) <= 1_000_000_000_000_000_000_000_000n, "AddKey allowance is above 1 NEAR");
+      const added = await owner.addFunctionCallAccessKey({ publicKey: action.params.publicKey, contractId: world, methodNames: permission.methodNames, allowance: BigInt(permission.allowance) });
+      sessionKeys.push(action.params.publicKey);
+      await saveReceipt(added, "recording wallet: approved the app's game-key AddKey (fallback)", "add_key");
+      return json(added);
+    }
+    assert.equal(request.receiverId, world);
     assert.equal(action.type, "FunctionCall");
     assert(["hire_escort", "buy_port", "set_port_sale_price"].includes(action.params.methodName), `Unexpected wallet method: ${action.params.methodName}`);
     assert.equal(String(action.params.deposit), "0");
     const result = await owner.callFunctionRaw({ contractId: world, methodName: action.params.methodName, args: action.params.args, gas: BigInt(action.params.gas), deposit: 0n });
     await saveReceipt(result, `recording wallet: approved ${action.params.methodName}`, action.params.methodName);
-    return JSON.parse(JSON.stringify(result, (_key, value) => typeof value === "bigint" ? value.toString() : value));
+    return json(result);
   });
   await context.addInitScript(({ origin, captain }) => {
     if (location.origin !== origin) return;
@@ -452,6 +476,7 @@ try {
     recordedAt: new Date().toISOString(),
     site: siteUrl.href,
     deploymentCommit,
+    walletEmulation,
     world,
     accounts: {
       captain: { accountId: captainId, freshBeforeRound: initialCaptain === null },

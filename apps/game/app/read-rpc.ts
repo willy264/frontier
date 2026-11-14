@@ -17,6 +17,16 @@ export async function readRpc<T>(method: string, params: Record<string, unknown>
   } finally { clearTimeout(timeout); }
 }
 
+type AccessKeyView = { error?: string; permission?: "FullAccess" | { FunctionCall: { receiver_id: string } } };
+
+// True when the account holds this exact key as a function-call key for the world.
+// A missing key comes back as result.error, which is an answer, not a failed read.
+export async function hasGameKey(accountId: string, publicKey: string): Promise<boolean> {
+  const key = await readRpc<AccessKeyView>("query", { request_type: "view_access_key", account_id: accountId, public_key: publicKey, finality: "final" });
+  if (key.error || !key.permission || key.permission === "FullAccess") return false;
+  return key.permission.FunctionCall.receiver_id === WORLD;
+}
+
 export async function view<T>(method: string, args: Record<string, unknown> = {}): Promise<T> {
   const bytes = new TextEncoder().encode(JSON.stringify(args));
   const argsBase64 = btoa(Array.from(bytes, byte => String.fromCharCode(byte)).join(""));
