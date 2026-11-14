@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SESSION_METHODS, WALLET_METHODS, ambushWindow, closedAmbushOrders, isRejected, arrivalMessage, dockedAt, isFinalHarbour, minimumOutput, voyageProgress, wholeAmount, type Ship } from "./game-state";
+import { SESSION_METHODS, WALLET_METHODS, ambushWindow, closedAmbushOrders, escortTransitions, isRejected, arrivalMessage, dockedAt, isFinalHarbour, minimumOutput, voyageProgress, wholeAmount, type Ship } from "./game-state";
 describe("game presentation from contract state", () => {
   const ship = { origin_port: null, current_port: null, departed_at: 0 } as Ship;
   it("does not put a newly built ship at sea", () => expect(voyageProgress(ship, undefined, 100).sailing).toBe(false));
@@ -63,5 +63,12 @@ describe("game presentation from contract state", () => {
     expect(closedAmbushOrders(orders, 121).map(o => o.id)).toEqual(["a"]);
     expect(closedAmbushOrders(orders, 500).map(o => o.id)).toEqual(["a", "b"]);
     expect(closedAmbushOrders(orders, 0)).toEqual([]);
+  });
+  it("reports escort hires and returns only when this browser saw the earlier state", () => {
+    const idle = { ...ship, escorting_convoy_id: null } as Ship, guarding = { ...ship, escorting_convoy_id: 41 } as Ship;
+    expect(escortTransitions({}, [[7, guarding]])).toEqual({ now: { 7: 41 }, hired: [], released: [] });
+    expect(escortTransitions({ 7: null }, [[7, guarding]]).hired).toEqual([[7, 41]]);
+    expect(escortTransitions({ 7: 41 }, [[7, idle]]).released).toEqual([7]);
+    expect(escortTransitions({ 7: 41 }, [[7, guarding]])).toEqual({ now: { 7: 41 }, hired: [], released: [] });
   });
 });

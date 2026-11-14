@@ -5,7 +5,7 @@ import type { NearConnector } from "@hot-labs/near-connect";
 import { hasGameKey, readRpc, view } from "./read-rpc";
 import { createReadCache, pollDelay } from "./read-cache";
 export { view } from "./read-rpc";
-import { arrivalMessage, isRejected, WORLD, RPC, SESSION_METHODS, WALLET_METHODS, type Port, type Route, type Ship, type Player, type Order, type GameEvent, type EconomySnapshot } from "./game-state";
+import { arrivalMessage, escortTransitions, isRejected, WORLD, RPC, SESSION_METHODS, WALLET_METHODS, type Port, type Route, type Ship, type Player, type Order, type GameEvent, type EconomySnapshot } from "./game-state";
 
 const keySlot = `frontier-game-key:${WORLD}`;
 const GAME_KEY_ALLOWANCE = "1000000000000000000000000";
@@ -88,6 +88,7 @@ export function useGame() {
         setPorts(Object.fromEntries(portList.flatMap((port, i) => port ? [[i + 1, port]] : [])));
         setRoutes(routeList.filter((route): route is Route => route !== null));
         setEconomy(nextEconomy); setHeight(block.header.height); setPlayer(nextPlayer); setShips(nextShips);
+        if (accountId) noteEscortChanges(accountId, nextShips);
         setReadState("ready");
         failures = 0;
         setSnapshots(items => [...items.filter(item => item.epoch !== nextEconomy.epoch), nextEconomy].slice(-20));
@@ -206,6 +207,17 @@ export function useGame() {
       setMessage(Object.entries(errors).find(([code]) => detail.includes(code))?.[1] ?? "The order was not confirmed. Refresh before retrying; check your wallet activity if it persists.");
       return null;
     } finally { lock.current = false; setPending(null); }
+  }
+  // Other captains hire your escort offers on-chain; nothing pushes that to you. The last state is kept
+  // per account in this browser, so hires that happened while the page was closed still show.
+  function noteEscortChanges(account: string, nextShips: Array<[number, Ship]>) {
+    const slotKey = `frontier-escort-state:${WORLD}:${account}`;
+    let before: Record<string, number | null> = {};
+    try { before = JSON.parse(localStorage.getItem(slotKey) ?? "{}"); } catch { /* storage unavailable */ }
+    const { now, hired, released } = escortTransitions(before, nextShips);
+    for (const [shipId, convoy] of hired) notify(`A captain hired your escort: ship ${shipId} now guards convoy ${convoy} until it arrives. The fee is in your CRED.`, "escort");
+    for (const shipId of released) notify(`Ship ${shipId} finished its escort duty and is idle again.`, "escort");
+    try { localStorage.setItem(slotKey, JSON.stringify(now)); } catch { /* storage unavailable */ }
   }
   function remember(order: Order) { saveOrders([...ordersRef.current.filter(item => item.id !== order.id), order]); }
   function removeOrder(id: string) { saveOrders(ordersRef.current.filter(item => item.id !== id)); }

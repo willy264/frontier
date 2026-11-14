@@ -29,6 +29,18 @@ export const aboutSeconds = (blocks: number) => `about ${Math.max(1, Math.round(
 export const isRejected = (detail: string) => /ERR_[A-Z_]+|Smart contract panicked|publishing_transaction_failed|ActionError|FunctionCallError/.test(detail);
 // The contract accepts a reveal up to window_start + 20, so an order is closed only after that block.
 export const closedAmbushOrders = (orders: Order[], height: number) => height > 0 ? orders.filter(o => o.kind === "ambush" && (o.window ?? 0) + AMBUSH_SPAN < height) : [];
+// Escort hires happen on another captain's transaction. Compare each ship's escort link with the last
+// state this browser saw; a ship seen for the first time produces no message.
+export function escortTransitions(before: Record<string, number | null>, ships: Array<[number, Ship]>) {
+  const now: Record<string, number | null> = {}, hired: Array<[number, number]> = [], released: number[] = [];
+  for (const [shipId, ship] of ships) {
+    now[shipId] = ship.escorting_convoy_id;
+    const was = before[shipId];
+    if (was === null && ship.escorting_convoy_id !== null) hired.push([shipId, ship.escorting_convoy_id]);
+    if (typeof was === "number" && ship.escorting_convoy_id === null) released.push(shipId);
+  }
+  return { now, hired, released };
+}
 export const portName = (id: number) => ISLANDS.find(p => p.id === id)?.name ?? "an unknown port";
 // Client rule: the contract does not check where goods are, so this client only sells where a ship is docked.
 export const dockedAt = (ships: Array<[number, Ship]>, portId: number) => ships.some(([, s]) => s.current_port === portId && s.origin_port === null);
